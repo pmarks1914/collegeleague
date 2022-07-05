@@ -1,0 +1,7 @@
+.dt-buttons, .dataTables_length{
+    display: contents;
+}
+.dashboard-loader{
+    position: absolute;
+    Left: 50%;
+}
