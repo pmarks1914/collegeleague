@@ -98,7 +98,7 @@ const routes = [
   { path: '/notifications/modals', name: 'Modals', element: Modals },
   { path: '/notifications/toasts', name: 'Toasts', element: Toasts },
   { path: '/widgets', name: 'Widgets', element: Widgets },
-  // below main pages views
+  // below main pages views 
   { path: '/compliance', name: 'Compliance', element: MyAccount },
 
 ]
