@@ -9,12 +9,21 @@ import {
   cilNotes,
   cilPencil,
   cilPuzzle,
-  cilMoon,
+  cilEco,
+  cilMoney,
   cilPeople,
+  cilTransfer,
+  cilMediaSkipForward,
+  cilTriangle,
+  cilReload,
+  cilWallet,
+  cilDataTransferUp,
   cilUser,
-  cilSpeech,
+  cilSmilePlus,
   cilSpeedometer,
   cilStar,
+  cilTablet,
+  cilControl,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -31,13 +40,13 @@ const account_nav = [
   },
   {
     component: CNavGroup,
-    name: 'PAYMENTS',
+    name: 'Payments',
     items: [
       {
         component: CNavItem,
         name: 'Transaction',
         to: '/payment/transaction',
-        icon: <CIcon icon={cilCursor} customClassName="nav-icon" />,
+        icon: <CIcon icon={cilTransfer} customClassName="nav-icon" />,
       },
       {
         component: CNavItem,
@@ -49,39 +58,63 @@ const account_nav = [
         component: CNavItem,
         name: 'Refunds',
         to: '/payment/refund',
-        icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
+        icon: <CIcon icon={cilReload} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Transaction Splits',
+        to: '/payment/transaction-split',
+        icon: <CIcon icon={cilEco} customClassName="nav-icon" />,
       },
       {
         component: CNavItem,
         name: 'Payouts',
         to: '/payment/payout',
-        icon: <CIcon icon={cilMoon} customClassName="nav-icon" />,
-      },
-      {
-        component: CNavItem,
-        name: 'Payouts',
-        to: '/payment/payout',
-        icon: <CIcon icon={cilBell} customClassName="nav-icon" />,
+        icon: <CIcon icon={cilMoney} customClassName="nav-icon" />,
       },
       {
         component: CNavItem,
         name: 'Subaccounts',
         to: '/payment/subaccount',
-        icon: <CIcon icon={cilBell} customClassName="nav-icon" />,
+        icon: <CIcon icon={cilTriangle} customClassName="nav-icon" />,
       },
       {
         component: CNavItem,
         name: 'Dispute',
         to: '/payment/dispute',
-        icon: <CIcon icon={cilBell} customClassName="nav-icon" />,
+        icon: <CIcon icon={cilDataTransferUp} customClassName="nav-icon" />,
+      },
+    ],
+  },
+  {
+    component: CNavGroup,
+    name: 'Transfers',
+    items: [
+      {
+        component: CNavItem,
+        name: 'Transfers',
+        to: '/transfer/transfer',
+        icon: <CIcon icon={cilMediaSkipForward} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Recipients',
+        to: '/transfer/recipient',
+        icon: <CIcon icon={cilPeople} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Balance',
+        to: '/transfer/balance',
+        icon: <CIcon icon={cilWallet} customClassName="nav-icon" />,
       },
     ],
   },
   {
     component: CNavItem,
-    name: 'Charts',
-    to: '/charts',
-    icon: <CIcon icon={cilChartPie} customClassName="nav-icon" />,
+    name: 'Compliance',
+    to: '/compliance',
+    icon: <CIcon icon={cilControl} customClassName="nav-icon" />,
   },
   
 ]
