@@ -16,6 +16,10 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 import axios from 'axios';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+
+
 // import swal from 'sweetalert2'
 
 const swal = require("sweetalert2");
@@ -154,30 +158,49 @@ const Login = () => {
                   <CForm>
                     <h1>Login</h1>
                     <p className="text-medium-emphasis">Sign In to your account</p>
-                    <CInputGroup className="mb-3">
-                      <CInputGroupText>
-                        <CIcon icon={cilUser} />
-                      </CInputGroupText>
-                      <CFormInput placeholder="Phone number" autoComplete="username" onChange={(e) => { setUsernameVar(e.target.value) }} />
-                    </CInputGroup>
-                    <CInputGroup className="mb-4">
-                      <CInputGroupText>
-                        <CIcon icon={cilLockLocked} />
-                      </CInputGroupText>
-                      <CFormInput
-                        type="password"
-                        placeholder="Password"
-                        autoComplete="current-password"
-                        onChange={(e) => { setPasswordVar(e.target.value) }}
-                      />
-                    </CInputGroup>
+
+
+                    <TextField 
+                    id="standard-basic"
+                    name = "email"
+                    label="Email"
+                    variant="standard"
+                    margin = "normal" 
+                    type="email"
+                    fullWidth
+                    required
+                    onChange={(e) => { setUsernameVar(e.target.value) }}
+                    />
+
+                    <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    name="password"
+                    label="Password"
+                    type="password"
+                    id="standard-basic"
+                    variant = "standard"
+                    autoComplete="current-password"
+                    />
+
                     <p className="text-medium-emphasis">{loginError}</p>
                     <CRow>
                       <CCol xs={6}>
+                        
                       {login === "Login" ? 
-                        <CButton color="primary" className="px-4 " onClick={(e) => CheckLogin(e)}>
-                          {login}
-                        </CButton>
+
+                        <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        sx={{ mt: 3, mb: 2 }}
+                        onClick={(e) => CheckLogin(e)}>
+                        {login}
+                        </Button>
+                        // <CButton color="primary" className="px-4 " onClick={(e) => CheckLogin(e)}>
+                        //   {login}
+                        // </CButton>
                         :
                         <CButton color="primary" className="px-4 ">
                           <a dangerouslySetInnerHTML={{ __html: loader }}></a>
