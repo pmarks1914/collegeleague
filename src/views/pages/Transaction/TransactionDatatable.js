@@ -294,7 +294,7 @@ const Transaction = (transactionDetails) => {
         <div id="myDropdown" className="dropdown-content">
 
           <div>
-            <CIcon icon={cilUser} className="me-2" />  fffff
+            <CIcon icon={cilUser} className="me-2" />  ffff
           </div>
           <div>
             <CIcon icon={cilCreditCard} className="me-2" />
