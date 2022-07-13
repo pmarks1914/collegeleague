@@ -78,3 +78,15 @@
     border: 1px solid #f0f0f5!important;
     background-color: #5f3c03!important;
 }
+
+.bg-text-com-wp{
+    background-color: #FF7643;
+    color: #fff;
+}
+.icon-com-wp{
+    text-align: "center";
+    border-radius: 100%;
+}
+.btn-com-wp{
+    width: 100%;
+}

@@ -24,11 +24,15 @@ const WidgetsDropdown = () => {
             <>
               GHS 269{' '}
               <span className="fs-6 fw-normal">
-                (-12.4% <CIcon icon={cilArrowBottom} />)
+                <CIcon icon={cilArrowTop} />
               </span> 
+              <div className="fs-6 fw-normal">
+                COUNT <b>{"90"}</b>
+              </div> 
+              
             </>
           }
-          title={"TOTAL TRANSACTION " + "34"}
+          title={"TOTAL TRANSACTION"}
           action={
             <CDropdown alignment="end">
               <CDropdownToggle color="transparent" caret={false} className="p-0">
@@ -111,8 +115,11 @@ const WidgetsDropdown = () => {
             <>
               GHS 6.200{' '}
               <span className="fs-6 fw-normal">
-                (40.9% <CIcon icon={cilArrowTop} />)
+                <CIcon icon={cilArrowTop} />
               </span>
+              <div className="fs-6 fw-normal">
+                COUNT <b>{"90"}</b>
+              </div> 
             </>
           }
           title="WINGIPAY TO WINGIPAY"
@@ -197,8 +204,11 @@ const WidgetsDropdown = () => {
             <>
               GHS 2.49{' '}
               <span className="fs-6 fw-normal">
-                (84.7% <CIcon icon={cilArrowTop} />)
+                <CIcon icon={cilArrowTop} />
               </span>
+              <div className="fs-6 fw-normal">
+                COUNT <b>{"90"}</b>
+              </div> 
             </>
           }
           title="WINGIPAY TO MTN"
@@ -270,8 +280,11 @@ const WidgetsDropdown = () => {
             <>
               GHS 4,400{' '}
               <span className="fs-6 fw-normal">
-                (-23.6% <CIcon icon={cilArrowBottom} />)
+                <CIcon icon={cilArrowTop} />
               </span>
+              <div className="fs-6 fw-normal">
+                COUNT <b>{"90"}</b>
+              </div> 
             </>
           }
           title="WINGIPAY TO VODAFONE"

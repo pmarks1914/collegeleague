@@ -1,0 +1,517 @@
+import React, { useEffect, useState } from 'react'
+import $ from 'jquery'
+import "jquery/dist/jquery.min.js";
+import "datatables.net-dt/js/dataTables.dataTables";
+import "datatables.net-dt/css/jquery.dataTables.min.css";
+import "datatables.net-buttons/js/dataTables.buttons.js";
+import "datatables.net-buttons/js/buttons.colVis.js";
+import "datatables.net-buttons/js/buttons.flash.js";
+import "datatables.net-buttons/js/buttons.html5.js";
+import "datatables.net-buttons/js/buttons.print.js";
+import '../../datatable/table.css';
+import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
+import moment from 'moment';
+import {
+  CAvatar,
+  CDropdown,
+  // CDropdownDivider,
+  CDropdownHeader,
+  CDropdownItem,
+  CDropdownMenu,
+  CDropdownToggle,
+  CBadge,
+  CButton,
+  CNavbar,
+  CImage,
+  CNavbarBrand,
+  CCard,
+  CDropdownDivider,
+  CCardBody,
+  CCollapse,
+  CCardHeader,
+  CCol,
+  CLink,
+  CModal,
+  CModalBody,
+  CModalFooter,
+  CModalHeader,
+  CModalTitle,
+  CPopover,
+  CRow,
+  CNav,
+  CNavItem,
+  CTooltip,
+} from '@coreui/react'
+import { getTransactionData } from '../Data/PageData';
+import ViewDetails from '../../datatable/ViewDetails';
+import CIcon from '@coreui/icons-react';
+import Avatar from '@mui/material/Avatar';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Box from '@mui/material/Box';
+import {
+  // cilBell,
+  cilCreditCard,
+  cilUser,
+  cilTask,
+  cilEnvelopeOpen,
+  // cilFile,
+  cilLockLocked,
+  // cilSettings,
+  cilFilter, cilCheckCircle, cilSettings,
+} from '@coreui/icons'
+
+// test data
+let posts = [
+  {
+    "id": "33bc65a6-70f5-470a-812a-61944b6412f3",
+    "amount": "0.01",
+    "note": "wingipay to MTN ussd GhS 0.01 from Eli",
+    "service": 2,
+    "status_code": "SUCCESSFUL",
+    "status_message": "Transaction completed successfully",
+    "created_at": "2022-06-01T14:38:14.995258Z"
+  },
+  {
+    "id": "33bc65a6-70f5-470a-812a-61944b6412f3",
+    "amount": "0.01",
+    "note": "wingipay to MTN ussd GhS 0.01 from Eli",
+    "service": 2,
+    "status_code": "PENDING",
+    "status_message": "Transaction completed successfully",
+    "created_at": "2022-06-01T14:38:14.995258Z"
+  },
+  {
+    "id": "33bc65a6-70f5-470a-812a-61944b6412f3",
+    "amount": "0.01",
+    "note": "wingipay to MTN ussd GhS 0.01 from Eli",
+    "service": 2,
+    "status_code": "FAILED",
+    "status_message": "Transaction completed successfully",
+    "created_at": "2022-06-01T14:38:14.995258Z"
+  }
+]
+
+let transactionData = getTransactionData();
+let transaction = []
+transactionData?.transaction?.then(value => { (transaction = value) });
+
+const Transaction = (transactionDetails) => {
+  const [loader, setLoader] = useState('<div class="spinner-border dashboard-loader" style="color: #e0922f;"></div>')
+  const [tableData, setTableData] = useState([]);
+  const [monitaState, setMonitaState] = useState(1);
+
+  // date time
+  const [dateTo, setDateTo] = useState(new Date('2014-08-18T21:11:54'));
+  const [dateFrom, setDateFrom] = useState(new Date('2014-08-18T21:11:54'));
+
+  // modals
+  // filer transaction
+  const [modal1, setModal1] = useState(false)
+  // view single transaction 
+  const [modal2, setModal2] = useState(false)
+
+  const [viewData, setViewData] = useState({})
+  useEffect(() => {
+
+    if (transaction?.length > 0 && monitaState === 1) {
+      setMonitaState(2)
+      datatablaScript(transaction);
+
+      setLoader('<a></a>')
+    }
+    console.log("props ", transaction)
+  }, [transaction])
+
+  // perform filter 
+  function datatablaScript(tdata) {
+    let printCounter = 0;
+
+    setTableData(tdata);
+    $('#myTable').DataTable().destroy();
+
+    setTimeout(() => {
+
+      $('#myTable').DataTable(
+        {
+          // data: transaction,
+          processing: true,
+          deferLoading: true,
+          keys: true,
+          dom: 'Blfrtip',
+          page: true,
+          // "dom": 't<"bottom"if><"clear">',
+          buttons: [
+            {
+              extend: 'copy',
+              messageTop: null,
+              // text: 'Copy Current Page',
+              exportOptions: {
+                modifier: {
+                  page: 'current'
+                }
+              }
+            },
+            {
+              extend: 'pdfHtml5',
+              messageTop: null,
+              // text: 'Export to PDF Current Page',
+              exportOptions: {
+                modifier: {
+                  page: 'current'
+                }
+              }
+            },
+            {
+              extend: 'excel',
+              messageTop: null,
+              // text: 'Export Current Page',
+              exportOptions: {
+                modifier: {
+                  page: 'current'
+                }
+              },
+              customize: function (anytype) {
+                let sheet = anytype.xl.worksheets['wingipaytransaction.xml'];
+                $('row:first c', sheet).attr('s', '7');
+              }
+            },
+            {
+              extend: 'csv',
+              messageBottom: null,
+              exportOptions: {
+                modifier: {
+                  page: 'current'
+                }
+              },
+            },
+            {
+              extend: 'print',
+              messageBottom: null,
+              exportOptions: {
+                modifier: {
+                  page: 'current'
+                }
+              },
+              customize: function (anytype) {
+                let sheet = anytype.xl.worksheets['wingipaytransaction.pdf'];
+                $('row:first c', sheet).attr('s', '7');
+              }
+            },
+            {
+              text: 'Filter',
+              action: function (e, dt, node, config) {
+                setModal1(true)
+              }
+            }
+          ],
+          scrollY: 600,
+          deferRender: false,
+          scroller: false,
+
+        }
+      );
+    }, 0);
+  }
+
+  function getFilterData(e) {
+    // 
+    e.preventDefault();
+    console.log("post tableData ", tableData);
+    // transaction = posts;
+    try {
+      // setTableData(posts);
+      let newFilterData = transactionDetails?.transactionDetails.filter((post) => { return moment(post.created_at).format('LLLL') <= moment(dateFrom).format('LLLL') })
+      // console.log("post tableData ", transactionDetails?.transactionDetails);
+      console.log("post tableData ", newFilterData);
+      datatablaScript(newFilterData);
+      setModal1(false)
+    } catch (error) {
+    }
+  }
+
+  const handleChangeTo = (newValue) => {
+    setDateTo(newValue);
+  };
+  const handleChangeFrom = (newValue) => {
+    setDateFrom(newValue);
+  };
+  function printContent() {
+    let w = window.open();
+
+    $(".bg-text-wp").css("background-color", "#FF7643");
+    $(".bg-text-wp").css("color", "#fff");
+    $(".bg-text-wp").css("text-align", "center");
+    $(".icon-wp").css("border-radius", "100%");
+    $(".icon-wp").css("width", "15%");
+    $(".viewDescription").css("font-size", "1.2rem");
+    // $(".viewDescription").css("box-shadow", "0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12)");
+    $(".viewDescription").css("font-family", "Roboto", "Helvetica", "Arial", "sans-serif");
+    $(".viewDescription").css("font-weight", "400");
+    $(".viewDescription").css("font-size", "0.875rem");
+    $(".viewDescription").css("line-height", "1.43");
+    $(".viewDescription").css("letter-spacing", "0.01071em");
+    $(".viewDescription").css("padding", "8px");
+    // $(".viewDescription").css("max-width", "50%");
+    $(".viewDescription").css("flex-basis", "50%");
+
+    w.document.write($('.contentForTransactionPrint').html());
+    w.print();
+    w.close();
+  }
+  function toggleFilter() {
+    document.getElementById("myDropdown").classList.toggle("show");
+  }
+  
+  // Close the dropdown if the user clicks outside of it
+  window.onclick = function(event) {
+    if (!event.target.matches('.dropbtn')) {
+      var dropdowns = document.getElementsByClassName("dropdown-content");
+      var i;
+      for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+          openDropdown.classList.remove('show');
+        }
+      }
+    }
+  }
+
+  return (
+    <div>
+      
+      {/* open modal for filter date range */}
+      {/* <CButton onClick={() => setModal1(!modal1)} icon={cilArrowRight} className="float-end" >Filter</CButton> */}
+        
+      <div className="dropdown">
+        <button onClick={(e) => toggleFilter(e)} className="dropbtn">Dropdown</button>
+        <div id="myDropdown" className="dropdown-content">
+
+          <div>
+            <CIcon icon={cilUser} className="me-2" />  fffff
+          </div>
+          <div>
+            <CIcon icon={cilCreditCard} className="me-2" />
+          </div>
+          <div>
+            <CIcon icon={cilTask} className="me-2" />
+          </div>
+        </div>
+      </div>
+      <CRow>
+        <CCol sm={2}> 
+             
+          <CDropdown variant="input-group">
+            <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
+              <CIcon icon={cilFilter} className="me-2" /> Filter
+            </CDropdownToggle>
+            gggggggg
+            <CDropdownMenu className="pt-0" placement="bottom-end">
+              <CDropdownHeader className="bg-light fw-semibold py-2">
+                <CRow>
+                  <CCol sm={4}> <CBadge color='secondary'>Reset</CBadge> </CCol>
+                  <CCol sm={4}>  </CCol>
+                  <CCol sm={4}> <CBadge color='primary'>Apply</CBadge> </CCol>
+                </CRow>
+              </CDropdownHeader>
+              <div>
+                <CIcon icon={cilUser} className="me-2" />  fffff
+              </div>
+              <div>
+                <CIcon icon={cilCreditCard} className="me-2" />
+              </div>
+              <div>
+                <CIcon icon={cilTask} className="me-2" />
+              </div>
+              {/* <CDropdownItem href="#">
+                <CIcon icon={cilBell} className="me-2" />
+                Updates
+                <CBadge color="info" className="ms-2">
+                  42
+                </CBadge>
+              </CDropdownItem>
+              <CDropdownItem href="#">
+                <CIcon icon={cilEnvelopeOpen} className="me-2" />
+                Messages
+                <CBadge color="success" className="ms-2">
+                  42
+                </CBadge>
+              </CDropdownItem>
+              <CDropdownItem href="#">
+                <CIcon icon={cilTask} className="me-2" />
+                Tasks
+                <CBadge color="danger" className="ms-2">
+                  42
+                </CBadge>
+              </CDropdownItem>
+              <CDropdownItem href="#">
+                <CIcon icon={cilCommentSquare} className="me-2" />
+                Comments
+                <CBadge color="warning" className="ms-2">
+                  42
+                </CBadge>
+              </CDropdownItem>
+              <CDropdownHeader className="bg-light fw-semibold py-2">Settings</CDropdownHeader>
+              <CDropdownItem href="#">
+                <CIcon icon={cilUser} className="me-2" />
+                Profile
+              </CDropdownItem>
+              <CDropdownItem href="#">
+                <CIcon icon={cilSettings} className="me-2" />
+                Settings
+              </CDropdownItem> */}
+              {/* {
+                console.log("userData ", process.env.REACT_APP_MAIN_BASE + userData?.userData?.photo50, userData?.userData)
+              } */}
+              <div>
+                <CIcon icon={cilUser} className="me-2" />  fffff
+              </div>
+              <div>
+                <CIcon icon={cilCreditCard} className="me-2" />
+              </div>
+              <div>
+                <CIcon icon={cilTask} className="me-2" />
+              </div>
+              <CDropdownItem >
+                <CIcon icon={cilLockLocked} className="me-2" />
+                fff water is in to water the flower
+              </CDropdownItem>
+              {/* <CDropdownItem href="#">
+                <CIcon icon={cilFile} className="me-2" />
+                Projects
+                <CBadge color="primary" className="ms-2">
+                  42
+                </CBadge>
+              </CDropdownItem>
+              <CDropdownDivider />
+              <CDropdownItem href="#">
+                <CIcon icon={cilLockLocked} className="me-2" />
+                Lock Account
+              </CDropdownItem> */}
+            </CDropdownMenu>
+          </CDropdown>
+        </CCol>
+        <CCol sm={2}>
+          f5
+        </CCol>
+        <CCol sm={3}>
+
+        </CCol>
+        <CCol sm={5}>
+          uy
+        </CCol>
+      </CRow>
+
+
+
+      {/* {dateTo.toString()}{" rrr "}{dateFrom.toString()} */}
+
+      <table id="myTable" className="display" style={{ width: '100%' }}>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Reference</th>
+            <th>Note</th>
+            <th>Status</th>
+            <th>Transaction Date</th>
+            <th>Amount</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {
+            tableData?.map((post, id) =>
+              <tr key={id}>
+                <td>{id + 1}</td>
+                <td>{post.reference_id}</td>
+                <td>{post.note}</td>
+                <td><CBadge color={post.status_code === "SUCCESSFUL" ? "success" : (post.status_code === "PENDING" ? "primary" : "secondary")}>{post.status_code}</CBadge> </td>
+                <td>{moment(post.created_at).format('LLLL')}</td>
+                <td>{post.amount}</td>
+                <td onClick={() => { setModal2(true); setViewData(post) }}><CBadge className='bg-text-wp'>View</CBadge></td>
+              </tr>
+            )}
+          {/* <tr>
+            <td>Tiger Nixon</td>
+            <td>System Architect</td>
+            <td>Edinburgh</td>
+            <td>61</td>
+            <td>2011-04-25</td>
+            <td>$320,800</td>
+          </tr> */}
+        </tbody>
+      </table>
+
+      <a dangerouslySetInnerHTML={{ __html: loader }}></a>
+
+      {/* modals */}
+      {/* modal for filter date range */}
+      <CModal visible={modal1} alignment="center" scrollable backdrop="static" fullscreen='md' onClose={() => setModal1(false)}>
+        <CModalHeader>
+          <CModalTitle> Filter </CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <Stack spacing={3}>
+              <DateTimePicker
+                label="From"
+                inputFormat="dd/MM/yyyy hh:mm:ss"
+                value={dateTo}
+                onChange={handleChangeTo}
+                renderInput={(params) => <TextField {...params} />}
+              />
+              <DateTimePicker
+                label="To"
+                inputFormat="dd/MM/yyyy hh:mm:ss"
+                value={dateFrom}
+                onChange={handleChangeFrom}
+                renderInput={(params) => <TextField {...params} />}
+              />
+            </Stack>
+          </LocalizationProvider>
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" className='text-white' onClick={() => setModal1(false)}>
+            Close
+          </CButton>
+          <CButton color="" className='text-white bg-text-wp' onClick={(e) => getFilterData(e)}> Apply</CButton>
+        </CModalFooter>
+      </CModal>
+
+      {/* modal for filter date range */}
+      <CModal visible={modal2} scrollable backdrop="static" fullscreen="xl" onClose={() => setModal2(false)}>
+        <CModalHeader>
+          <CModalTitle>  </CModalTitle>
+        </CModalHeader>
+        <CModalBody className='contentForTransactionPrint'>
+          <p className="success rounded" style={{ textAlign: "center" }} >
+            <h2> Transaction Details </h2>
+            <CIcon icon={cilCheckCircle} className="bg-text-wp icon-wp" width="15%" />
+          </p>
+
+          {/* view only data for transaction */}
+          <ViewDetails viewData={viewData} />
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" className='text-white' onClick={() => setModal2(false)}>
+            Close
+          </CButton>
+          <CButton className='text-white bg-text-wp' onClick={() => printContent()}>
+            Print
+          </CButton>
+
+        </CModalFooter>
+      </CModal>
+    </div>
+  )
+}
+
+export default Transaction;

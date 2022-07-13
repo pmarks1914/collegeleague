@@ -37,7 +37,7 @@ const Login = () => {
     setLogin("")
     setLoader('<div class="spinner-border "style="color: #e0922f;"></div>`')
 
-    console.log("fff", process.env.REACT_APP_BASE_API)
+    console.log("fff", process.env.REACT_APP_BASE_API, passwordVar, usernameVar)
 
     if (usernameVar === "") {
       // document.getElementById("usernameError").style.display = "block";
@@ -47,9 +47,9 @@ const Login = () => {
       document.getElementById("usernameError").style.display = "none";
     }
     else {
-
+      console.log(" login ")
       let data = JSON.stringify({
-        "phone": usernameVar,
+        "username": usernameVar,
         "password": passwordVar
       });
 
@@ -90,7 +90,7 @@ const Login = () => {
           };
           localStorage.setItem("userDataStore", JSON.stringify(userData));
 
-          window.location.href = "/Home";
+          window.location.href = "/dashboard";
 
         }
         else {
@@ -182,6 +182,7 @@ const Login = () => {
                     id="standard-basic"
                     variant = "standard"
                     autoComplete="current-password"
+                    onChange={(e) => { setPasswordVar(e.target.value) }}
                     />
 
                     <p className="text-medium-emphasis">{loginError}</p>

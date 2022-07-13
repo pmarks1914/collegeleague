@@ -51,7 +51,9 @@ const Toasts = React.lazy(() => import('./views/notifications/toasts/Toasts'))
 const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 
 // main pages components
-const MyAccount = React.lazy(() => import('./views/pages/MyAccount/MyAccount'))
+// compliance
+const MyAccount = React.lazy(() => import('./views/pages/Compliance/MyAccount'))
+const Transaction = React.lazy(() => import('./views/pages/Transaction/Transaction'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
@@ -100,6 +102,7 @@ const routes = [
   { path: '/widgets', name: 'Widgets', element: Widgets },
   // below main pages views 
   { path: '/compliance', name: 'Compliance', element: MyAccount },
+  { path: '/payment/transaction', name: 'Transaction', element: Transaction },
 
 ]
 

@@ -5,3 +5,76 @@
     position: absolute;
     Left: 50%;
 }
+.bg-text-wp{
+    background-color: #FF7643;
+    color: #fff;
+}
+.icon-wp{
+    text-align: "center";
+    border-radius: 100%;
+}
+
+@media print
+{   
+    @page {
+        margin-top: 0;
+        /* margin-bottom: 0; */
+        size: auto;
+        margin: 0;  
+        top: 0px;
+    }
+    /* body {
+        padding-top: 72px;
+        padding-bottom: 72px ;
+    } */
+}
+.viewDescription{
+    /* display: block; */
+    font-size: 1.1em;
+    margin-top: 0.67em;
+    margin-bottom: 0.67em;
+    margin-left: 0;
+    margin-right: 0;
+    font-weight: initial;
+}
+
+
+/* dropdown css */
+.dropbtn {
+    background-color: #3498DB;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .dropbtn:hover, .dropbtn:focus {
+    background-color: #2980B9;
+  }
+  
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    overflow: auto;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  .dropdown a:hover {background-color: #ddd;}
+  
+  .show {display: block;}

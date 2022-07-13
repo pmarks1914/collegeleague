@@ -13,25 +13,28 @@ import {
   // cilBell,
   cilCreditCard,
   // cilCommentSquare,
-  // cilEnvelopeOpen,
+  cilEnvelopeOpen,
   // cilFile,
-  // cilLockLocked,
+  cilLockLocked,
   // cilSettings,
-  // cilTask,
-  // cilUser,
+  cilTask,
+  cilUser,
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 
 import avatar8 from './../../assets/images/avatars/8.jpg'
 
-const AppHeaderDropdown = () => {
+const AppHeaderDropdown = (userData) => {
+  function logoutUser(){
+    window.location.href="/login"
+  }
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
-        <CAvatar src={avatar8} size="md" />
+        <CAvatar src={(process.env.REACT_APP_MAIN_BASE + userData?.userData?.photo150) || avatar8} size="md" alt="user image"/>
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
-        <CDropdownHeader className="bg-light fw-semibold py-2">Account</CDropdownHeader>
+        <CDropdownHeader className="bg-light fw-semibold py-2">User Profile</CDropdownHeader>
         {/* <CDropdownItem href="#">
           <CIcon icon={cilBell} className="me-2" />
           Updates
@@ -69,11 +72,25 @@ const AppHeaderDropdown = () => {
           <CIcon icon={cilSettings} className="me-2" />
           Settings
         </CDropdownItem> */}
-        <CDropdownItem href="#">
+        {
+          console.log("userData ", process.env.REACT_APP_MAIN_BASE + userData?.userData?.photo50, userData?.userData)
+        }
+        <CDropdownItem>
           <CIcon icon={cilCreditCard} className="me-2" />
-          Payments
-          <CBadge color="secondary" className="ms-2">
-            42
+          {userData?.userData?.firstname + " " + userData?.userData?.lastname + " " + userData?.userData?.other_names}
+        </CDropdownItem>
+        <CDropdownItem>
+          <CIcon icon={cilUser} className="me-2" />
+          {userData?.userData?.phone}
+        </CDropdownItem>
+        <CDropdownItem>
+          <CIcon icon={cilTask} className="me-2" />
+          {userData?.userData?.nationalId || "ID not available"}
+        </CDropdownItem>
+        <CDropdownItem onClick={(e)=>logoutUser()}>
+          <CIcon icon={cilLockLocked} className="me-2" />
+          <CBadge className="ms-2 bg-text-wp">
+          Logout
           </CBadge>
         </CDropdownItem>
         {/* <CDropdownItem href="#">

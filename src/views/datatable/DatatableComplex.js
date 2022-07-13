@@ -36,12 +36,23 @@ import {
   CTooltip,
 } from '@coreui/react'
 import { getTransactionData } from '../dashboard/DashboardData';
-import { cilX, cilCheckCircle } from '@coreui/icons';
 import ViewDetails from './ViewDetails';
 import CIcon from '@coreui/icons-react';
 import Avatar from '@mui/material/Avatar';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Box from '@mui/material/Box';
+import {
+  // cilBell,
+  cilCreditCard,
+  cilUser,
+  cilTask,
+  cilEnvelopeOpen,
+  // cilFile,
+  cilLockLocked,
+  // cilSettings,
+  cilTask,
+  cilUser,cilX, cilCheckCircle,
+} from '@coreui/icons'
 
 // test data
 let posts = [
@@ -109,7 +120,7 @@ const DatatableMain = (transactionDetails) => {
   function datatablaScript(tdata) {
     let printCounter = 0;
 
-    setTableData(tdata.filter((post, id)=>{return id < 5}));
+    setTableData(tdata);
     $('#myTable').DataTable().destroy();
 
     setTimeout(()=>{
@@ -120,13 +131,76 @@ const DatatableMain = (transactionDetails) => {
           processing: true,
           deferLoading: true,
           keys: true,
-          // dom: 'Blfrtip',
-          paging: false,
-          searching: false,
+          dom: 'Blfrtip',
+          page: true,
           // "dom": 't<"bottom"if><"clear">',
-          // scrollY: 200,
+          buttons: [
+            {
+              extend: 'copy',
+              messageTop: null,
+              // text: 'Copy Current Page',
+              exportOptions: {
+                modifier: {
+                  page: 'current'
+                }
+              }
+            },
+            {
+              extend: 'pdfHtml5',
+              messageTop: null,
+              // text: 'Export to PDF Current Page',
+              exportOptions: {
+                modifier: {
+                  page: 'current'
+                }
+              }
+            },
+            {
+              extend: 'excel',
+              messageTop: null,
+              // text: 'Export Current Page',
+              exportOptions: {
+                modifier: {
+                  page: 'current'
+                }
+              },
+              customize: function (anytype) {
+                let sheet = anytype.xl.worksheets['wingipaytransaction.xml'];
+                $('row:first c', sheet).attr('s', '7');
+              }
+            },
+            {
+              extend: 'csv',
+              messageBottom: null,
+              exportOptions: {
+                modifier: {
+                  page: 'current'
+                }
+              },
+            },
+            {
+              extend: 'print',
+              messageBottom: null,
+              exportOptions: {
+                modifier: {
+                  page: 'current'
+                }
+              },
+              customize: function (anytype) {
+                let sheet = anytype.xl.worksheets['wingipaytransaction.pdf'];
+                $('row:first c', sheet).attr('s', '7');
+              }
+            },
+            {
+              text: 'Filter',
+              action: function ( e, dt, node, config ) {
+                  setModal1(true)
+            }
+          }
+          ],
+          scrollY: 200,
           deferRender: false,
-          scroller: false,
+          scroller: true,
   
         }
       );
@@ -192,7 +266,7 @@ const DatatableMain = (transactionDetails) => {
           <tr>
             <th>ID</th>
             <th>Reference</th>
-            {/* <th>Note</th> */}
+            <th>Note</th>
             <th>Status</th>
             <th>Transaction Date</th>
             <th>Amount</th>
@@ -206,7 +280,7 @@ const DatatableMain = (transactionDetails) => {
               <tr key={id}>
                 <td>{id + 1}</td>
                 <td>{post.reference_id}</td>
-                {/* <td>{post.note}</td> */}
+                <td>{post.note}</td>
                 <td><CBadge color= {post.status_code === "SUCCESSFUL" ? "success" : (post.status_code === "PENDING" ? "primary" : "secondary")}>{post.status_code}</CBadge> </td>
                 <td>{moment(post.created_at).format('LLLL')}</td>
                 <td>{post.amount}</td>
