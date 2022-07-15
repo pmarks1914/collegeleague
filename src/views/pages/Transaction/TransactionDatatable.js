@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
+import { Container, Row, Col, Label } from 'reactstrap';
 import $ from 'jquery'
 import "jquery/dist/jquery.min.js";
 import "datatables.net-dt/js/dataTables.dataTables";
@@ -10,13 +11,21 @@ import "datatables.net-buttons/js/buttons.html5.js";
 import "datatables.net-buttons/js/buttons.print.js";
 import '../../datatable/table.css';
 import Stack from '@mui/material/Stack';
-import TextField from '@mui/material/TextField';
+import {TextField, Input} from '@mui/material';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import Box from '@mui/material/Box';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+// import Input from '@mui/material/Input';
+import InputAdornment from '@mui/material/InputAdornment';
+import { NativeSelect} from '@mui/material';
+import AccountCircle from '@mui/icons-material/AccountCircle';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
-import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
+import { DateRangePicker } from "materialui-daterange-picker";
+
 import moment from 'moment';
 import {
   CAvatar,
@@ -52,9 +61,6 @@ import {
 import { getTransactionData } from '../Data/PageData';
 import ViewDetails from '../../datatable/ViewDetails';
 import CIcon from '@coreui/icons-react';
-import Avatar from '@mui/material/Avatar';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Box from '@mui/material/Box';
 import {
   // cilBell,
   cilCreditCard,
@@ -64,8 +70,10 @@ import {
   // cilFile,
   cilLockLocked,
   // cilSettings,
-  cilFilter, cilCheckCircle, cilSettings,
+  cilFilter, cilCheckCircle, cilSettings, cilCalendar, cilSearch,
 } from '@coreui/icons'
+import {Helmet} from "react-helmet";
+import Select from 'react-select';
 
 // test data
 let posts = [
@@ -105,11 +113,13 @@ transactionData?.transaction?.then(value => { (transaction = value) });
 const Transaction = (transactionDetails) => {
   const [loader, setLoader] = useState('<div class="spinner-border dashboard-loader" style="color: #e0922f;"></div>')
   const [tableData, setTableData] = useState([]);
-  const [monitaState, setMonitaState] = useState(1);
+  const [monitorState, setMonitorState] = useState(1);
+  const [dropValue, setDropValue] = useState(0);
 
   // date time
   const [dateTo, setDateTo] = useState(new Date('2014-08-18T21:11:54'));
-  const [dateFrom, setDateFrom] = useState(new Date('2014-08-18T21:11:54'));
+  const [dateFrom, setDateFrom] = useState(new Date('2014-08-18T21:11:54')); 
+  const [value, setValue] = useState([null, null]);
 
   // modals
   // filer transaction
@@ -118,15 +128,23 @@ const Transaction = (transactionDetails) => {
   const [modal2, setModal2] = useState(false)
 
   const [viewData, setViewData] = useState({})
+  const [openDateRange, setOpenDateRange] = useState(true);
+  const [dateRange, setDateRange] = useState({startDate: Date.parse("2022-01-13"), endDate: Date.now()});
+  const [transactionStatus, setTransactionStatus] = useState({});
+  const [transactionExport, setTransactionExport] = useState({});
+
+  const toggle = () => setOpenDateRange(!openDateRange);
+
   useEffect(() => {
 
-    if (transaction?.length > 0 && monitaState === 1) {
-      setMonitaState(2)
+    if (transaction?.length > 0 && monitorState === 1) {
+      setMonitorState(2)
       datatablaScript(transaction);
 
       setLoader('<a></a>')
     }
     console.log("props ", transaction)
+
   }, [transaction])
 
   // perform filter 
@@ -135,18 +153,18 @@ const Transaction = (transactionDetails) => {
 
     setTableData(tdata);
     $('#myTable').DataTable().destroy();
-
-    setTimeout(() => {
-
+    setTimeout(() => {   
+       
       $('#myTable').DataTable(
         {
           // data: transaction,
           processing: true,
           deferLoading: true,
           keys: true,
-          dom: 'Blfrtip',
+          // dom: 'Blfrtip',
+          // dom: '<"top"Bfrt>rt<"bottom"lip>',
           page: true,
-          // "dom": 't<"bottom"if><"clear">',
+          dom: '<"top">rt<"bottom"ilp><"clear">',
           buttons: [
             {
               extend: 'copy',
@@ -211,13 +229,15 @@ const Transaction = (transactionDetails) => {
               }
             }
           ],
-          scrollY: 600,
+          // scrollY: 600,
           deferRender: false,
-          scroller: false,
+          // scroller: false,
+          // lengthChange: false
 
         }
       );
     }, 0);
+
   }
 
   function getFilterData(e) {
@@ -265,152 +285,306 @@ const Transaction = (transactionDetails) => {
     w.print();
     w.close();
   }
-  function toggleFilter() {
-    document.getElementById("myDropdown").classList.toggle("show");
+  function toggleFilter(e, type) {
+    e.preventDefault();
+    console.log("test>>> ", dropValue)
+    setDropValue(1);
+    console.log("test ", dropValue, "type", type, "openDateRange", openDateRange)
+    if(type === "filter"){
+      document.getElementById("filterDropdown").classList.toggle("show");
+      document.getElementById("dateRangeDropdown").classList.remove('show');
+    }
+    if(type === "dateRange"){
+      setOpenDateRange(true)
+      document.getElementById("dateRangeDropdown").classList.toggle("show");
+      // document.getElementById("filterDropdown").classList.remove('show');
+    }
+    // setDropValue(0);
   }
-  
+
   // Close the dropdown if the user clicks outside of it
-  window.onclick = function(event) {
-    if (!event.target.matches('.dropbtn')) {
-      var dropdowns = document.getElementsByClassName("dropdown-content");
-      var i;
+  window.onclick = function (event) {
+    event.preventDefault()
+    console.log("dropdown ==", dropValue, "e", event.target.matches('.dateRange'), "openDateRange > ", openDateRange)
+    setDropValue(0);
+    if (!event.target.matches('.dropbtn') && dropValue === 0) {
+      let dropdowns = document.getElementsByClassName("dropdown-content");
+      let i;
       for (i = 0; i < dropdowns.length; i++) {
-        var openDropdown = dropdowns[i];
+        let openDropdown = dropdowns[i];
+        console.log("list ==> ", openDropdown.classList.contains('show'))
         if (openDropdown.classList.contains('show')) {
           openDropdown.classList.remove('show');
+        }
+        else {
+          // openDropdown.classList.remove('show');
+        }
+      }
+    }
+
+    if (!event.target.matches('.dateRange') && dropValue === 0) {
+      
+      let dropdowns = document.getElementsByClassName("dropdown-content-dateRange");
+      let i;
+      for (i = 0; i < dropdowns.length; i++) {
+        let openDropdown = dropdowns[i];
+        console.log("list ==> ", openDropdown.classList.contains('show'))
+        if (openDropdown.classList.contains('show')) {
+          openDropdown.classList.remove('show');
+        }
+        else {
+          // openDropdown.classList.remove('show');
         }
       }
     }
   }
-
+  const handleChangeTransactionStatus = (event) => {
+    setTransactionStatus(event.target.value);
+  };
+  const handleChangeExport = (event) => {
+    setTransactionExport(event.target.value);
+  };
+  const optionsStatus = [
+    // {value: "", label: "Se", icon: "", isDisabled: true },
+    {value: "All Transaction", label: "All Transaction" },
+    {value: "Successfull", label: "Successfull" },
+    {value: "Pending", label: "Pending" },
+    {value: "Failed", label: "Failed" }
+  ];
+  const optionsExport = [
+    // {value: "", label: "Se", icon: "", isDisabled: true },
+    {value: "Export to excel", label: "Export to excel" },
+    {value: "Export to csv", label: "Export to csv" }
+  ];
   return (
     <div>
+      {console.log("dateRange ", dateRange)}
       
       {/* open modal for filter date range */}
       {/* <CButton onClick={() => setModal1(!modal1)} icon={cilArrowRight} className="float-end" >Filter</CButton> */}
-        
-      <div className="dropdown">
-        <button onClick={(e) => toggleFilter(e)} className="dropbtn">Dropdown</button>
-        <div id="myDropdown" className="dropdown-content">
+      <div id="filterDropdown" className="dropdown-content mb-4" onClick={(e) => setDropValue(1)}>
+        <CCard sm={12} md={12} lg={12}>
+          <CCardHeader>
+            <CRow sm={12} md={12} lg={12}>
+              <CCol sm={12} md={12} lg={12} > <CBadge color='secondary'>Reset</CBadge> <CBadge color='primary' style={{ float: "right" }}>Apply</CBadge> </CCol>
+            </CRow>
+          </CCardHeader>
+          <CCardBody>
+            <p>Search by:</p>
+            <div> 
+              <p className='des-filter-inputs'>Transaction Reference</p>
+              <Box
+                component="form"
+                // sx={{
+                //   '& > :not(style)': { m: 1, width: '25ch' },
+                // }}
+                noValidate
+                autoComplete="off"
+                sx={{ minWidth: 30 }} 
+                className='filters-d'
+                >
+                <TextField 
+                  id='filters-d'
+                  // onClick={(e) => toggleFilter(e, "filter")} 
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end" >
+                        <CIcon icon={cilSearch} className="me-2" />
+                      </InputAdornment>
+                    ),
+                  }}
+                  // label="Filter"
+                  placeholder="eg. WP55467987765"
+                  // multiline
+                  />
+              </Box>
+            </div>
+            <div>
+              
+              <p className='des-filter-inputs'>Product ID </p>
+              <Box
+                component="form"
+                // sx={{
+                //   '& > :not(style)': { m: 1, width: '25ch' },
+                // }}
+                noValidate
+                autoComplete="off"
+                sx={{ minWidth: 30 }} 
+                className='filters-d'
+                >
+                <TextField 
+                  id='filters-d'
+                  // onClick={(e) => toggleFilter(e, "filter")} 
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="start" >
+                        <CIcon icon={cilSearch} className="me-2" />
+                      </InputAdornment>
+                    ),
+                  }}
+                  // label="Filter"
+                  placeholder="eg. WP55467987765"
+                  // multiline
+                  />
+              </Box>
+            </div>
+            <div>
+              
+              <p className='des-filter-inputs'>Filter by: </p>
+              <Box
+                component="form"
+                // sx={{
+                //   '& > :not(style)': { m: 1, width: '25ch' },
+                // }}
+                noValidate
+                autoComplete="off"
+                sx={{ minWidth: 30 }} 
+                className='filters-d'
+                >
+                <TextField 
+                  id='filters-d'
+                  // onClick={(e) => toggleFilter(e, "filter")} 
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="start" >
+                        <CIcon icon={cilSearch} className="me-2" />
+                      </InputAdornment>
+                    ),
+                  }}
+                  // label="Filter"
+                  placeholder="eg. WP55467987765"
+                  // multiline
+                  />
+              </Box>
+            </div>
 
-          <div>
-            <CIcon icon={cilUser} className="me-2" />  ffff
-          </div>
-          <div>
-            <CIcon icon={cilCreditCard} className="me-2" />
-          </div>
-          <div>
-            <CIcon icon={cilTask} className="me-2" />
-          </div>
-        </div>
+          </CCardBody>
+
+        </CCard>
       </div>
-      <CRow>
-        <CCol sm={2}> 
-             
-          <CDropdown variant="input-group">
-            <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
-              <CIcon icon={cilFilter} className="me-2" /> Filter
-            </CDropdownToggle>
-            gggggggg
-            <CDropdownMenu className="pt-0" placement="bottom-end">
-              <CDropdownHeader className="bg-light fw-semibold py-2">
-                <CRow>
-                  <CCol sm={4}> <CBadge color='secondary'>Reset</CBadge> </CCol>
-                  <CCol sm={4}>  </CCol>
-                  <CCol sm={4}> <CBadge color='primary'>Apply</CBadge> </CCol>
-                </CRow>
-              </CDropdownHeader>
-              <div>
-                <CIcon icon={cilUser} className="me-2" />  fffff
-              </div>
-              <div>
-                <CIcon icon={cilCreditCard} className="me-2" />
-              </div>
-              <div>
-                <CIcon icon={cilTask} className="me-2" />
-              </div>
-              {/* <CDropdownItem href="#">
-                <CIcon icon={cilBell} className="me-2" />
-                Updates
-                <CBadge color="info" className="ms-2">
-                  42
-                </CBadge>
-              </CDropdownItem>
-              <CDropdownItem href="#">
-                <CIcon icon={cilEnvelopeOpen} className="me-2" />
-                Messages
-                <CBadge color="success" className="ms-2">
-                  42
-                </CBadge>
-              </CDropdownItem>
-              <CDropdownItem href="#">
-                <CIcon icon={cilTask} className="me-2" />
-                Tasks
-                <CBadge color="danger" className="ms-2">
-                  42
-                </CBadge>
-              </CDropdownItem>
-              <CDropdownItem href="#">
-                <CIcon icon={cilCommentSquare} className="me-2" />
-                Comments
-                <CBadge color="warning" className="ms-2">
-                  42
-                </CBadge>
-              </CDropdownItem>
-              <CDropdownHeader className="bg-light fw-semibold py-2">Settings</CDropdownHeader>
-              <CDropdownItem href="#">
-                <CIcon icon={cilUser} className="me-2" />
-                Profile
-              </CDropdownItem>
-              <CDropdownItem href="#">
-                <CIcon icon={cilSettings} className="me-2" />
-                Settings
-              </CDropdownItem> */}
-              {/* {
-                console.log("userData ", process.env.REACT_APP_MAIN_BASE + userData?.userData?.photo50, userData?.userData)
-              } */}
-              <div>
-                <CIcon icon={cilUser} className="me-2" />  fffff
-              </div>
-              <div>
-                <CIcon icon={cilCreditCard} className="me-2" />
-              </div>
-              <div>
-                <CIcon icon={cilTask} className="me-2" />
-              </div>
-              <CDropdownItem >
-                <CIcon icon={cilLockLocked} className="me-2" />
-                fff water is in to water the flower
-              </CDropdownItem>
-              {/* <CDropdownItem href="#">
-                <CIcon icon={cilFile} className="me-2" />
-                Projects
-                <CBadge color="primary" className="ms-2">
-                  42
-                </CBadge>
-              </CDropdownItem>
-              <CDropdownDivider />
-              <CDropdownItem href="#">
-                <CIcon icon={cilLockLocked} className="me-2" />
-                Lock Account
-              </CDropdownItem> */}
-            </CDropdownMenu>
-          </CDropdown>
-        </CCol>
-        <CCol sm={2}>
-          f5
-        </CCol>
-        <CCol sm={3}>
 
-        </CCol>
-        <CCol sm={5}>
-          uy
-        </CCol>
-      </CRow>
+      <Container>
+      
+          {/* date range dropdown */}      
+          <div id="dateRangeDropdown" className="dropdown-content-dateRange mb-9" onClick={(e) => setDropValue(1)}>
+                {/*  */}
+            <DateRangePicker
+              open={openDateRange}
+              toggle={toggle}
+              onChange={(range) => setDateRange(range)}
+              moveRangeOnFirstSelection={false}
+              ranges={dateRange}
+              months={2}
+              // locale={locales["ja"]}
+              // direction="verticle"
+            />
+          </div>
+      <Row>
+        <Col xs="12" sm="12" md={2} lg={2} >
+          {/* filter */}
+          <div className="dropdown filterDrop">
+            <Box
+              component="form"
+              // sx={{
+              //   '& > :not(style)': { m: 1, width: '25ch' },
+              // }}
+              noValidate
+              autoComplete="off"
+              sx={{ minWidth: 30 }} 
+              >
+              <TextField 
+                id="dropbtn" 
+                onClick={(e) => toggleFilter(e, "filter")} 
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start" >
+                      <CIcon icon={cilFilter} className="me-2" /> Filter
+                    </InputAdornment>
+                  ),
+                }}
+                // label="Filter"
+                // placeholder="Placeholder"
+                multiline
+                // variant="standard"
+                // style={{height: "10px"}}
+                />
+            </Box>
+          </div>
+        </Col>
+        <Col xs="12" sm="12" md={3} lg={3} >
+          {/* transaction types */}
+          <Box sx={{ minWidth: 160 }}>
+            <FormControl fullWidth>
+              <Label for="transactionStatus" className="label-dc"> </Label>
+              <Select
+                placeholder={"Select "}
+                options={optionsStatus}
+                id="transactionStatus"
+                className='other-input-select'
+                // components={{ Option: paymentOption }}
+                onChange={(e) => handleChangeTransactionStatus(e.value)}
+              />
+          
+            </FormControl>
+          </Box>
+        </Col>
+        <Col xs="12" sm="12" md={4} lg={4} >
+          {/* date range */}
+          <FormControl fullWidth>
+            <Box
+              component="form"
+              // sx={{
+              //   '& > :not(style)': { m: 1, width: '25ch' },
+              // }}
+              noValidate
+              autoComplete="off"
+              sx={{ minWidth: 170 }}
+              
+            >
+              <TextField 
+               id="dateRange" 
+              //  label="Date range"
+               onClick={(e)=>toggleFilter(e, "dateRange")} 
+              //  variant="outlined" 
+               placeholder=
+               {" " + moment(dateRange?.startDate).format("DD/MM/yyyy") + " - " + moment(dateRange?.endDate).format("DD/MM/yyyy")} 
+               InputProps={{
+                 startAdornment: (
+                   <InputAdornment position="end" > 
+                   <CIcon icon={cilCalendar} className="me-6" />
+                   </InputAdornment>
+                 ),
+               }}
+               
+               />
+            </Box>
+          </FormControl>
+        </Col>
+        <Col xs="12" sm="12" md={1} lg={1} >
+        </Col>
+        <Col xs="12" sm="12" md={2} lg={2} >
+          {/* export */}
+          <Box sx={{ minWidth: 120 }}>
+            <FormControl fullWidth>
+              <Label for="transactionExport" className="label-dc"> </Label>
+              <Select
+                placeholder={"Select "}
+                options={optionsExport}
+                id="transactionExport"
+                className='other-input-select'
+                // components={{ Option: paymentOption }}
+                onChange={(e) => handleChangeExport(e.value)}
+              />
+            </FormControl>
+          </Box>
+        </Col>
+      </Row>
+      </Container>
 
 
 
       {/* {dateTo.toString()}{" rrr "}{dateFrom.toString()} */}
+      <br /><br />
 
       <table id="myTable" className="display" style={{ width: '100%' }}>
         <thead>
@@ -438,14 +612,7 @@ const Transaction = (transactionDetails) => {
                 <td onClick={() => { setModal2(true); setViewData(post) }}><CBadge className='bg-text-wp'>View</CBadge></td>
               </tr>
             )}
-          {/* <tr>
-            <td>Tiger Nixon</td>
-            <td>System Architect</td>
-            <td>Edinburgh</td>
-            <td>61</td>
-            <td>2011-04-25</td>
-            <td>$320,800</td>
-          </tr> */}
+            
         </tbody>
       </table>
 

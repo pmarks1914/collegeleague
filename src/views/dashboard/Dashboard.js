@@ -294,7 +294,7 @@ const Dashboard = () => {
                   },
                 }}
               />
-            </CCardBody>
+            </CCardBody> 
             <CCardFooter>
               <CRow xs={{ cols: 1 }} md={{ cols: 4 }} className="text-center">
                 {progressExample.map((item, index) => (
