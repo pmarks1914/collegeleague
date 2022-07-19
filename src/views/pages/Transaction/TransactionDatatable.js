@@ -168,7 +168,9 @@ const Transaction = (transactionDetails) => {
       // setMonitorState(3)
     }
     else{
-      setTimeout()
+      setTimeout(()=>{
+        setNoData("No data")
+      }, 2000)
     }
 
     // if(transactionStatus && monitorState === 2){
