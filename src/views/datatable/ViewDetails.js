@@ -24,7 +24,7 @@ export default function ViewDetails(post) {
             <Grid item xs={2} sm={4} md={4} >
                 <Item style={{color: "#000"}}>
                     <div className="viewDescription">Reference ID </div>
-                    {post?.viewData?.id}
+                    {post?.viewData?.reference_id}
                 </Item>
             </Grid>
             <Grid item xs={2} sm={4} md={4} >

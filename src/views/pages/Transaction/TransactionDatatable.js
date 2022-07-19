@@ -25,6 +25,8 @@ import { NativeSelect} from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { DateRangePicker } from "materialui-daterange-picker";
+import 'rsuite/dist/rsuite.min.css';
+import {DateRangePicker as RSuitDateRangePicker} from 'rsuite';
 
 import moment from 'moment';
 import {
@@ -74,6 +76,7 @@ import {
 } from '@coreui/icons'
 import {Helmet} from "react-helmet";
 import Select from 'react-select';
+import * as XLSX from 'xlsx';
 
 // test data
 let posts = [
@@ -113,6 +116,7 @@ transactionData?.transaction?.then(value => { (transaction = value) });
 const Transaction = (transactionDetails) => {
   const [loader, setLoader] = useState('<div class="spinner-border dashboard-loader" style="color: #e0922f;"></div>')
   const [tableData, setTableData] = useState([]);
+  const [noData, setNoData] = useState("")
   const [monitorState, setMonitorState] = useState(1);
   const [dropValue, setDropValue] = useState(0);
 
@@ -129,23 +133,52 @@ const Transaction = (transactionDetails) => {
 
   const [viewData, setViewData] = useState({})
   const [openDateRange, setOpenDateRange] = useState(true);
-  const [dateRange, setDateRange] = useState({startDate: Date.parse("2022-01-13"), endDate: Date.now()});
-  const [transactionStatus, setTransactionStatus] = useState({});
+  const [dateRange, setDateRange] = useState({});
+  // startDate: Date.parse("2022-01-13"), endDate: Date.now()
+
+  const [transactionStatus, setTransactionStatus] = useState("");
+  const [transactionId, setTransactionId] = useState("");
+  const [referanceId, setReferanceId] = useState("");
   const [transactionExport, setTransactionExport] = useState({});
+  const [dateFilterData, setDateFilterData] = useState({});
+  const [amountLess, setAmountLess] = useState(0.00);
+  const [amountGreat, setAmountGreat] = useState(0.00);
+  const [amountEqual, setAmountEqual] = useState(0.00);
 
   const toggle = () => setOpenDateRange(!openDateRange);
 
   useEffect(() => {
 
-    if (transaction?.length > 0 && monitorState === 1) {
+    if(dateRange.length > 0 && monitorState === 1){
       setMonitorState(2)
+      performFilter("filterByDate", "none")
+      setTransactionStatus("")
+
+      setLoader('<a></a>')
+    }
+    else if (transaction?.length > 0 && monitorState === 1) {
+      // setMonitorState(2)
       datatablaScript(transaction);
 
       setLoader('<a></a>')
     }
-    console.log("props ", transaction)
+    else if(dateRange && monitorState === 2){
+      performFilter("filterByDate", "none")
+      setTransactionStatus("")
+      // setMonitorState(3)
+    }
+    else{
+      setTimeout()
+    }
 
-  }, [transaction])
+    // if(transactionStatus && monitorState === 2){
+    //   performFilter("filterByStatus")
+    // }
+
+    
+    // console.log("props ", dateRange, transaction, transactionStatus, monitorState)
+
+  }, [transaction, dateRange, noData])
 
   // perform filter 
   function datatablaScript(tdata) {
@@ -255,13 +288,6 @@ const Transaction = (transactionDetails) => {
     } catch (error) {
     }
   }
-
-  const handleChangeTo = (newValue) => {
-    setDateTo(newValue);
-  };
-  const handleChangeFrom = (newValue) => {
-    setDateFrom(newValue);
-  };
   function printContent() {
     let w = window.open();
 
@@ -292,7 +318,7 @@ const Transaction = (transactionDetails) => {
     console.log("test ", dropValue, "type", type, "openDateRange", openDateRange)
     if(type === "filter"){
       document.getElementById("filterDropdown").classList.toggle("show");
-      document.getElementById("dateRangeDropdown").classList.remove('show');
+      // document.getElementById("dateRangeDropdown").classList.remove('show');
     }
     if(type === "dateRange"){
       setOpenDateRange(true)
@@ -305,30 +331,14 @@ const Transaction = (transactionDetails) => {
   // Close the dropdown if the user clicks outside of it
   window.onclick = function (event) {
     event.preventDefault()
-    console.log("dropdown ==", dropValue, "e", event.target.matches('.dateRange'), "openDateRange > ", openDateRange)
+    // console.log("dropdown ==", dropValue, "e", event.target.matches('.dateRange'), "openDateRange > ", openDateRange)
     setDropValue(0);
     if (!event.target.matches('.dropbtn') && dropValue === 0) {
       let dropdowns = document.getElementsByClassName("dropdown-content");
       let i;
       for (i = 0; i < dropdowns.length; i++) {
         let openDropdown = dropdowns[i];
-        console.log("list ==> ", openDropdown.classList.contains('show'))
-        if (openDropdown.classList.contains('show')) {
-          openDropdown.classList.remove('show');
-        }
-        else {
-          // openDropdown.classList.remove('show');
-        }
-      }
-    }
-
-    if (!event.target.matches('.dateRange') && dropValue === 0) {
-      
-      let dropdowns = document.getElementsByClassName("dropdown-content-dateRange");
-      let i;
-      for (i = 0; i < dropdowns.length; i++) {
-        let openDropdown = dropdowns[i];
-        console.log("list ==> ", openDropdown.classList.contains('show'))
+        // console.log("list ==> ", openDropdown.classList.contains('show'))
         if (openDropdown.classList.contains('show')) {
           openDropdown.classList.remove('show');
         }
@@ -338,16 +348,25 @@ const Transaction = (transactionDetails) => {
       }
     }
   }
-  const handleChangeTransactionStatus = (event) => {
-    setTransactionStatus(event.target.value);
+  const handleChangeTransactionStatus = (valSelected) => {
+    setTransactionStatus(valSelected);
+    performFilter("filterByStatus", valSelected)
   };
-  const handleChangeExport = (event) => {
-    setTransactionExport(event.target.value);
+  const handleChangeExport = (valSelected) => {
+    setTransactionExport(valSelected);
+    if(valSelected === "Export to excel"){
+      // 
+      downloadExcel(tableData);
+    }
+    else if(valSelected === "Export to csv"){
+      // 
+      downloadCSV(tableData);
+    }
   };
   const optionsStatus = [
     // {value: "", label: "Se", icon: "", isDisabled: true },
     {value: "All Transaction", label: "All Transaction" },
-    {value: "Successfull", label: "Successfull" },
+    {value: "Successful", label: "Successful" },
     {value: "Pending", label: "Pending" },
     {value: "Failed", label: "Failed" }
   ];
@@ -356,17 +375,139 @@ const Transaction = (transactionDetails) => {
     {value: "Export to excel", label: "Export to excel" },
     {value: "Export to csv", label: "Export to csv" }
   ];
+  function performFilter(type, status){
+
+    // console.log("by status ", transactionStatus, "type", type )
+    // perform filter by date range
+    if(type === "filterByDate"){
+      // 
+      let dataFilter = transaction.filter((post, id) => {return ( moment(post?.created_at).format('DD/MM/yyyy') >= moment(dateRange[0]).format('DD/MM/yyyy') && moment(post?.created_at).format('DD/MM/yyyy') <= moment(dateRange[1]).format('DD/MM/yyyy') )});
+
+      datatablaScript( dataFilter );
+
+      setDateFilterData( dataFilter );
+    }
+    else if(type === "filterByStatus"){
+      // 
+      // console.log("by status ", status )
+      if(status === "All Transaction" && monitorState === 2){
+        datatablaScript(dateFilterData);
+      }
+      else if((status === "Successful" || status === "Pending" || status === "Failed") && monitorState === 1){
+        datatablaScript( transaction.filter((post, id) => {return ( post?.status_code === status.toUpperCase() )}) );
+      }
+      else if((status === "Successful" || status === "Pending" || status === "Failed") && monitorState === 2){
+        datatablaScript( dateFilterData?.filter((post, id) => {return ( post?.status_code === status.toUpperCase() )}) );
+        
+      }
+    }
+    else if(type === "filterByOptions"){
+      // 
+      let dataFilter = [];
+      if(amountEqual !== 0 || amountGreat !== 0 || amountLess !== 0){
+        // 
+        if( amountGreat != 0 && amountLess !=0){
+          dataFilter = transaction.filter((post, id) => {
+            return ( (post?.amount <= amountLess && post?.amount >= amountGreat) && ( post?.reference_id?.toLowerCase().includes(referanceId.toLowerCase()) && post?.id?.toLowerCase().includes(transactionId.toLowerCase()) ) )
+          });
+        } 
+        else if( amountGreat != 0 ){
+          dataFilter = transaction.filter((post, id) => {
+            return ( ((post?.amount >= amountGreat) || ( post?.reference_id?.toLowerCase().includes(referanceId.toLowerCase()) || post?.id?.toLowerCase().includes(transactionId.toLowerCase())) 
+            && 
+            ( post?.reference_id?.toLowerCase().includes(referanceId.toLowerCase()) && post?.id?.toLowerCase().includes(transactionId.toLowerCase()) ) ))
+          });
+        }
+        else if( amountLess != 0 ){
+          dataFilter = transaction.filter((post, id) => {
+            return ( ((post?.amount <= amountLess) || ( post?.reference_id?.toLowerCase().includes(referanceId.toLowerCase()) || post?.id?.toLowerCase().includes(transactionId.toLowerCase()) ) ) 
+            && (post?.reference_id?.toLowerCase().includes(referanceId.toLowerCase()) && post?.id?.toLowerCase().includes(transactionId.toLowerCase())) )
+          });
+        }
+        else if( amountEqual != 0 ){
+          dataFilter = transaction.filter((post, id) => {
+            return ( ((post?.amount === amountEqual) || ( post?.reference_id?.toLowerCase().includes(referanceId.toLowerCase()) || post?.id?.toLowerCase().includes(transactionId.toLowerCase()) )) && ( post?.reference_id?.toLowerCase().includes(referanceId.toLowerCase()) && post?.id?.toLowerCase().includes(transactionId.toLowerCase()) ) )
+          });
+        }
+      }
+      else{
+        console.log("hhhh")
+        dataFilter = transaction.filter((post, id) => {return ( post?.reference_id?.toLowerCase().includes(referanceId.toLowerCase()) && post?.id?.toLowerCase().includes(transactionId.toLowerCase()) )});
+      }
+      datatablaScript( dataFilter );
+      // 98ca3328-2e84-4b52-8942-e04ac1b2df71
+    }
+  }
+  function resetFilter(e){
+    e.preventDefault()
+    setAmountEqual(0)
+    setAmountGreat(0)
+    setAmountLess(0)
+    setReferanceId("")
+    setTransactionId("")
+    datatablaScript(transaction)
+  }
+  function convertArrayOfObjectsToCSV(array) {
+    let result;
+    const columnDelimiter = ',';
+    const lineDelimiter = '\n';
+    // console.log("array 0>>", array);
+    const keys = Object.keys(array[0]);
+    // console.log("keys", keys );
+    result = '';
+    result += keys.join(columnDelimiter);
+    result += lineDelimiter;
+  
+    array.forEach(item => {
+      let ctr = 0;
+      keys.forEach(key => {
+        if (ctr > 0) result += columnDelimiter;
+        result += item[key];
+        ctr++;
+      });
+      result += lineDelimiter;
+    });
+    return result;
+  }
+
+  function downloadCSV(array) {
+    const link = document.createElement('a');
+    // console.log("exp downloadCSV==>", array  );
+    let csv = convertArrayOfObjectsToCSV(array);
+    console.log("csv", csv);
+    if (csv == null) {return};
+  
+    const filename = 'WPexport.csv';
+  
+    if (!csv.match(/^data:text\/csv/i)) {
+      csv = `data:text/csv;charset=utf-8,${csv}`;
+    }
+  
+    link.setAttribute('href', encodeURI(csv));
+    link.setAttribute('download', filename);
+    link.click();
+  }
+  const downloadExcel = (data) => {
+    // console.log(data);
+    // e.preventDefault();
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "WPexport");
+    /* generate XLSX file and send to client */
+    XLSX.writeFile(wb, "WPexport.xlsx");
+  };
   return (
+
     <div>
-      {console.log("dateRange ", dateRange)}
-      
+      {/* {console.log("dateRange ", dateRange)} */}
+
       {/* open modal for filter date range */}
       {/* <CButton onClick={() => setModal1(!modal1)} icon={cilArrowRight} className="float-end" >Filter</CButton> */}
       <div id="filterDropdown" className="dropdown-content mb-4" onClick={(e) => setDropValue(1)}>
         <CCard sm={12} md={12} lg={12}>
           <CCardHeader>
             <CRow sm={12} md={12} lg={12}>
-              <CCol sm={12} md={12} lg={12} > <CBadge color='secondary'>Reset</CBadge> <CBadge color='primary' style={{ float: "right" }}>Apply</CBadge> </CCol>
+              <CCol sm={12} md={12} lg={12} > <CBadge color='secondary' onClick={(e)=>resetFilter(e)}>Reset</CBadge> <CBadge color='primary' style={{ float: "right" }} onClick={(e)=>performFilter("filterByOptions", "none")}>Apply</CBadge> </CCol>
             </CRow>
           </CCardHeader>
           <CCardBody>
@@ -374,7 +515,7 @@ const Transaction = (transactionDetails) => {
             <div> 
               <p className='des-filter-inputs'>Transaction Reference</p>
               <Box
-                component="form"
+                // component="form"
                 // sx={{
                 //   '& > :not(style)': { m: 1, width: '25ch' },
                 // }}
@@ -385,7 +526,8 @@ const Transaction = (transactionDetails) => {
                 >
                 <TextField 
                   id='filters-d'
-                  // onClick={(e) => toggleFilter(e, "filter")} 
+                  value={referanceId}
+                  onChange={(e) => setReferanceId(e.target.value)} 
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end" >
@@ -403,7 +545,7 @@ const Transaction = (transactionDetails) => {
               
               <p className='des-filter-inputs'>Product ID </p>
               <Box
-                component="form"
+                // component="form"
                 // sx={{
                 //   '& > :not(style)': { m: 1, width: '25ch' },
                 // }}
@@ -414,7 +556,8 @@ const Transaction = (transactionDetails) => {
                 >
                 <TextField 
                   id='filters-d'
-                  // onClick={(e) => toggleFilter(e, "filter")} 
+                  value={transactionId}
+                  onChange={(e) => setTransactionId(e.target.value)} 
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="start" >
@@ -423,16 +566,17 @@ const Transaction = (transactionDetails) => {
                     ),
                   }}
                   // label="Filter"
-                  placeholder="eg. WP55467987765"
+                  placeholder="Product ID"
                   // multiline
                   />
               </Box>
             </div>
-            <div>
+            <div style={{width: "220px"}}>
               
-              <p className='des-filter-inputs'>Filter by: </p>
+              <p className='des-filter-inputs'>Filter by amount: </p>
+              
               <Box
-                component="form"
+                // component="form"
                 // sx={{
                 //   '& > :not(style)': { m: 1, width: '25ch' },
                 // }}
@@ -441,9 +585,11 @@ const Transaction = (transactionDetails) => {
                 sx={{ minWidth: 30 }} 
                 className='filters-d'
                 >
-                <TextField 
+                {/* <TextField 
                   id='filters-d'
+                  sx={{ minWidth: 5 }} 
                   // onClick={(e) => toggleFilter(e, "filter")} 
+                  // onChange={(e) => setReferanceId(e.target.value)} 
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="start" >
@@ -452,9 +598,60 @@ const Transaction = (transactionDetails) => {
                     ),
                   }}
                   // label="Filter"
-                  placeholder="eg. WP55467987765"
-                  // multiline
+                  placeholder="eg. "
+                  /> */}
+  
+              </Box>
+              <Box
+                noValidate
+                autoComplete="off"
+                // sx={{ minWidth: 30 }} 
+                // className='filters-d'
+                >
+
+              <Row sm={12} md={12} lg={12}>
+                <Col sm={6} md={6} lg={6} > 
+                  <Label for="amount-less"> Less = </Label>
+                  <TextField
+                    id='amount-less'
+                    type="number"
+                    value={amountLess}
+                    variant="outlined"
+                    inputProps={{
+                      step: "0.01"
+                    }}
+                    onChange={(e) => setAmountLess(parseFloat(e.target.value).toFixed(2))} 
                   />
+                </Col>
+                <Col sm={6} md={6} lg={6} > 
+                  <Label for="amount-great"> Greter = </Label>
+                  <TextField
+                    id='amount-great'
+                    type="number"
+                    value={amountGreat}
+                    variant="outlined"
+                    inputProps={{
+                      step: "0.01"
+                    }}
+                    onChange={(e) => setAmountGreat(parseFloat(e.target.value).toFixed(2))} 
+                  />
+                </Col>
+              </Row>
+              <Row sm={12} md={12} lg={12}>
+                  <Col sm={6} md={6} lg={6} >
+                    <Label for="amount-great"> Equal </Label>
+                    <TextField
+                      id='amount-equal'
+                      type="number"
+                      value={amountEqual}
+                      variant="outlined"
+                      inputProps={{
+                        step: "0.01"
+                      }}
+                      onChange={(e) => setAmountEqual(parseFloat(e.target.value).toFixed(2))}
+                    />
+                  </Col>
+              </Row>
               </Box>
             </div>
 
@@ -464,25 +661,13 @@ const Transaction = (transactionDetails) => {
       </div>
 
       <Container>
-      
-          {/* date range dropdown */}      
-          <div id="dateRangeDropdown" className="dropdown-content-dateRange mb-9" onClick={(e) => setDropValue(1)}>
-                {/*  */}
-            <DateRangePicker
-              open={openDateRange}
-              toggle={toggle}
-              onChange={(range) => setDateRange(range)}
-              moveRangeOnFirstSelection={false}
-              ranges={dateRange}
-              months={2}
-              // locale={locales["ja"]}
-              // direction="verticle"
-            />
-          </div>
+
       <Row>
         <Col xs="12" sm="12" md={2} lg={2} >
           {/* filter */}
           <div className="dropdown filterDrop">
+
+          <FormControl fullWidth >
             <Box
               component="form"
               // sx={{
@@ -494,6 +679,7 @@ const Transaction = (transactionDetails) => {
               >
               <TextField 
                 id="dropbtn" 
+                className='d-filters'
                 onClick={(e) => toggleFilter(e, "filter")} 
                 InputProps={{
                   startAdornment: (
@@ -509,18 +695,19 @@ const Transaction = (transactionDetails) => {
                 // style={{height: "10px"}}
                 />
             </Box>
+          </FormControl>
           </div>
         </Col>
         <Col xs="12" sm="12" md={3} lg={3} >
           {/* transaction types */}
           <Box sx={{ minWidth: 160 }}>
-            <FormControl fullWidth>
+            <FormControl fullWidth style={{marginTop: "0px"}}>
               <Label for="transactionStatus" className="label-dc"> </Label>
               <Select
-                placeholder={"Select "}
+                placeholder={"Select status"}
                 options={optionsStatus}
                 id="transactionStatus"
-                className='other-input-select'
+                className='other-input-select d-filters'
                 // components={{ Option: paymentOption }}
                 onChange={(e) => handleChangeTransactionStatus(e.value)}
               />
@@ -528,11 +715,13 @@ const Transaction = (transactionDetails) => {
             </FormControl>
           </Box>
         </Col>
+        {/* Date range */}
         <Col xs="12" sm="12" md={4} lg={4} >
           {/* date range */}
           <FormControl fullWidth>
             <Box
-              component="form"
+              // component="form"
+              id='dateRange-control'
               // sx={{
               //   '& > :not(style)': { m: 1, width: '25ch' },
               // }}
@@ -541,10 +730,25 @@ const Transaction = (transactionDetails) => {
               sx={{ minWidth: 170 }}
               
             >
-              <TextField 
+              
+              <RSuitDateRangePicker 
+                appearance="default" 
+                placeholder={"Select date range"} 
+                size="lg"
+                style={{ width: 260, display: 'block', border: "10px solid #080808 !important"}} 
+                className="d-filters"
+                // open={openDateRange}
+                // toggle={toggle}
+                onChange={(range) => setDateRange(range)}
+                // ranges={dateRange}
+                // months={2}
+                id="datePicker-0"
+              />
+              {/* <TextField 
                id="dateRange" 
               //  label="Date range"
-               onClick={(e)=>toggleFilter(e, "dateRange")} 
+              //  onClick={(e)=>toggleFilter(e, "dateRange")} 
+              onClick={(e)=>setModal1(true) }
               //  variant="outlined" 
                placeholder=
                {" " + moment(dateRange?.startDate).format("DD/MM/yyyy") + " - " + moment(dateRange?.endDate).format("DD/MM/yyyy")} 
@@ -556,7 +760,7 @@ const Transaction = (transactionDetails) => {
                  ),
                }}
                
-               />
+               /> */}
             </Box>
           </FormControl>
         </Col>
@@ -568,10 +772,10 @@ const Transaction = (transactionDetails) => {
             <FormControl fullWidth>
               <Label for="transactionExport" className="label-dc"> </Label>
               <Select
-                placeholder={"Select "}
+                placeholder={"Select export"}
                 options={optionsExport}
                 id="transactionExport"
-                className='other-input-select'
+                className='other-input-select d-filters'
                 // components={{ Option: paymentOption }}
                 onChange={(e) => handleChangeExport(e.value)}
               />
@@ -616,39 +820,30 @@ const Transaction = (transactionDetails) => {
         </tbody>
       </table>
 
-      <a dangerouslySetInnerHTML={{ __html: loader }}></a>
+      {tableData?.length > 0 ? "" : <p style={{textAlign: "center"}}> <br /><br /> {noData}</p>}
+
+      {/* <a dangerouslySetInnerHTML={{ __html: loader }}></a> */}
 
       {/* modals */}
       {/* modal for filter date range */}
-      <CModal visible={modal1} alignment="center" scrollable backdrop="static" fullscreen='md' onClose={() => setModal1(false)}>
-        <CModalHeader>
-          <CModalTitle> Filter </CModalTitle>
-        </CModalHeader>
-        <CModalBody>
-
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <Stack spacing={3}>
-              <DateTimePicker
-                label="From"
-                inputFormat="dd/MM/yyyy hh:mm:ss"
-                value={dateTo}
-                onChange={handleChangeTo}
-                renderInput={(params) => <TextField {...params} />}
-              />
-              <DateTimePicker
-                label="To"
-                inputFormat="dd/MM/yyyy hh:mm:ss"
-                value={dateFrom}
-                onChange={handleChangeFrom}
-                renderInput={(params) => <TextField {...params} />}
-              />
-            </Stack>
-          </LocalizationProvider>
+      <CModal visible={modal1} alignment="center" scrollable fullscreen='xl' onClose={() => setModal1(false)}>
+        <CModalBody> 
+        {/* <DateRangePicker
+            open={openDateRange}
+            toggle={toggle}
+            onChange={(range) => setDateRange(range)}
+            moveRangeOnFirstSelection={false}
+            ranges={dateRange}
+            months={2}
+            showClearDate={true}
+          /> */}
+          <DateRangePicker
+            // open={openDateRange}
+            // toggle={toggle}
+            // onChange={(range) => setDateRange(range)}
+          />
         </CModalBody>
         <CModalFooter>
-          <CButton color="secondary" className='text-white' onClick={() => setModal1(false)}>
-            Close
-          </CButton>
           <CButton color="" className='text-white bg-text-wp' onClick={(e) => getFilterData(e)}> Apply</CButton>
         </CModalFooter>
       </CModal>

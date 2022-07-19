@@ -223,7 +223,7 @@ const DatatableMain = (transactionDetails) => {
           </tr> */}
         </tbody>
       </table>
-
+      {tableData?.length > 0 ? "" : <p style={{textAlign: "center"}}> <br /><br /> No data</p>}
       <a dangerouslySetInnerHTML={{ __html: loader }}></a>
 
       {/* modals */}

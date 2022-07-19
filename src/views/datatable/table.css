@@ -51,6 +51,15 @@
     font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Ubuntu,sans-serif;
     font-weight: 500;
   }
+  .d-filters{
+    /* background-color: #eef2f4; */
+    color: #080808;
+    /* padding: 5px; */
+    font-size: 15px;
+    border: none;
+    font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Ubuntu,sans-serif;
+    font-weight: 500;
+  }
   
   .dropbtn:hover, .dropbtn:focus {
     /* background-color: #2980B9; */
@@ -72,7 +81,11 @@
     /* border-radius: 20px; */
     z-index: 1;
   }
-  #filters-d{
+  
+  .dropdown-content{
+    margin-top: 9px;
+  }
+  #filters-d, #amount-less, #amount-great, #amount-equal{
     height: 4px;
   }
   .des-filter-inputs{
@@ -82,20 +95,37 @@
       width: 100px;
   }
   .other-input-select{
-      height: 35px;
+      /* height: 35px; */
       width: 180px;
   }
   .filterDrop form div div{
-      height: 35px;
+      height: 32px;
+      padding: 0px 0px 5px 5px;
+      margin-top: 13px;
   }
-  .other-input-text, #dateRange{
+  /* #filterDrop form div div, #other-input-select{
+    height: 30px;
+    margin-top: 13px;
+    padding: 0px 0px 5px 5px;
+  } */
+  .other-input-text{
       height: 4px !important;
   }
   #dateRange{
+    height: 1px !important
+
+ }
+ #datePicker-0{
+     /*  */
+    /* border: 1px solid #080808 !important; */
+ }
+  #dateRange{
     width: 250px;
   }
-  #dateRange{
-    padding: 16px 0px;
+  #dateRange-control{
+    /* padding: 16px 0px; */
+    margin: 6px 0px 0px 0px;
+    height: 2px;
   }
   .dropdown-content a {
     color: black;

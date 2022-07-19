@@ -23,6 +23,7 @@ import {
   cilSpeedometer,
   cilStar,
   cilTablet,
+  cilLibrary,
   cilControl,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
@@ -115,6 +116,12 @@ const account_nav = [
     name: 'Compliance',
     to: '/compliance',
     icon: <CIcon icon={cilControl} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Api keys',
+    to: '/api-keys',
+    icon: <CIcon icon={cilLibrary} customClassName="nav-icon" />,
   },
   
 ]
