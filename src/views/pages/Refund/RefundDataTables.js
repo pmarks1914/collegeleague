@@ -77,8 +77,6 @@ import {
 import {Helmet} from "react-helmet";
 import Select from 'react-select';
 import * as XLSX from 'xlsx';
-import { getSessionTimeout } from '../../../Utils/Utils'; 
-import Swal from 'sweetalert2';
 
 // test data
 let posts = [
@@ -115,7 +113,7 @@ let transactionData = getTransactionData();
 let transaction = []
 transactionData?.transaction?.then(value => { (transaction = value) });
 
-const Transaction = (transactionDetails) => {
+const RefundDataTables = (transactionDetails) => {
   const [loader, setLoader] = useState('<div class="spinner-border dashboard-loader" style="color: #e0922f;"></div>')
   const [tableData, setTableData] = useState([]);
   const [noData, setNoData] = useState("")
@@ -150,7 +148,7 @@ const Transaction = (transactionDetails) => {
   const toggle = () => setOpenDateRange(!openDateRange);
 
   useEffect(() => {
-    // reset user
+
     if(dateRange.length > 0 && monitorState === 1){
       setMonitorState(2)
       performFilter("filterByDate", "none")
@@ -180,9 +178,9 @@ const Transaction = (transactionDetails) => {
     // }
 
     
-    console.log("props ", dateRange, transaction, transactionStatus, monitorState)
+    // console.log("props ", dateRange, transaction, transactionStatus, monitorState)
 
-  }, [ dateRange, noData])
+  }, [dateRange, noData])
 
   // perform filter 
   function datatablaScript(tdata) {
@@ -335,8 +333,7 @@ const Transaction = (transactionDetails) => {
   // Close the dropdown if the user clicks outside of it
   window.onclick = function (event) {
     event.preventDefault()
-    trackActivity();
-    console.log("dropdown ==", dropValue, "e", event.target.matches('.dateRange'), "openDateRange > ", openDateRange)
+    // console.log("dropdown ==", dropValue, "e", event.target.matches('.dateRange'), "openDateRange > ", openDateRange)
     setDropValue(0);
     if (!event.target.matches('.dropbtn') && dropValue === 0) {
       let dropdowns = document.getElementsByClassName("dropdown-content");
@@ -501,8 +498,6 @@ const Transaction = (transactionDetails) => {
     /* generate XLSX file and send to client */
     XLSX.writeFile(wb, "WPexport.xlsx");
   };
-
-
   function trackActivity() {
     // e.preventDefault();
     // getSessionTimeout();
@@ -513,6 +508,10 @@ const Transaction = (transactionDetails) => {
     }
   }
 
+  window.onclick = function (event) {
+    event.preventDefault()
+    trackActivity()
+  }
   return (
 
     <div>
@@ -893,4 +892,4 @@ const Transaction = (transactionDetails) => {
   )
 }
 
-export default Transaction;
+export default RefundDataTables;

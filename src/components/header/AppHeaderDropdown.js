@@ -26,7 +26,11 @@ import avatar8 from './../../assets/images/avatars/8.jpg'
 
 const AppHeaderDropdown = (userData) => {
   function logoutUser(){
-    window.location.href="/login"
+    window.location.href="/login";
+    localStorage.removeItem("userDataStore");
+    // window.onstorage = () =>{
+    //   window.location.href = "/login"
+    // } 
   }
   return (
     <CDropdown variant="nav-item">
@@ -73,7 +77,7 @@ const AppHeaderDropdown = (userData) => {
           Settings
         </CDropdownItem> */}
         {
-          console.log("userData ", process.env.REACT_APP_MAIN_BASE + userData?.userData?.photo50, userData?.userData)
+          // console.log("userData ", process.env.REACT_APP_MAIN_BASE + userData?.userData?.photo50, userData?.userData)
         }
         <CDropdownItem>
           <CIcon icon={cilCreditCard} className="me-2" />

@@ -55,6 +55,8 @@ const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 const MyAccount = React.lazy(() => import('./views/pages/Compliance/MyAccount'))
 const Transaction = React.lazy(() => import('./views/pages/Transaction/Transaction'))
 const Apikey = React.lazy(() => import('./views/pages/Apikey/Apikey'))
+const Refund = React.lazy(() => import('./views/pages/Refund/Refund'))
+const Payout = React.lazy(() => import('./views/pages/Payout/Payout'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
@@ -103,7 +105,9 @@ const routes = [
   { path: '/widgets', name: 'Widgets', element: Widgets },
   // below main pages views 
   { path: '/compliance', name: 'Compliance', element: MyAccount },
+  { path: '/payment/refunds', name: 'Refund', element: Refund },
   { path: '/payment/transaction', name: 'Transaction', element: Transaction },
+  { path: '/payment/payouts', name: 'Payout', element: Payout },
   { path: '/api-keys', name: 'Api Key', element: Apikey },
 
 ]

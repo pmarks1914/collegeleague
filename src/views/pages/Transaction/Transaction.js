@@ -11,6 +11,7 @@ import "datatables.net-buttons/js/buttons.print.js";
 import '../../datatable/table.css';
 import { getTransactionData } from '../Data/PageData';
 import TransactionDataTables from './TransactionDatatable'
+import { getSessionTimeout } from '../../../Utils/Utils'; 
 
 // test data
 let posts = [
@@ -67,12 +68,13 @@ const Transaction = () => {
 
     useEffect(() => {
         // 
+        // getSessionTimeout();
+        // console.log("getSessionTimeout", getSessionTimeout())
         let transactionData = getTransactionData();
         transactionData?.transaction?.then(value => { setTransactionDetails(value) });
 
     }, [])
-
-
+   
     return (
         <div>
             {/* open modal for filter date range */}

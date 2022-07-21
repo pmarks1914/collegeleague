@@ -55,6 +55,7 @@ import avatar6 from 'src/assets/images/avatars/6.jpg'
 import WidgetsDropdown from '../widgets/WidgetsDropdown'
 import Datatable from '../datatable/DatatableMain'
 import { getTransactionData } from './DashboardData'
+import { getSessionTimeout } from '../../Utils/Utils'; 
 
 const Dashboard = () => {
   const [transactionDetails, setTransactionDetails] = useState(null)
@@ -63,7 +64,7 @@ const Dashboard = () => {
     // 
     let transactionData = getTransactionData();
     transactionData?.transaction?.then(value => { setTransactionDetails(value) });
-
+    trackActivity();
   }, [])
   // console.log("transactionDetails ", transactionDetails)
 
@@ -189,6 +190,22 @@ const Dashboard = () => {
       activity: 'Last week',
     },
   ]
+
+
+  function trackActivity() {
+    // e.preventDefault();
+    getSessionTimeout();
+    const currentUser_new = JSON.parse(localStorage.getItem("userDataStore"));    
+    if(currentUser_new){
+      currentUser_new["timeLogout"] = new Date().getTime() + currentUser_new?.counter;
+      localStorage.setItem('userDataStore', JSON.stringify(currentUser_new))
+    }
+  }
+
+  window.onclick = function (event) {
+    event.preventDefault()
+    trackActivity()
+  }
 
   return (
     <>

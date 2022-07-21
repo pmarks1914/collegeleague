@@ -1,7 +1,17 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { AppContent, AppSidebar, AppFooter, AppHeader } from '../components/index'
 
+
+// session  
+const currentUser = JSON.parse(localStorage.getItem("userDataStore")); 
+
 const DefaultLayout = () => {
+
+
+
+  if(!currentUser){
+    window.location.href = "/login"
+  } 
   return (
     <div>
       <AppSidebar />
