@@ -67,7 +67,7 @@ const Login = () => {
         console.log(response.status);
         if (response.status === 200) { 
           console.log(response?.data)
-          let counter = 10000;
+          let counter = 700000;
 
           const userData = {
             status: response.status,
