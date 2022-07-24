@@ -1,29 +1,46 @@
-import React, { useEffect, useState } from 'react'
+import React, { Component } from 'react'
 import { AppContent, AppSidebar, AppFooter, AppHeader } from '../components/index'
 
 
 // session  
 const currentUser = JSON.parse(localStorage.getItem("userDataStore")); 
 
-const DefaultLayout = () => {
+class DefaultLayout extends Component {
+  render() {
+    if(!currentUser){
+      window.location.href = "/login"
+    } 
 
-
-
-  if(!currentUser){
-    window.location.href = "/login"
-  } 
-  return (
-    <div>
-      <AppSidebar />
-      <div className="wrapper d-flex flex-column min-vh-100 bg-light">
-        <AppHeader />
-        <div className="body flex-grow-1 px-3">
-          <AppContent />
+    window.onstorage = () => {
+      // console.log("storage ", JSON.parse(localStorage.getItem("userDataStore")) )
+      if(JSON.parse(localStorage.getItem("userDataStore")) === null){
+        // console.log("storage ")
+        window.location.href="/";
+      }
+    };
+    return (
+      <div>
+        <AppSidebar />
+        <div className="wrapper d-flex flex-column min-vh-100 bg-light">
+          <AppHeader />
+          <div className="body flex-grow-1 px-3">
+            <AppContent />
+          </div>
+          <AppFooter />
         </div>
-        <AppFooter />
       </div>
-    </div>
-  )
+    );
+  }
 }
 
-export default DefaultLayout
+export default DefaultLayout;
+
+
+
+// console.log("storage listener")
+// window.addEventListener('storage', function(event){
+//   console.log("storage listener")
+//   if (event.key == 'logout-event') { 
+//       // ..
+//   }
+// });

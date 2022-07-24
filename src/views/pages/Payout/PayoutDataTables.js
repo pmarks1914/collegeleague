@@ -60,7 +60,7 @@ import {
   CNavItem,
   CTooltip,
 } from '@coreui/react'
-import { getTransactionData } from '../Data/PageData';
+import { payoutData } from '../Data/PageData';
 import ViewDetails from '../../datatable/ViewDetails';
 import CIcon from '@coreui/icons-react';
 import {
@@ -78,38 +78,7 @@ import {Helmet} from "react-helmet";
 import Select from 'react-select';
 import * as XLSX from 'xlsx';
 
-// test data
-let posts = [
-  {
-    "id": "33bc65a6-70f5-470a-812a-61944b6412f3",
-    "amount": "0.01",
-    "note": "wingipay to MTN ussd GhS 0.01 from Eli",
-    "service": 2,
-    "status_code": "SUCCESSFUL",
-    "status_message": "Transaction completed successfully",
-    "created_at": "2022-06-01T14:38:14.995258Z"
-  },
-  {
-    "id": "33bc65a6-70f5-470a-812a-61944b6412f3",
-    "amount": "0.01",
-    "note": "wingipay to MTN ussd GhS 0.01 from Eli",
-    "service": 2,
-    "status_code": "PENDING",
-    "status_message": "Transaction completed successfully",
-    "created_at": "2022-06-01T14:38:14.995258Z"
-  },
-  {
-    "id": "33bc65a6-70f5-470a-812a-61944b6412f3",
-    "amount": "0.01",
-    "note": "wingipay to MTN ussd GhS 0.01 from Eli",
-    "service": 2,
-    "status_code": "FAILED",
-    "status_message": "Transaction completed successfully",
-    "created_at": "2022-06-01T14:38:14.995258Z"
-  }
-]
-
-let transactionData = getTransactionData();
+let transactionData = payoutData();
 let transaction = []
 transactionData?.transaction?.then(value => { (transaction = value) });
 
@@ -168,9 +137,9 @@ const PayoutDataTables = (transactionDetails) => {
       // setMonitorState(3)
     }
     else{
-      setTimeout(()=>{
-        setNoData("No data")
-      }, 2000)
+        datatablaScript([])
+        setLoader('<a></a>')
+    
     }
 
     // if(transactionStatus && monitorState === 2){
@@ -180,7 +149,7 @@ const PayoutDataTables = (transactionDetails) => {
     
     // console.log("props ", dateRange, transaction, transactionStatus, monitorState)
 
-  }, [dateRange, noData])
+  }, [dateRange, transaction])
 
   // perform filter 
   function datatablaScript(tdata) {
@@ -392,8 +361,8 @@ const PayoutDataTables = (transactionDetails) => {
     else if(type === "filterByStatus"){
       // 
       // console.log("by status ", status )
-      if(status === "All Transaction" && monitorState === 2){
-        datatablaScript(dateFilterData);
+      if(status === "All Transaction" && monitorState === 1){
+        datatablaScript(transaction);
       }
       else if((status === "Successful" || status === "Pending" || status === "Failed") && monitorState === 1){
         datatablaScript( transaction.filter((post, id) => {return ( post?.status_code === status.toUpperCase() )}) );
@@ -506,10 +475,6 @@ const PayoutDataTables = (transactionDetails) => {
     localStorage.setItem('userDataStore', JSON.stringify(currentUser_new));
   };
 
-  window.onclick = function (event) {
-    event.preventDefault()
-    trackActivity()
-  }
   return (
 
     <div>
@@ -750,7 +715,7 @@ const PayoutDataTables = (transactionDetails) => {
                 placeholder={"Select date range"} 
                 size="lg"
                 style={{ width: 260, display: 'block', border: "10px solid #080808 !important"}} 
-                className="d-filters"
+                className="d-filters datePicker-0"
                 // open={openDateRange}
                 // toggle={toggle}
                 onChange={(range) => setDateRange(range)}
@@ -824,7 +789,7 @@ const PayoutDataTables = (transactionDetails) => {
                 <td>{id + 1}</td>
                 <td>{post.reference_id}</td>
                 <td>{post.note}</td>
-                <td><CBadge color={post.status_code === "SUCCESSFUL" ? "success" : (post.status_code === "PENDING" ? "primary" : "secondary")}>{post.status_code}</CBadge> </td>
+                <td><CBadge color={post.status_code === "SUCCESSFUL" ? "success" : (post.status_code === "PENDING" ? "primary" : (post.status_code === "REVERSED" ? "danger" : "secondary") )}>{post.status_code}</CBadge> </td>
                 <td>{moment(post.created_at).format('LLLL')}</td>
                 <td>{post.amount}</td>
                 <td onClick={() => { setModal2(true); setViewData(post) }}><CBadge className='bg-text-wp'>View</CBadge></td>

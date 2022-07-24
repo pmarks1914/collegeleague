@@ -170,6 +170,8 @@ const Transaction = (transactionDetails) => {
       // setMonitorState(3)
     }
     else{
+
+      setLoader('<a></a>')
       setTimeout(()=>{
         setNoData("No data")
       }, 2000)
@@ -180,7 +182,7 @@ const Transaction = (transactionDetails) => {
     // }
 
     
-    console.log("props ", dateRange, transaction, transactionStatus, monitorState)
+    // console.log("props ", dateRange, transaction, transactionStatus, monitorState)
 
   }, [ dateRange, noData])
 
@@ -195,6 +197,9 @@ const Transaction = (transactionDetails) => {
       $('#myTable').DataTable(
         {
           // data: transaction,
+          columnDefs: [
+            { "width": "10%", "targets": 2 }
+          ],
           processing: true,
           deferLoading: true,
           keys: true,
@@ -394,9 +399,9 @@ const Transaction = (transactionDetails) => {
     }
     else if(type === "filterByStatus"){
       // 
-      // console.log("by status ", status )
-      if(status === "All Transaction" && monitorState === 2){
-        datatablaScript(dateFilterData);
+      console.log("by status ", status, monitorState )
+      if(status === "All Transaction" && monitorState === 1){
+        datatablaScript(transaction);
       }
       else if((status === "Successful" || status === "Pending" || status === "Failed") && monitorState === 1){
         datatablaScript( transaction.filter((post, id) => {return ( post?.status_code === status.toUpperCase() )}) );
@@ -827,7 +832,7 @@ const Transaction = (transactionDetails) => {
                 <td>{id + 1}</td>
                 <td>{post.reference_id}</td>
                 <td>{post.note}</td>
-                <td><CBadge color={post.status_code === "SUCCESSFUL" ? "success" : (post.status_code === "PENDING" ? "primary" : "secondary")}>{post.status_code}</CBadge> </td>
+                <td><CBadge color={post.status_code === "SUCCESSFUL" ? "success" : (post.status_code === "PENDING" ? "primary" : (post.status_code === "REVERSED" ? "danger" : "secondary") )}>{post.status_code}</CBadge> </td>
                 <td>{moment(post.created_at).format('LLLL')}</td>
                 <td>{post.amount}</td>
                 <td onClick={() => { setModal2(true); setViewData(post) }}><CBadge className='bg-text-wp'>View</CBadge></td>

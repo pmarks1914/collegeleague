@@ -13,7 +13,9 @@
     text-align: "center";
     border-radius: 100%;
 }
-
+.bottom .dataTables_length label{
+  margin: 6px 0px 0px 10px;
+}
 @media print
 {   
     @page {
@@ -115,9 +117,10 @@
     height: 1px !important
 
  }
- #datePicker-0{
+ .datePicker-0{
      /*  */
     /* border: 1px solid #080808 !important; */
+    margin: 0 0 40px 0px;
  }
   #dateRange{
     width: 250px;

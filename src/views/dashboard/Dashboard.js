@@ -59,14 +59,19 @@ import { getSessionTimeout } from '../../Utils/Utils';
 
 const Dashboard = () => {
   const [transactionDetails, setTransactionDetails] = useState(null)
+  const [summaryDetails, setSummaryDetails] = useState(null)
 
   useEffect(() => {
     // 
     let transactionData = getTransactionData();
     transactionData?.transaction?.then(value => { setTransactionDetails(value) });
     trackActivity();
+    
+    let summaryData = getTransactionData();
+    summaryData?.summary?.then(value => { setSummaryDetails(value) });
+   
   }, [])
-  // console.log("transactionDetails ", transactionDetails)
+  // console.log("summarry ", summaryDetails)
 
   const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
 
@@ -216,7 +221,7 @@ const Dashboard = () => {
       <CRow>
         <CCol xs={12} sm={12} md={9} xl={9} style={{float: "left!important"}}>
 
-          <CCard className="mb-4">
+          <CCard className="mb-0">
             <CCardBody>
               <CRow>
                 <CCol sm={5}>
@@ -328,55 +333,146 @@ const Dashboard = () => {
           </CCard>
           <Datatable transactionDetails={transactionDetails} />
         </CCol>
-        <CCol xs={12} sm={12} md={3} xl={3} style={{float: "right"}}>
-          <CCol sm={12}>
-            <CCard className="mb-0">
+
+        <CCol xs={12} sm={12} md={3} xl={3} style={{float: "right" }}>
+          <CCard className="mb-1">
               <CCardHeader> Quick Overview </CCardHeader>
-              <CCardBody>
-                <div className="border-start border-start-4 border-start-primary py-1 px-3">
-                  <div className="text-medium-emphasis small">WINGIPAY TO AIRTELTIGO</div>
-                  <div className="fs-5 fw-semibold">GHS 9,123</div>
-                </div>
-              </CCardBody>
-            </CCard>
+          </CCard>
+          <div style={{ height: "69em", "overflowY": "auto", whiteSpace: "nowrap" }}>
+            {/*  */}
+            <CCol sm={12}>
+              <CCard className="mb-2">
+                <CCardBody>
+                  <div className="border-start border-start-4 border-start-primary py-1 px-3">
+                    <div className="text-medium-emphasis small">BY DAY</div>
+                    <div className="fs-5 fw-semibold">
+                      {summaryDetails?.currency} {summaryDetails?.day_amount || 0.00}
+                    </div>
+                    <div className="text-medium-emphasis small">COUNT {summaryDetails?.day_count || 0}</div>
+                  </div>
+                </CCardBody>
+              </CCard>
+              
+              <CCard className="mb-2">
+                <CCardBody>
+                  <div className="border-start border-start-4 border-start-primary py-1 px-3">
+                    <div className="text-medium-emphasis small">WINGIPAY TO WINGIPAY</div>
+                    <div className="fs-5 fw-semibold">
+                      {summaryDetails?.currency} {summaryDetails?.wingipay_amount || 0.00}
+                    </div>
+                    <div className="text-medium-emphasis small">COUNT {summaryDetails?.wingipay || 0}</div>
+                  </div>
+                </CCardBody>
+              </CCard>
 
-            <CCard className="mb-0">
-              <CCardBody>
-                <div className="border-start border-start-4 border-start-warning py-1 px-3">
-                  <div className="text-medium-emphasis small">GHS MTN TO WINGIPAY</div>
-                  <div className="fs-5 fw-semibold">22,643</div>
-                </div>
-              </CCardBody>
-            </CCard>
+              <CCard className="mb-2">
+                <CCardBody>
+                  <div className="border-start border-start-4 border-start-primary py-1 px-3">
+                    <div className="text-medium-emphasis small">WINGIPAY TO AIRTELTIGO</div>
+                    <div className="fs-5 fw-semibold">
+                      {summaryDetails?.currency} {summaryDetails?.airteltigo_debit_total_amount || 0.00}
+                    </div>
+                    <div className="text-medium-emphasis small">COUNT {summaryDetails?.airteltigo_debit || 0}
+                    </div>
+                  </div>
+                </CCardBody>
+              </CCard>
 
-            <CCard className="mb-0">
+              <CCard className="mb-2">
+                <CCardBody>
+                  <div className="border-start border-start-4 border-start-warning py-1 px-3">
+                    <div className="text-medium-emphasis small"> WINGIPAY TO MTN </div>
+                    <div className="fs-5 fw-semibold">
+                      {summaryDetails?.currency} {summaryDetails?.mtn_debit_total_amount || 0.00}
+                    </div>
+                    <div className="text-medium-emphasis small">COUNT {summaryDetails?.mtn_debit || 0}</div>
+                  </div>
+                </CCardBody>
+              </CCard>
+
+              <CCard className="mb-2">
+                <CCardBody>
+                  <div className="border-start border-start-4 border-start-danger py-1 px-3">
+                    <div className="text-medium-emphasis small">VODAFONE TO WINGIPAY</div>
+                    <div className="fs-5 fw-semibold">
+                      {summaryDetails?.currency} {summaryDetails?.vodafone_debit_total_amount || 0.00}
+                    </div>
+                    <div className="text-medium-emphasis small">COUNT {summaryDetails?.vodofone_debit || 0}</div>
+                  </div>
+                </CCardBody>
+              </CCard>
+
+              <CCard className="mb-2">
+                <CCardBody>
+                  <div className="border-start border-start-4 border-start-primary py-1 px-3">
+                    <div className="text-medium-emphasis small"> AIRTELTIGO TO WINGIPAY</div>
+                    <div className="fs-5 fw-semibold">
+                      {summaryDetails?.currency} {summaryDetails?.airteltigo_credit_total_amount || 0.00}
+                    </div>
+                    <div className="text-medium-emphasis small">COUNT {summaryDetails?.airtel_credit || 0}</div>
+                  </div>
+                </CCardBody>
+              </CCard>
+
+              <CCard className="mb-2">
+                <CCardBody>
+                  <div className="border-start border-start-4 border-start-warning py-1 px-3">
+                    <div className="text-medium-emphasis small"> MTN TO WINGIPAY</div>
+                    <div className="fs-5 fw-semibold">
+                      {summaryDetails?.currency} {summaryDetails?.mtn_credit_total_amount || 0.00}
+                    </div>
+                    <div className="text-medium-emphasis small">COUNT {summaryDetails?.mtn_credit || 0}</div>
+                  </div>
+                </CCardBody>
+              </CCard>
+            </CCol>
+
+            <CCard className="mb-2">
               <CCardBody>
                 <div className="border-start border-start-4 border-start-danger py-1 px-3">
                   <div className="text-medium-emphasis small">VODAFONE TO WINGIPAY</div>
-                  <div className="fs-5 fw-semibold">GHS 78,623</div>
+                  <div className="fs-5 fw-semibold">
+                    {summaryDetails?.currency} {summaryDetails?.vodafone_credit_total_amount || 0.00}
+                  </div>
+                  <div className="text-medium-emphasis small">COUNT {summaryDetails?.vodofone_credit || 0}</div>
                 </div>
               </CCardBody>
             </CCard>
 
-            <CCard className="mb-0">
+            <CCard className="mb-2">
               <CCardBody>
-                <div className="border-start border-start-4 border-start-primary py-1 px-3">
-                  <div className="text-medium-emphasis small">AIRTELTIGO TO WINGIPAY</div>
-                  <div className="fs-5 fw-semibold">GHS 49,123</div>
+                <div className="border-start border-start-4 border-start-danger py-1 px-3">
+                  <div className="text-medium-emphasis small">CASHOUT</div>
+                  <div className="fs-5 fw-semibold">
+                    {summaryDetails?.currency} {summaryDetails?.cashout_total_amount || 0.00}
+                  </div>
+                  {/* <div className="text-medium-emphasis small">COUNT {summaryDetails?.vodofone_credit}</div> */}
                 </div>
               </CCardBody>
             </CCard>
-          </CCol>
+
+            <CCard className="mb-2">
+              <CCardBody>
+                <div className="border-start border-start-4 border-start-danger py-1 px-3">
+                  <div className="text-medium-emphasis small">FAILED</div>
+                  <div className="fs-5 fw-semibold">
+                    {summaryDetails?.currency} {summaryDetails?.failed_amount || 0.00}
+                  </div>
+                  <div className="text-medium-emphasis small">COUNT {summaryDetails?.failed_count || 0}</div>
+                </div>
+              </CCardBody>
+            </CCard>
+          </div>
 
           {/* <hr className="mt-0" /> */}
         </CCol>
 
-        <CCol xs>
+        {/* <CCol xs>
           <CCard className="mb-4">
-            {/* <CCardHeader> {' & '} Sales</CCardHeader> */}
+            <CCardHeader> {' & '} Sales</CCardHeader>
             <CCardBody>
 
-              {/* <CTable align="middle" className="mb-0 border" hover responsive>
+              <CTable align="middle" className="mb-0 border" hover responsive>
                 <CTableHead color="light">
                   <CTableRow>
                     <CTableHeaderCell className="text-center">
@@ -426,10 +522,10 @@ const Dashboard = () => {
                     </CTableRow>
                   ))}
                 </CTableBody>
-              </CTable> */}
+              </CTable>
             </CCardBody>
           </CCard>
-        </CCol>
+        </CCol> */}
       </CRow>
     </>
   )

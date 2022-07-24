@@ -43,37 +43,6 @@ import Avatar from '@mui/material/Avatar';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Box from '@mui/material/Box';
 
-// test data
-let posts = [
-  {
-  "id": "33bc65a6-70f5-470a-812a-61944b6412f3",
-  "amount": "0.01",
-  "note": "wingipay to MTN ussd GhS 0.01 from Eli",
-  "service": 2,
-  "status_code": "SUCCESSFUL",
-  "status_message": "Transaction completed successfully",
-  "created_at": "2022-06-01T14:38:14.995258Z"
-},
-{
-"id": "33bc65a6-70f5-470a-812a-61944b6412f3",
-"amount": "0.01",
-"note": "wingipay to MTN ussd GhS 0.01 from Eli",
-"service": 2,
-"status_code": "PENDING",
-"status_message": "Transaction completed successfully",
-"created_at": "2022-06-01T14:38:14.995258Z"
-},
-{
-"id": "33bc65a6-70f5-470a-812a-61944b6412f3",
-"amount": "0.01",
-"note": "wingipay to MTN ussd GhS 0.01 from Eli",
-"service": 2,
-"status_code": "FAILED",
-"status_message": "Transaction completed successfully",
-"created_at": "2022-06-01T14:38:14.995258Z"
-}
-]
-
 let transactionData = getTransactionData();
 let transaction = []
 transactionData?.transaction?.then(value => { (transaction = value) } );
@@ -117,6 +86,9 @@ const DatatableMain = (transactionDetails) => {
       $('#myTable').DataTable(
         {
           // data: transaction,
+          columnDefs: [
+            { "width": "10%", "targets": 2 }
+          ],
           processing: true,
           deferLoading: true,
           keys: true,
@@ -192,7 +164,7 @@ const DatatableMain = (transactionDetails) => {
           <tr>
             <th>ID</th>
             <th>Reference</th>
-            {/* <th>Note</th> */}
+            <th>Note</th>
             <th>Status</th>
             <th>Transaction Date</th>
             <th>Amount</th>
@@ -206,8 +178,8 @@ const DatatableMain = (transactionDetails) => {
               <tr key={id}>
                 <td>{id + 1}</td>
                 <td>{post.reference_id}</td>
-                {/* <td>{post.note}</td> */}
-                <td><CBadge color= {post.status_code === "SUCCESSFUL" ? "success" : (post.status_code === "PENDING" ? "primary" : "secondary")}>{post.status_code}</CBadge> </td>
+                <td>{post.note}</td>
+                <td><CBadge color={post.status_code === "SUCCESSFUL" ? "success" : (post.status_code === "PENDING" ? "primary" : (post.status_code === "REVERSED" ? "danger" : "secondary") )}>{post.status_code}</CBadge> </td>
                 <td>{moment(post.created_at).format('LLLL')}</td>
                 <td>{post.amount}</td>
                 <td onClick={()=>{setModal2(true); setViewData(post)}}><CBadge className='bg-text-wp'>View</CBadge></td>

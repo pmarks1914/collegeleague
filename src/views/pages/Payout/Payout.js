@@ -9,7 +9,7 @@ import "datatables.net-buttons/js/buttons.flash.js";
 import "datatables.net-buttons/js/buttons.html5.js";
 import "datatables.net-buttons/js/buttons.print.js";
 import '../../datatable/table.css';
-import { getTransactionData } from '../Data/PageData';
+import { payoutData } from '../Data/PageData';
 import PayoutDataTables from './PayoutDataTables'
 
 // test data
@@ -43,9 +43,9 @@ let posts = [
     }
 ]
 
-let transactionData = getTransactionData();
-let transaction = []
-transactionData?.transaction?.then(value => { (transaction = value) });
+// let transactionData = getTransactionData();
+// let transaction = []
+// transactionData?.transaction?.then(value => { (transaction = value) });
 
 const Payout = () => {
     const [loader, setLoader] = useState('<div class="spinner-border dashboard-loader" style="color: #e0922f;"></div>')
@@ -67,7 +67,7 @@ const Payout = () => {
 
     useEffect(() => {
         // 
-        let transactionData = getTransactionData();
+        let transactionData = payoutData();
         transactionData?.transaction?.then(value => { setTransactionDetails(value) });
 
     }, [])

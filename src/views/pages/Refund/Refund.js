@@ -9,7 +9,7 @@ import "datatables.net-buttons/js/buttons.flash.js";
 import "datatables.net-buttons/js/buttons.html5.js";
 import "datatables.net-buttons/js/buttons.print.js";
 import '../../datatable/table.css';
-import { getTransactionData } from '../Data/PageData';
+import { refundData } from '../Data/PageData';
 import RefundDataTables from './RefundDataTables'
 
 // test data
@@ -65,10 +65,10 @@ const Refund = () => {
     const [viewData, setViewData] = useState({})
     const [transactionDetails, setTransactionDetails] = useState(null)
 
-    useEffect(() => {
+    useEffect(() => { 
         // 
-        let transactionData = getTransactionData();
-        transactionData?.transaction?.then(value => { setTransactionDetails(value) });
+        let transactionData = refundData();
+        transactionData?.refund?.then(value => { setTransactionDetails(value) });
 
     }, [])
 

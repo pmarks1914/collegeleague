@@ -21,17 +21,25 @@ import {
   cilUser,
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-
+import $ from 'jquery'
 import avatar8 from './../../assets/images/avatars/8.jpg'
 
 const AppHeaderDropdown = (userData) => {
   function logoutUser(){
     window.location.href="/login";
     localStorage.removeItem("userDataStore");
-    // window.onstorage = () =>{
-    //   window.location.href = "/login"
-    // } 
+ 
   }
+
+// $(document).ready(function () {
+//     window.addEventListener('storage', function(event){
+
+//       console.log("storage ")
+//     });
+    
+// });
+
+
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>

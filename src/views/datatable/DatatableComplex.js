@@ -128,6 +128,9 @@ const DatatableMain = (transactionDetails) => {
       $('#myTable').DataTable(
         {
           // data: transaction,
+          columnDefs: [
+            { "width": "10%", "targets": 2 }
+          ],
           processing: true,
           deferLoading: true,
           keys: true,
@@ -281,7 +284,7 @@ const DatatableMain = (transactionDetails) => {
                 <td>{id + 1}</td>
                 <td>{post.reference_id}</td>
                 <td>{post.note}</td>
-                <td><CBadge color= {post.status_code === "SUCCESSFUL" ? "success" : (post.status_code === "PENDING" ? "primary" : "secondary")}>{post.status_code}</CBadge> </td>
+                <td><CBadge color={post.status_code === "SUCCESSFUL" ? "success" : (post.status_code === "PENDING" ? "primary" : (post.status_code === "REVERSED" ? "danger" : "secondary") )}>{post.status_code}</CBadge></td>
                 <td>{moment(post.created_at).format('LLLL')}</td>
                 <td>{post.amount}</td>
                 <td onClick={()=>{setModal2(true); setViewData(post)}}><CBadge className='bg-text-wp'>View</CBadge></td>

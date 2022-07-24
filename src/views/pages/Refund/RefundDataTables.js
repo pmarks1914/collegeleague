@@ -60,7 +60,7 @@ import {
   CNavItem,
   CTooltip,
 } from '@coreui/react'
-import { getTransactionData } from '../Data/PageData';
+import { refundData } from '../Data/PageData';
 import ViewDetails from '../../datatable/ViewDetails';
 import CIcon from '@coreui/icons-react';
 import {
@@ -78,40 +78,9 @@ import {Helmet} from "react-helmet";
 import Select from 'react-select';
 import * as XLSX from 'xlsx';
 
-// test data
-let posts = [
-  {
-    "id": "33bc65a6-70f5-470a-812a-61944b6412f3",
-    "amount": "0.01",
-    "note": "wingipay to MTN ussd GhS 0.01 from Eli",
-    "service": 2,
-    "status_code": "SUCCESSFUL",
-    "status_message": "Transaction completed successfully",
-    "created_at": "2022-06-01T14:38:14.995258Z"
-  },
-  {
-    "id": "33bc65a6-70f5-470a-812a-61944b6412f3",
-    "amount": "0.01",
-    "note": "wingipay to MTN ussd GhS 0.01 from Eli",
-    "service": 2,
-    "status_code": "PENDING",
-    "status_message": "Transaction completed successfully",
-    "created_at": "2022-06-01T14:38:14.995258Z"
-  },
-  {
-    "id": "33bc65a6-70f5-470a-812a-61944b6412f3",
-    "amount": "0.01",
-    "note": "wingipay to MTN ussd GhS 0.01 from Eli",
-    "service": 2,
-    "status_code": "FAILED",
-    "status_message": "Transaction completed successfully",
-    "created_at": "2022-06-01T14:38:14.995258Z"
-  }
-]
-
-let transactionData = getTransactionData();
+let transactionData = refundData();
 let transaction = []
-transactionData?.transaction?.then(value => { (transaction = value) });
+transactionData?.refund?.then(value => { (transaction = value) });
 
 const RefundDataTables = (transactionDetails) => {
   const [loader, setLoader] = useState('<div class="spinner-border dashboard-loader" style="color: #e0922f;"></div>')
@@ -168,9 +137,11 @@ const RefundDataTables = (transactionDetails) => {
       // setMonitorState(3)
     }
     else{
-      setTimeout(()=>{
-        setNoData("No data")
-      }, 2000)
+        datatablaScript([])
+        setLoader('<a></a>')
+        // setTimeout(()=>{
+        //     setNoData("dd")
+        // }, 200)
     }
 
     // if(transactionStatus && monitorState === 2){
@@ -180,7 +151,7 @@ const RefundDataTables = (transactionDetails) => {
     
     // console.log("props ", dateRange, transaction, transactionStatus, monitorState)
 
-  }, [dateRange, noData])
+  }, [dateRange, transaction])
 
   // perform filter 
   function datatablaScript(tdata) {
@@ -193,6 +164,9 @@ const RefundDataTables = (transactionDetails) => {
       $('#myTable').DataTable(
         {
           // data: transaction,
+          columnDefs: [
+            { "width": "10%", "targets": 2 }
+          ],
           processing: true,
           deferLoading: true,
           keys: true,
@@ -333,7 +307,8 @@ const RefundDataTables = (transactionDetails) => {
   // Close the dropdown if the user clicks outside of it
   window.onclick = function (event) {
     event.preventDefault()
-    // console.log("dropdown ==", dropValue, "e", event.target.matches('.dateRange'), "openDateRange > ", openDateRange)
+    trackActivity();
+    console.log("dropdown ==", dropValue, "e", event.target.matches('.dateRange'), "openDateRange > ", openDateRange)
     setDropValue(0);
     if (!event.target.matches('.dropbtn') && dropValue === 0) {
       let dropdowns = document.getElementsByClassName("dropdown-content");
@@ -370,7 +345,8 @@ const RefundDataTables = (transactionDetails) => {
     {value: "All Transaction", label: "All Transaction" },
     {value: "Successful", label: "Successful" },
     {value: "Pending", label: "Pending" },
-    {value: "Failed", label: "Failed" }
+    {value: "Failed", label: "Failed" },
+    {value: "Reversed", label: "Reversed" }
   ];
   const optionsExport = [
     // {value: "", label: "Se", icon: "", isDisabled: true },
@@ -392,13 +368,13 @@ const RefundDataTables = (transactionDetails) => {
     else if(type === "filterByStatus"){
       // 
       // console.log("by status ", status )
-      if(status === "All Transaction" && monitorState === 2){
-        datatablaScript(dateFilterData);
+      if(status === "All Transaction" && monitorState === 1){
+        datatablaScript(transaction);
       }
-      else if((status === "Successful" || status === "Pending" || status === "Failed") && monitorState === 1){
+      else if((status === "Reversed" || status === "Successful" || status === "Pending" || status === "Failed") && monitorState === 1){
         datatablaScript( transaction.filter((post, id) => {return ( post?.status_code === status.toUpperCase() )}) );
       }
-      else if((status === "Successful" || status === "Pending" || status === "Failed") && monitorState === 2){
+      else if((status === "Reversed" || status === "Successful" || status === "Pending" || status === "Failed") && monitorState === 2){
         datatablaScript( dateFilterData?.filter((post, id) => {return ( post?.status_code === status.toUpperCase() )}) );
         
       }
@@ -433,7 +409,7 @@ const RefundDataTables = (transactionDetails) => {
         }
       }
       else{
-        console.log("hhhh")
+        // console.log("hhhh")
         dataFilter = transaction.filter((post, id) => {return ( post?.reference_id?.toLowerCase().includes(referanceId.toLowerCase()) && post?.id?.toLowerCase().includes(transactionId.toLowerCase()) )});
       }
       datatablaScript( dataFilter );
@@ -508,10 +484,10 @@ const RefundDataTables = (transactionDetails) => {
     }
   }
 
-  window.onclick = function (event) {
-    event.preventDefault()
-    trackActivity()
-  }
+//   window.onclick = function (event) {
+//     event.preventDefault()
+//     trackActivity()
+//   }
   return (
 
     <div>
@@ -826,7 +802,7 @@ const RefundDataTables = (transactionDetails) => {
                 <td>{id + 1}</td>
                 <td>{post.reference_id}</td>
                 <td>{post.note}</td>
-                <td><CBadge color={post.status_code === "SUCCESSFUL" ? "success" : (post.status_code === "PENDING" ? "primary" : "secondary")}>{post.status_code}</CBadge> </td>
+                <td><CBadge color={post.status_code === "SUCCESSFUL" ? "success" : (post.status_code === "PENDING" ? "primary" : (post.status_code === "REVERSED" ? "danger" : "secondary") )}>{post.status_code}</CBadge> </td>
                 <td>{moment(post.created_at).format('LLLL')}</td>
                 <td>{post.amount}</td>
                 <td onClick={() => { setModal2(true); setViewData(post) }}><CBadge className='bg-text-wp'>View</CBadge></td>

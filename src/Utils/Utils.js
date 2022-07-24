@@ -18,7 +18,7 @@ export function getSessionTimeout(){
             // console.log( " <> ", currentUser_new);
             // console.log(distance, " <> ", seconds);
 
-            if(distance< 5742 ){
+            if(distance < 5742 ){
             Swal.fire({
                 icon: 'error',
                 title: 'Signing you out in ' + (seconds < 1 ? 0 : seconds) + 's.',

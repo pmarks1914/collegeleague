@@ -6,7 +6,7 @@ const userData = JSON.parse(localStorage.getItem("userDataStore"));
 
 export function getTransactionData(){
 
-    // /939e8b7b-ce5c-421f-b635-a88dc14fcb32/
+    // /939e8b7b-ce5c-421f-b635-a88dc14fcb32/ 
     let data = '';
     let config_transaction = {
         method: 'get',
@@ -55,7 +55,7 @@ export function getTransactionData(){
 
     let config_transaction_summary_client = {
         method: 'get',
-        url: process.env.REACT_APP_BASE_API + "/transaction/summary/client/" + userData?.wallet + "/",
+        url: process.env.REACT_APP_BASE_API + "/transactions/stats/",
         headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + userData?.access
