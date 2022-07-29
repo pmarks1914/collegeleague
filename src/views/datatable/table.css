@@ -13,7 +13,9 @@
     text-align: "center";
     border-radius: 100%;
 }
-
+.bottom .dataTables_length label{
+  margin: 6px 0px 0px 10px;
+}
 @media print
 {   
     @page {
@@ -41,16 +43,28 @@
 
 /* dropdown css */
 .dropbtn {
-    background-color: #3498DB;
-    color: white;
-    padding: 16px;
-    font-size: 16px;
+    background-color: #eef2f4;
+    color: #080808;
+    padding: 5px;
+    font-size: 15px;
     border: none;
+    border: 1px solid #aca6a6;
     cursor: pointer;
+    font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Ubuntu,sans-serif;
+    font-weight: 500;
+  }
+  .d-filters{
+    /* background-color: #eef2f4; */
+    color: #080808;
+    /* padding: 5px; */
+    font-size: 15px;
+    border: none;
+    font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Ubuntu,sans-serif;
+    font-weight: 500;
   }
   
   .dropbtn:hover, .dropbtn:focus {
-    background-color: #2980B9;
+    /* background-color: #2980B9; */
   }
   
   .dropdown {
@@ -58,16 +72,64 @@
     display: inline-block;
   }
   
-  .dropdown-content {
+  .dropdown-content, .dropdown-content-dateRange{
     display: none;
+    float: left;
     position: absolute;
     background-color: #f1f1f1;
-    min-width: 160px;
-    overflow: auto;
+    min-width: auto;
+    /* overflow: auto; */
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    /* border-radius: 20px; */
     z-index: 1;
   }
   
+  .dropdown-content{
+    margin-top: 9px;
+  }
+  #filters-d, #amount-less, #amount-great, #amount-equal{
+    height: 4px;
+  }
+  .des-filter-inputs{
+      margin: 10px 0px 5px 0px;
+  }
+  .filterDrop{
+      width: 100px;
+  }
+  .other-input-select{
+      /* height: 35px; */
+      width: 180px;
+  }
+  .filterDrop form div div{
+      height: 32px;
+      padding: 0px 0px 5px 5px;
+      margin-top: 13px;
+  }
+  /* #filterDrop form div div, #other-input-select{
+    height: 30px;
+    margin-top: 13px;
+    padding: 0px 0px 5px 5px;
+  } */
+  .other-input-text{
+      height: 4px !important;
+  }
+  #dateRange{
+    height: 1px !important
+
+ }
+ .datePicker-0{
+     /*  */
+    /* border: 1px solid #080808 !important; */
+    margin: 0 0 40px 0px;
+ }
+  #dateRange{
+    width: 250px;
+  }
+  #dateRange-control{
+    /* padding: 16px 0px; */
+    margin: 6px 0px 0px 0px;
+    height: 2px;
+  }
   .dropdown-content a {
     color: black;
     padding: 12px 16px;

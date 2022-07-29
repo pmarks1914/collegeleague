@@ -22,7 +22,8 @@ import {
   cilSmilePlus,
   cilSpeedometer,
   cilStar,
-  cilTablet,
+  cilTablet, 
+  cilLibrary,
   cilControl,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
@@ -57,31 +58,31 @@ const account_nav = [
       {
         component: CNavItem,
         name: 'Refunds',
-        to: '/payment/refund',
+        to: '/payment/refunds',
         icon: <CIcon icon={cilReload} customClassName="nav-icon" />,
       },
       {
         component: CNavItem,
         name: 'Transaction Splits',
-        to: '/payment/transaction-split',
+        to: '/payment/transaction-splits',
         icon: <CIcon icon={cilEco} customClassName="nav-icon" />,
       },
       {
         component: CNavItem,
         name: 'Payouts',
-        to: '/payment/payout',
+        to: '/payment/payouts',
         icon: <CIcon icon={cilMoney} customClassName="nav-icon" />,
       },
       {
         component: CNavItem,
         name: 'Subaccounts',
-        to: '/payment/subaccount',
+        to: '/payment/subaccounts',
         icon: <CIcon icon={cilTriangle} customClassName="nav-icon" />,
       },
       {
         component: CNavItem,
         name: 'Dispute',
-        to: '/payment/dispute',
+        to: '/payment/disputes',
         icon: <CIcon icon={cilDataTransferUp} customClassName="nav-icon" />,
       },
     ],
@@ -93,13 +94,13 @@ const account_nav = [
       {
         component: CNavItem,
         name: 'Transfers',
-        to: '/transfer/transfer',
+        to: '/transfer/transfers',
         icon: <CIcon icon={cilMediaSkipForward} customClassName="nav-icon" />,
       },
       {
         component: CNavItem,
         name: 'Recipients',
-        to: '/transfer/recipient',
+        to: '/transfer/recipients',
         icon: <CIcon icon={cilPeople} customClassName="nav-icon" />,
       },
       {
@@ -115,6 +116,12 @@ const account_nav = [
     name: 'Compliance',
     to: '/compliance',
     icon: <CIcon icon={cilControl} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Api keys',
+    to: '/api-keys',
+    icon: <CIcon icon={cilLibrary} customClassName="nav-icon" />,
   },
   
 ]

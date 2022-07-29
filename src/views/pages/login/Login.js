@@ -37,7 +37,7 @@ const Login = () => {
     setLogin("")
     setLoader('<div class="spinner-border "style="color: #e0922f;"></div>`')
 
-    console.log("fff", process.env.REACT_APP_BASE_API, passwordVar, usernameVar)
+    // console.log("fff", process.env.REACT_APP_BASE_API, passwordVar, usernameVar)
 
     if (usernameVar === "") {
       // document.getElementById("usernameError").style.display = "block";
@@ -65,8 +65,9 @@ const Login = () => {
         setLoader("<a></a>")
         setLogin("Login")
         console.log(response.status);
-        if (response.status === 200) {
-          // console.log(response?.data)
+        if (response.status === 200) { 
+          console.log(response?.data)
+          let counter = 700000;
 
           const userData = {
             status: response.status,
@@ -86,7 +87,9 @@ const Login = () => {
             photo150: response.data.photo150x150,
             photo50: response.data.photo50x50,
             wallet: response.data.wallet,
-            role: response?.data?.role || "none"
+            role: response?.data?.role || "none",
+            timeLogout: new Date(new Date().getTime() + counter),
+            counter: counter
           };
           localStorage.setItem("userDataStore", JSON.stringify(userData));
 

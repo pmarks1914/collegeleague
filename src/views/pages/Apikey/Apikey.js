@@ -9,9 +9,8 @@ import "datatables.net-buttons/js/buttons.flash.js";
 import "datatables.net-buttons/js/buttons.html5.js";
 import "datatables.net-buttons/js/buttons.print.js";
 import '../../datatable/table.css';
-import { getTransactionData } from '../Data/PageData';
-import TransactionDataTables from './TransactionDatatable'
-import { getSessionTimeout } from '../../../Utils/Utils'; 
+import { apikeyData } from '../Data/PageData';
+import ApikeyDataTables from './ApikeyDataTables'
 
 // test data
 let posts = [
@@ -44,11 +43,11 @@ let posts = [
     }
 ]
 
-let transactionData = getTransactionData();
-let transaction = []
-transactionData?.transaction?.then(value => { (transaction = value) });
+// let transactionData = getTransactionData();
+// let transaction = []
+// transactionData?.transaction?.then(value => { (transaction = value) });
 
-const Transaction = () => {
+const Apikey = () => {
     const [loader, setLoader] = useState('<div class="spinner-border dashboard-loader" style="color: #e0922f;"></div>')
     const [tableData, setTableData] = useState([]);
     const [monitaState, setMonitaState] = useState(1);
@@ -64,26 +63,25 @@ const Transaction = () => {
     const [modal2, setModal2] = useState(false)
 
     const [viewData, setViewData] = useState({})
-    const [transactionDetails, setTransactionDetails] = useState(null)
+    const [apikeyDetails, setApikeyDetails] = useState(null)
 
-    useEffect(() => {
+    useEffect(() => { 
         // 
-        // getSessionTimeout();
-        // console.log("getSessionTimeout", getSessionTimeout())
-        let transactionData = getTransactionData();
-        transactionData?.transaction?.then(value => { setTransactionDetails(value) });
+        let apikey_data = apikeyData();
+        apikey_data?.apikey?.then(value => { setApikeyDetails(value) });
 
     }, [])
-   
+
+
     return (
         <div>
             {/* open modal for filter date range */}
             {/* <CButton onClick={() => setModal1(!modal1)} icon={cilArrowRight} className="float-end" >Filter</CButton> */}
             <br /><br />
-            <TransactionDataTables transactionDetails={transactionDetails} />
+            <ApikeyDataTables apikeyDetails={apikeyDetails} />
 
         </div>
     )
 }
 
-export default Transaction;
+export default Apikey;

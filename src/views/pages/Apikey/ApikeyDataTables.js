@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Label } from 'reactstrap';
+import { Container, Row, Col, Label, Input } from 'reactstrap';
 import $ from 'jquery'
 import "jquery/dist/jquery.min.js";
 import "datatables.net-dt/js/dataTables.dataTables";
@@ -11,7 +11,7 @@ import "datatables.net-buttons/js/buttons.html5.js";
 import "datatables.net-buttons/js/buttons.print.js";
 import '../../datatable/table.css';
 import Stack from '@mui/material/Stack';
-import {TextField, Input} from '@mui/material';
+import {TextField} from '@mui/material';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
@@ -60,7 +60,7 @@ import {
   CNavItem,
   CTooltip,
 } from '@coreui/react'
-import { getTransactionData } from '../Data/PageData';
+import { apikeyData } from '../Data/PageData';
 import ViewDetails from '../../datatable/ViewDetails';
 import CIcon from '@coreui/icons-react';
 import {
@@ -72,50 +72,20 @@ import {
   // cilFile,
   cilLockLocked,
   // cilSettings,
-  cilFilter, cilCheckCircle, cilSettings, cilCalendar, cilSearch,
+  cilFilter, cilCheckCircle, cilSettings, cilCalendar, cilSearch, cilPlus, cilKeyboard,
 } from '@coreui/icons'
 import {Helmet} from "react-helmet";
 import Select from 'react-select';
 import * as XLSX from 'xlsx';
-import { getSessionTimeout } from '../../../Utils/Utils'; 
+import axios from 'axios';
 import Swal from 'sweetalert2';
 
-// test data
-let posts = [
-  {
-    "id": "33bc65a6-70f5-470a-812a-61944b6412f3",
-    "amount": "0.01",
-    "note": "wingipay to MTN ussd GhS 0.01 from Eli",
-    "service": 2,
-    "status_code": "SUCCESSFUL",
-    "status_message": "Transaction completed successfully",
-    "created_at": "2022-06-01T14:38:14.995258Z"
-  },
-  {
-    "id": "33bc65a6-70f5-470a-812a-61944b6412f3",
-    "amount": "0.01",
-    "note": "wingipay to MTN ussd GhS 0.01 from Eli",
-    "service": 2,
-    "status_code": "PENDING",
-    "status_message": "Transaction completed successfully",
-    "created_at": "2022-06-01T14:38:14.995258Z"
-  },
-  {
-    "id": "33bc65a6-70f5-470a-812a-61944b6412f3",
-    "amount": "0.01",
-    "note": "wingipay to MTN ussd GhS 0.01 from Eli",
-    "service": 2,
-    "status_code": "FAILED",
-    "status_message": "Transaction completed successfully",
-    "created_at": "2022-06-01T14:38:14.995258Z"
-  }
-]
+let currentUser = JSON.parse(localStorage.getItem("userDataStore")); 
+let apikeyInfoData = apikeyData();
+let apikeyInfo = []
+apikeyInfoData?.apikey?.then(value => { (apikeyInfo = value) });
 
-let transactionData = getTransactionData();
-let transaction = []
-transactionData?.transaction?.then(value => { (transaction = value) });
-
-const Transaction = (transactionDetails) => {
+const ApikeyDataTables = (apikeyDetails) => {
   const [loader, setLoader] = useState('<div class="spinner-border dashboard-loader" style="color: #e0922f;"></div>')
   const [tableData, setTableData] = useState([]);
   const [noData, setNoData] = useState("")
@@ -128,20 +98,23 @@ const Transaction = (transactionDetails) => {
   const [value, setValue] = useState([null, null]);
 
   // modals
-  // filer transaction
+  // filer apikeyInfo
   const [modal1, setModal1] = useState(false)
-  // view single transaction 
+  // view single apikeyInfo 
   const [modal2, setModal2] = useState(false)
 
   const [viewData, setViewData] = useState({})
   const [openDateRange, setOpenDateRange] = useState(true);
   const [dateRange, setDateRange] = useState({});
+  const [description, setDescription] = useState("");
+  const [apikeyInfoStatusInModal, setapikeyInfoStatusInModal] = useState("");
   // startDate: Date.parse("2022-01-13"), endDate: Date.now()
+  
 
-  const [transactionStatus, setTransactionStatus] = useState("");
-  const [transactionId, setTransactionId] = useState("");
+  const [apikeyInfoStatus, setapikeyInfoStatus] = useState("");
+  const [apikeyInfoId, setapikeyInfoId] = useState("");
   const [referanceId, setReferanceId] = useState("");
-  const [transactionExport, setTransactionExport] = useState({});
+  const [apikeyInfoExport, setapikeyInfoExport] = useState({});
   const [dateFilterData, setDateFilterData] = useState({});
   const [amountLess, setAmountLess] = useState(0.00);
   const [amountGreat, setAmountGreat] = useState(0.00);
@@ -150,41 +123,41 @@ const Transaction = (transactionDetails) => {
   const toggle = () => setOpenDateRange(!openDateRange);
 
   useEffect(() => {
-    // reset user
-    if(dateRange?.length > 0 && monitorState === 1){
+
+    if(dateRange.length > 0 && monitorState === 1){
       setMonitorState(2)
       performFilter("filterByDate", "none")
-      setTransactionStatus("")
+      setapikeyInfoStatus("")
 
       setLoader('<a></a>')
     }
-    else if (transaction?.length > 0 && monitorState === 1) {
+    else if (apikeyInfo?.length > 0 && monitorState === 1) {
       // setMonitorState(2)
-      datatablaScript(transaction);
+      datatablaScript(apikeyInfo);
 
       setLoader('<a></a>')
     }
     else if(dateRange && monitorState === 2){
       performFilter("filterByDate", "none")
-      setTransactionStatus("")
+      setapikeyInfoStatus("")
       // setMonitorState(3)
     }
     else{
-
-      setLoader('<a></a>')
-      setTimeout(()=>{
-        setNoData("No data")
-      }, 2000)
+        datatablaScript([])
+        setLoader('<a></a>')
+        // setTimeout(()=>{
+        //     setNoData("dd")
+        // }, 200)
     }
 
-    // if(transactionStatus && monitorState === 2){
+    // if(apikeyInfoStatus && monitorState === 2){
     //   performFilter("filterByStatus")
     // }
 
     
-    // console.log("props ", dateRange, transaction, transactionStatus, monitorState)
+    // console.log("props ", dateRange, apikeyInfo, apikeyInfoStatus, monitorState)
 
-  }, [ dateRange, noData])
+  }, [dateRange, apikeyInfo])
 
   // perform filter 
   function datatablaScript(tdata) {
@@ -196,7 +169,7 @@ const Transaction = (transactionDetails) => {
        
       $('#myTable').DataTable(
         {
-          // data: transaction,
+          // data: apikeyInfo,
           columnDefs: [
             { "width": "10%", "targets": 2 }
           ],
@@ -238,7 +211,7 @@ const Transaction = (transactionDetails) => {
                 }
               },
               customize: function (anytype) {
-                let sheet = anytype.xl.worksheets['wingipaytransaction.xml'];
+                let sheet = anytype.xl.worksheets['wingipayapikeyInfo.xml'];
                 $('row:first c', sheet).attr('s', '7');
               }
             },
@@ -260,7 +233,7 @@ const Transaction = (transactionDetails) => {
                 }
               },
               customize: function (anytype) {
-                let sheet = anytype.xl.worksheets['wingipaytransaction.pdf'];
+                let sheet = anytype.xl.worksheets['wingipayapikeyInfo.pdf'];
                 $('row:first c', sheet).attr('s', '7');
               }
             },
@@ -286,11 +259,11 @@ const Transaction = (transactionDetails) => {
     // 
     e.preventDefault();
     console.log("post tableData ", tableData);
-    // transaction = posts;
+    // apikeyInfo = posts;
     try {
       // setTableData(posts);
-      let newFilterData = transactionDetails?.transactionDetails.filter((post) => { return moment(post.created_at).format('LLLL') <= moment(dateFrom).format('LLLL') })
-      // console.log("post tableData ", transactionDetails?.transactionDetails);
+      let newFilterData = apikeyDetails?.apikeyDetails.filter((post) => { return moment(post?.created).format('LLLL') <= moment(dateFrom).format('LLLL') })
+      // console.log("post tableData ", apikeyDetails?.apikeyDetails);
       console.log("post tableData ", newFilterData);
       datatablaScript(newFilterData);
       setModal1(false)
@@ -316,7 +289,7 @@ const Transaction = (transactionDetails) => {
     // $(".viewDescription").css("max-width", "50%");
     $(".viewDescription").css("flex-basis", "50%");
 
-    w.document.write($('.contentForTransactionPrint').html());
+    w.document.write($('.contentForapikeyInfoPrint').html());
     w.print();
     w.close();
   }
@@ -358,12 +331,15 @@ const Transaction = (transactionDetails) => {
       }
     }
   }
-  const handleChangeTransactionStatus = (valSelected) => {
-    setTransactionStatus(valSelected);
+  const handleChangeapikeyInfoStatus = (valSelected) => {
+    setapikeyInfoStatus(valSelected);
     performFilter("filterByStatus", valSelected)
   };
+  const handleChangeapikeyInfoStatusInModal = (valSelected) => {
+    setapikeyInfoStatusInModal(valSelected);
+  };
   const handleChangeExport = (valSelected) => {
-    setTransactionExport(valSelected);
+    setapikeyInfoExport(valSelected);
     if(valSelected === "Export to excel"){
       // 
       downloadExcel(tableData);
@@ -375,10 +351,14 @@ const Transaction = (transactionDetails) => {
   };
   const optionsStatus = [
     // {value: "", label: "Se", icon: "", isDisabled: true },
-    {value: "All Transaction", label: "All Transaction" },
-    {value: "Successful", label: "Successful" },
-    {value: "Pending", label: "Pending" },
-    {value: "Failed", label: "Failed" }
+    {value: "live", label: "Live Key" },
+    {value: "test", label: "Test Key" },
+    {value: "All apikeyInfo", label: "All Keys" }
+  ];
+  const optionsStatusInModal = [
+    // {value: "", label: "Se", icon: "", isDisabled: true },
+    {value: "live", label: "Live Key" },
+    {value: "test", label: "Test Key" },
   ];
   const optionsExport = [
     // {value: "", label: "Se", icon: "", isDisabled: true },
@@ -387,11 +367,11 @@ const Transaction = (transactionDetails) => {
   ];
   function performFilter(type, status){
 
-    // console.log("by status ", transactionStatus, "type", type )
+    // console.log("by status ", apikeyInfoStatus, "type", type )
     // perform filter by date range
     if(type === "filterByDate"){
       // 
-      let dataFilter = transaction.filter((post, id) => {return ( moment(post?.created_at).format('DD/MM/yyyy') >= moment(dateRange[0]).format('DD/MM/yyyy') && moment(post?.created_at).format('DD/MM/yyyy') <= moment(dateRange[1]).format('DD/MM/yyyy') )});
+      let dataFilter = apikeyInfo.filter((post, id) => {return ( moment(post?.created).format('DD/MM/yyyy') >= moment(dateRange[0]).format('DD/MM/yyyy') && moment(post?.created).format('DD/MM/yyyy') <= moment(dateRange[1]).format('DD/MM/yyyy') )});
 
       datatablaScript( dataFilter );
 
@@ -399,54 +379,27 @@ const Transaction = (transactionDetails) => {
     }
     else if(type === "filterByStatus"){
       // 
-      console.log("by status ", status, monitorState )
-      if(status === "All Transaction" && monitorState === 1){
-        datatablaScript(transaction);
+      // console.log("by status",status, monitorState, apikeyDetails )
+      if(status === "All apikeyInfo" && monitorState === 1){
+        datatablaScript(apikeyDetails?.apikeyDetails);
       }
-      else if((status === "Successful" || status === "Pending" || status === "Failed") && monitorState === 1){
-        datatablaScript( transaction.filter((post, id) => {return ( post?.status_code === status.toUpperCase() )}) );
+      else if(status === "All apikeyInfo" && monitorState === 2){
+        datatablaScript(dateFilterData);
       }
-      else if((status === "Successful" || status === "Pending" || status === "Failed") && monitorState === 2){
-        datatablaScript( dateFilterData?.filter((post, id) => {return ( post?.status_code === status.toUpperCase() )}) );
-        
+      else if(status === "test" && monitorState === 1){
+        datatablaScript( apikeyDetails?.apikeyDetails?.filter((post, id) => {return ( post?.is_live === false )}) );
+      }
+      else if(status === "live" && monitorState === 1){
+        datatablaScript( apikeyDetails?.apikeyDetails?.filter((post, id) => {return ( post?.is_live === true )}) );
+      }
+      else if(status === "test" && monitorState === 2){
+        datatablaScript( dateFilterData?.filter((post, id) => {return ( post?.is_live === false )}) );
+      }
+      else if(status === "live" && monitorState === 2){
+        datatablaScript( dateFilterData?.filter((post, id) => {return ( post?.is_live === true )}) );
       }
     }
-    else if(type === "filterByOptions"){
-      // 
-      let dataFilter = [];
-      if(amountEqual !== 0 || amountGreat !== 0 || amountLess !== 0){
-        // 
-        if( amountGreat != 0 && amountLess !=0){
-          dataFilter = transaction.filter((post, id) => {
-            return ( (post?.amount <= amountLess && post?.amount >= amountGreat) && ( post?.reference_id?.toLowerCase().includes(referanceId.toLowerCase()) && post?.id?.toLowerCase().includes(transactionId.toLowerCase()) ) )
-          });
-        } 
-        else if( amountGreat != 0 ){
-          dataFilter = transaction.filter((post, id) => {
-            return ( ((post?.amount >= amountGreat) || ( post?.reference_id?.toLowerCase().includes(referanceId.toLowerCase()) || post?.id?.toLowerCase().includes(transactionId.toLowerCase())) 
-            && 
-            ( post?.reference_id?.toLowerCase().includes(referanceId.toLowerCase()) && post?.id?.toLowerCase().includes(transactionId.toLowerCase()) ) ))
-          });
-        }
-        else if( amountLess != 0 ){
-          dataFilter = transaction.filter((post, id) => {
-            return ( ((post?.amount <= amountLess) || ( post?.reference_id?.toLowerCase().includes(referanceId.toLowerCase()) || post?.id?.toLowerCase().includes(transactionId.toLowerCase()) ) ) 
-            && (post?.reference_id?.toLowerCase().includes(referanceId.toLowerCase()) && post?.id?.toLowerCase().includes(transactionId.toLowerCase())) )
-          });
-        }
-        else if( amountEqual != 0 ){
-          dataFilter = transaction.filter((post, id) => {
-            return ( ((post?.amount === amountEqual) || ( post?.reference_id?.toLowerCase().includes(referanceId.toLowerCase()) || post?.id?.toLowerCase().includes(transactionId.toLowerCase()) )) && ( post?.reference_id?.toLowerCase().includes(referanceId.toLowerCase()) && post?.id?.toLowerCase().includes(transactionId.toLowerCase()) ) )
-          });
-        }
-      }
-      else{
-        console.log("hhhh")
-        dataFilter = transaction.filter((post, id) => {return ( post?.reference_id?.toLowerCase().includes(referanceId.toLowerCase()) && post?.id?.toLowerCase().includes(transactionId.toLowerCase()) )});
-      }
-      datatablaScript( dataFilter );
-      // 98ca3328-2e84-4b52-8942-e04ac1b2df71
-    }
+    
   }
   function resetFilter(e){
     e.preventDefault()
@@ -454,8 +407,8 @@ const Transaction = (transactionDetails) => {
     setAmountGreat(0)
     setAmountLess(0)
     setReferanceId("")
-    setTransactionId("")
-    datatablaScript(transaction)
+    setapikeyInfoId("")
+    datatablaScript(apikeyInfo)
   }
   function convertArrayOfObjectsToCSV(array) {
     let result;
@@ -506,8 +459,6 @@ const Transaction = (transactionDetails) => {
     /* generate XLSX file and send to client */
     XLSX.writeFile(wb, "WPexport.xlsx");
   };
-
-
   function trackActivity() {
     // e.preventDefault();
     // getSessionTimeout();
@@ -518,6 +469,114 @@ const Transaction = (transactionDetails) => {
     }
   }
 
+
+  
+  function generateApikey(e) {
+    e.preventDefault();
+    let keyType = false;
+    if(apikeyInfoStatusInModal === "live"){
+      keyType = true;
+    }
+
+    let data = JSON.stringify({
+      "description": description,
+      "is_live": keyType
+    });
+
+    let config = {
+      method: 'post',
+      url: process.env.REACT_APP_BASE_API + "/account/apikey/generate/",
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + currentUser?.access
+      },
+      data: data
+    };
+    axios(config).then(response => {
+      console.log(response.status);
+      if (response?.data?.status === true || response?.data?.statu === true) { 
+        // console.log("api key", tableData)
+        // let arryData = [];
+        // apikeyInfo = arryData;
+        // console.log("api key", infoData)
+        let textStr = "The API Key below will be shown only once.<p>Key Prefix: " + response?.data?.key_prefix + "</p>Key Type: " + apikeyInfoStatusInModal + "<p>Key Secret: <h6>" + response?.data?.key + "</h6></p>";
+
+        Swal.fire({
+          title: 'API key Generated',
+          html: textStr.toString(),
+          icon: 'success',
+          allowOutsideClick: false,
+          // allowEscapeKey: false,
+          showCancelButton: false,
+          confirmButtonColor: '#FF7643',
+          // cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, i have copied and saved the API Key!'
+        }).then((result) => {
+          // if (result.isConfirmed) {
+            // 
+          setModal1(false);
+          window.location.reload()
+          // }
+        });
+        // setTimeout(() => {
+        //   let infoData = apikeyData();
+        //   let infoArray = [];
+        //   infoData?.apikey?.then(value => { 
+        //     infoArray = value;
+        //     datatablaScript(value);
+        //     apikeyDetails = value;
+        //     apikeyInfo = value
+
+        //   }); 
+        //   }, 1000);
+      }
+      else {
+        Swal.fire({
+          title: 'API key Generation Failed!',
+          // text: "Try again",
+          icon: 'warning',
+          showCancelButton: true,
+          showConfirmButton: false,
+          cancelButtonColor: '#d33',
+        }).then((result) => {
+          // 
+        })
+      }
+
+    }).catch(function (error) {
+      if(error){
+        Swal.fire({
+          title: 'API key Generation Failed!',
+          text: "Try again!",
+          icon: 'warning',
+          showCancelButton: true,
+          showConfirmButton: false,
+          cancelButtonColor: '#d33',
+        }).then((result) => {
+          // 
+        })
+      }
+
+      if (error.response) {
+        // console.log("==>");
+        /*
+          * The request was made and the server responded with a
+          * status code that falls out of the range of 2xx
+          */
+
+      } else if (error.request) {
+        /*
+          * The request was made but no response was received, `error.request`
+          * is an instance of XMLHttpRequest in the browser and an instance
+          * of http.ClientRequest in Node.js
+          */
+
+      } else {
+        // Something happened in setting up the request and triggered an Error
+      }
+    }
+    );
+  }
   return (
 
     <div>
@@ -535,7 +594,7 @@ const Transaction = (transactionDetails) => {
           <CCardBody>
             <p>Search by:</p>
             <div> 
-              <p className='des-filter-inputs'>Transaction Reference</p>
+              <p className='des-filter-inputs'>apikeyInfo Reference</p>
               <Box
                 // component="form"
                 // sx={{
@@ -578,8 +637,8 @@ const Transaction = (transactionDetails) => {
                 >
                 <TextField 
                   id='filters-d'
-                  value={transactionId}
-                  onChange={(e) => setTransactionId(e.target.value)} 
+                  value={apikeyInfoId}
+                  onChange={(e) => setapikeyInfoId(e.target.value)} 
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="start" >
@@ -702,11 +761,11 @@ const Transaction = (transactionDetails) => {
               <TextField 
                 id="dropbtn" 
                 className='d-filters'
-                onClick={(e) => toggleFilter(e, "filter")} 
+                onClick={(e) => setModal1(true)} 
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start" >
-                      <CIcon icon={cilFilter} className="me-2" /> Filter
+                      <CIcon icon={cilPlus} className="me-2" /> Add key
                     </InputAdornment>
                   ),
                 }}
@@ -721,17 +780,17 @@ const Transaction = (transactionDetails) => {
           </div>
         </Col>
         <Col xs="12" sm="12" md={3} lg={3} >
-          {/* transaction types */}
+          {/* apikeyInfo types */}
           <Box sx={{ minWidth: 160 }}>
             <FormControl fullWidth style={{marginTop: "0px"}}>
-              <Label for="transactionStatus" className="label-dc"> </Label>
+              <Label for="apikeyInfoStatus" className="label-dc"> </Label>
               <Select
                 placeholder={"Select status"}
                 options={optionsStatus}
-                id="transactionStatus"
+                id="apikeyInfoStatus"
                 className='other-input-select d-filters'
                 // components={{ Option: paymentOption }}
-                onChange={(e) => handleChangeTransactionStatus(e.value)}
+                onChange={(e) => handleChangeapikeyInfoStatus(e.value)}
               />
           
             </FormControl>
@@ -792,11 +851,11 @@ const Transaction = (transactionDetails) => {
           {/* export */}
           <Box sx={{ minWidth: 120 }}>
             <FormControl fullWidth>
-              <Label for="transactionExport" className="label-dc"> </Label>
+              <Label for="apikeyInfoExport" className="label-dc"> </Label>
               <Select
                 placeholder={"Select export"}
                 options={optionsExport}
-                id="transactionExport"
+                id="apikeyInfoExport"
                 className='other-input-select d-filters'
                 // components={{ Option: paymentOption }}
                 onChange={(e) => handleChangeExport(e.value)}
@@ -816,12 +875,11 @@ const Transaction = (transactionDetails) => {
         <thead>
           <tr>
             <th>ID</th>
-            <th>Reference</th>
-            <th>Note</th>
+            <th>Prefix</th>
+            <th>Description</th>
             <th>Status</th>
-            <th>Transaction Date</th>
-            <th>Amount</th>
-            <th>Action</th>
+            <th>Date</th>
+            {/* <th>Action</th> */}
           </tr>
         </thead>
 
@@ -830,12 +888,12 @@ const Transaction = (transactionDetails) => {
             tableData?.map((post, id) =>
               <tr key={id}>
                 <td>{id + 1}</td>
-                <td>{post.reference_id}</td>
-                <td>{post.note}</td>
-                <td><CBadge color={post.status_code === "SUCCESSFUL" ? "success" : (post.status_code === "PENDING" ? "primary" : (post.status_code === "REVERSED" ? "danger" : "secondary") )}>{post.status_code}</CBadge> </td>
-                <td>{moment(post.created_at).format('LLLL')}</td>
-                <td>{post.amount}</td>
-                <td onClick={() => { setModal2(true); setViewData(post) }}><CBadge className='bg-text-wp'>View</CBadge></td>
+                <td>{post?.prefix}</td>
+                <td>{post?.name}</td>
+                <td><CBadge color={post?.is_live === true ? "success" : "secondary" }> {post?.is_live === true ? "LIVE" : "TEST"} </CBadge> </td>
+                <td>{moment(post?.created).format('LLLL')}</td>
+                {/* <td>{post?.amount}</td> */}
+                {/* <td onClick={() => { setModal2(true); setViewData(post) }}><CBadge className='bg-text-wp'>View</CBadge></td> */}
               </tr>
             )}
             
@@ -848,25 +906,47 @@ const Transaction = (transactionDetails) => {
 
       {/* modals */}
       {/* modal for filter date range */}
-      <CModal visible={modal1} alignment="center" scrollable fullscreen='xl' onClose={() => setModal1(false)}>
+      <CModal visible={modal1} alignment="center" onClose={() => setModal1(false)}>
+        <CModalHeader> Generate New API key </CModalHeader>
         <CModalBody> 
-        {/* <DateRangePicker
-            open={openDateRange}
-            toggle={toggle}
-            onChange={(range) => setDateRange(range || {})}
-            moveRangeOnFirstSelection={false}
-            ranges={dateRange}
-            months={2}
-            showClearDate={true}
-          /> */}
-          <DateRangePicker
-            // open={openDateRange}
-            // toggle={toggle}
-            // onChange={(range) => setDateRange(range || {})}
-          />
+          {/*  */}
+          <Row>
+          <Col xs="12" sm="12" md={5} lg={5} className="mt-0" > 
+            <Label for="apikeyInfoStatus" className="label-dc"> Description </Label>
+            <TextField 
+              // id='filters-d'
+              value={description}
+              onChange={(e) => setDescription(e.target.value)} 
+              // label="Filter"
+              placeholder="Eg. my api key for shopti"
+              multiline
+              />
+          </Col>
+          <Col xs="12" sm="12" md={5} lg={5} className="mt-1" >
+            <Label for="apikeyInfoStatus" className="label-dc"> Key type </Label>
+            <Select
+              placeholder={"Select status"}
+              options={optionsStatusInModal}
+              id="apikeyInfoStatus"
+              className='other-input-select'
+              // components={{ Option: paymentOption }}
+              onChange={(e) => handleChangeapikeyInfoStatusInModal(e.value)}
+            />
+          </Col>
+
+          </Row>
+
+              
+        
+          
         </CModalBody>
         <CModalFooter>
-          <CButton color="" className='text-white bg-text-wp' onClick={(e) => getFilterData(e)}> Apply</CButton>
+          <CButton color="secondary" className='text-white' onClick={(e) => setModal1(false)}> 
+          Cancel
+          </CButton>
+          <CButton color="" className='text-white bg-text-wp' onClick={(e) => generateApikey(e)}> 
+          Create
+          </CButton>
         </CModalFooter>
       </CModal>
 
@@ -875,13 +955,13 @@ const Transaction = (transactionDetails) => {
         <CModalHeader>
           <CModalTitle>  </CModalTitle>
         </CModalHeader>
-        <CModalBody className='contentForTransactionPrint'>
+        <CModalBody className='contentForapikeyInfoPrint'>
           <p className="success rounded" style={{ textAlign: "center" }} >
-            <h2> Transaction Details </h2>
+            <h2> apikeyInfo Details </h2>
             <CIcon icon={cilCheckCircle} className="bg-text-wp icon-wp" width="15%" />
           </p>
 
-          {/* view only data for transaction */}
+          {/* view only data for apikeyInfo */}
           <ViewDetails viewData={viewData} />
         </CModalBody>
         <CModalFooter>
@@ -898,4 +978,4 @@ const Transaction = (transactionDetails) => {
   )
 }
 
-export default Transaction;
+export default ApikeyDataTables;

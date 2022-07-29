@@ -54,6 +54,10 @@ const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 // compliance
 const MyAccount = React.lazy(() => import('./views/pages/Compliance/MyAccount'))
 const Transaction = React.lazy(() => import('./views/pages/Transaction/Transaction'))
+const Apikey = React.lazy(() => import('./views/pages/Apikey/Apikey'))
+const Refund = React.lazy(() => import('./views/pages/Refund/Refund'))
+const Payout = React.lazy(() => import('./views/pages/Payout/Payout'))
+// const Checkout = React.lazy(() => import('./views/pages/Checkout/Checkout'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
@@ -64,7 +68,7 @@ const routes = [
   { path: '/base', name: 'Base', element: Cards, exact: true },
   { path: '/base/accordion', name: 'Accordion', element: Accordion },
   { path: '/base/breadcrumbs', name: 'Breadcrumbs', element: Breadcrumbs },
-  { path: '/base/cards', name: 'Cards', element: Cards },
+  { path: '/base/cards', name: 'Cards', element: Cards }, 
   { path: '/base/carousels', name: 'Carousel', element: Carousels },
   { path: '/base/collapses', name: 'Collapse', element: Collapses },
   { path: '/base/list-groups', name: 'List Groups', element: ListGroups },
@@ -102,7 +106,11 @@ const routes = [
   { path: '/widgets', name: 'Widgets', element: Widgets },
   // below main pages views 
   { path: '/compliance', name: 'Compliance', element: MyAccount },
+  { path: '/payment/refunds', name: 'Refund', element: Refund },
   { path: '/payment/transaction', name: 'Transaction', element: Transaction },
+  { path: '/payment/payouts', name: 'Payout', element: Payout },
+  { path: '/api-keys', name: 'Api Key', element: Apikey },
+  // { path: '/checkout/:id', name: '', element: Checkout },
 
 ]
 

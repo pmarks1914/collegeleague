@@ -24,7 +24,7 @@ export default function ViewDetails(post) {
             <Grid item xs={2} sm={4} md={4} >
                 <Item style={{color: "#000"}}>
                     <div className="viewDescription">Reference ID </div>
-                    {post?.viewData?.id}
+                    {post?.viewData?.reference_id}
                 </Item>
             </Grid>
             <Grid item xs={2} sm={4} md={4} >
@@ -55,7 +55,7 @@ export default function ViewDetails(post) {
                 <Item style={{color: "#000"}} className="viewDescription"><div className="viewDescription"> Status Message </div> {post?.viewData?.status_message}</Item>
             </Grid>
             <Grid item xs={2} sm={4} md={4} >
-                <Item style={{color: "#000"}} className="viewDescription"> <div className="viewDescription"> Status </div> <CBadge color= {post?.viewData?.status_code === "SUCCESSFUL" ? "success" : (post?.viewData?.status_code === "PENDING" ? "primary" : "secondary")}>{post?.viewData?.status_code}</CBadge> </Item>
+                <Item style={{color: "#000"}} className="viewDescription"> <div className="viewDescription"> Status </div> <CBadge color= {post?.viewData?.status_code === "SUCCESSFUL" ? "success" : (post?.viewData?.status_code === "PENDING" ? "primary" : (post.viewData.status_code === "REVERSED" ? "danger" : "secondary") )}>{post?.viewData?.status_code}</CBadge> </Item>
             </Grid>
             
             <Grid item xs={2} sm={4} md={4} >

@@ -21,16 +21,28 @@ import {
   cilUser,
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-
+import $ from 'jquery'
 import avatar8 from './../../assets/images/avatars/8.jpg'
 
 const AppHeaderDropdown = (userData) => {
   function logoutUser(){
-    window.location.href="/login"
+    window.location.href="/login";
+    localStorage.removeItem("userDataStore");
+ 
   }
+
+// $(document).ready(function () {
+//     window.addEventListener('storage', function(event){
+
+//       console.log("storage ")
+//     });
+    
+// });
+
+
   return (
-    <CDropdown variant="nav-item">
-      <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
+    <CDropdown variant="nav">
+      <CDropdownToggle placement="bottom-end" className="p-0 profile-img" caret={false}>
         <CAvatar src={(process.env.REACT_APP_MAIN_BASE + userData?.userData?.photo150) || avatar8} size="md" alt="user image"/>
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
@@ -73,7 +85,7 @@ const AppHeaderDropdown = (userData) => {
           Settings
         </CDropdownItem> */}
         {
-          console.log("userData ", process.env.REACT_APP_MAIN_BASE + userData?.userData?.photo50, userData?.userData)
+          // console.log("userData ", process.env.REACT_APP_MAIN_BASE + userData?.userData?.photo50, userData?.userData)
         }
         <CDropdownItem>
           <CIcon icon={cilCreditCard} className="me-2" />

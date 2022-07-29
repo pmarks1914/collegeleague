@@ -60,7 +60,7 @@ import {
   CNavItem,
   CTooltip,
 } from '@coreui/react'
-import { getTransactionData } from '../Data/PageData';
+import { refundData } from '../Data/PageData';
 import ViewDetails from '../../datatable/ViewDetails';
 import CIcon from '@coreui/icons-react';
 import {
@@ -77,45 +77,12 @@ import {
 import {Helmet} from "react-helmet";
 import Select from 'react-select';
 import * as XLSX from 'xlsx';
-import { getSessionTimeout } from '../../../Utils/Utils'; 
-import Swal from 'sweetalert2';
 
-// test data
-let posts = [
-  {
-    "id": "33bc65a6-70f5-470a-812a-61944b6412f3",
-    "amount": "0.01",
-    "note": "wingipay to MTN ussd GhS 0.01 from Eli",
-    "service": 2,
-    "status_code": "SUCCESSFUL",
-    "status_message": "Transaction completed successfully",
-    "created_at": "2022-06-01T14:38:14.995258Z"
-  },
-  {
-    "id": "33bc65a6-70f5-470a-812a-61944b6412f3",
-    "amount": "0.01",
-    "note": "wingipay to MTN ussd GhS 0.01 from Eli",
-    "service": 2,
-    "status_code": "PENDING",
-    "status_message": "Transaction completed successfully",
-    "created_at": "2022-06-01T14:38:14.995258Z"
-  },
-  {
-    "id": "33bc65a6-70f5-470a-812a-61944b6412f3",
-    "amount": "0.01",
-    "note": "wingipay to MTN ussd GhS 0.01 from Eli",
-    "service": 2,
-    "status_code": "FAILED",
-    "status_message": "Transaction completed successfully",
-    "created_at": "2022-06-01T14:38:14.995258Z"
-  }
-]
-
-let transactionData = getTransactionData();
+let transactionData = refundData();
 let transaction = []
-transactionData?.transaction?.then(value => { (transaction = value) });
+transactionData?.refund?.then(value => { (transaction = value) });
 
-const Transaction = (transactionDetails) => {
+const RefundDataTables = (transactionDetails) => {
   const [loader, setLoader] = useState('<div class="spinner-border dashboard-loader" style="color: #e0922f;"></div>')
   const [tableData, setTableData] = useState([]);
   const [noData, setNoData] = useState("")
@@ -150,8 +117,8 @@ const Transaction = (transactionDetails) => {
   const toggle = () => setOpenDateRange(!openDateRange);
 
   useEffect(() => {
-    // reset user
-    if(dateRange?.length > 0 && monitorState === 1){
+
+    if(dateRange.length > 0 && monitorState === 1){
       setMonitorState(2)
       performFilter("filterByDate", "none")
       setTransactionStatus("")
@@ -170,11 +137,11 @@ const Transaction = (transactionDetails) => {
       // setMonitorState(3)
     }
     else{
-
-      setLoader('<a></a>')
-      setTimeout(()=>{
-        setNoData("No data")
-      }, 2000)
+        datatablaScript([])
+        setLoader('<a></a>')
+        // setTimeout(()=>{
+        //     setNoData("dd")
+        // }, 200)
     }
 
     // if(transactionStatus && monitorState === 2){
@@ -184,7 +151,7 @@ const Transaction = (transactionDetails) => {
     
     // console.log("props ", dateRange, transaction, transactionStatus, monitorState)
 
-  }, [ dateRange, noData])
+  }, [dateRange, transaction])
 
   // perform filter 
   function datatablaScript(tdata) {
@@ -378,7 +345,8 @@ const Transaction = (transactionDetails) => {
     {value: "All Transaction", label: "All Transaction" },
     {value: "Successful", label: "Successful" },
     {value: "Pending", label: "Pending" },
-    {value: "Failed", label: "Failed" }
+    {value: "Failed", label: "Failed" },
+    {value: "Reversed", label: "Reversed" }
   ];
   const optionsExport = [
     // {value: "", label: "Se", icon: "", isDisabled: true },
@@ -399,14 +367,14 @@ const Transaction = (transactionDetails) => {
     }
     else if(type === "filterByStatus"){
       // 
-      console.log("by status ", status, monitorState )
+      // console.log("by status ", status )
       if(status === "All Transaction" && monitorState === 1){
         datatablaScript(transaction);
       }
-      else if((status === "Successful" || status === "Pending" || status === "Failed") && monitorState === 1){
+      else if((status === "Reversed" || status === "Successful" || status === "Pending" || status === "Failed") && monitorState === 1){
         datatablaScript( transaction.filter((post, id) => {return ( post?.status_code === status.toUpperCase() )}) );
       }
-      else if((status === "Successful" || status === "Pending" || status === "Failed") && monitorState === 2){
+      else if((status === "Reversed" || status === "Successful" || status === "Pending" || status === "Failed") && monitorState === 2){
         datatablaScript( dateFilterData?.filter((post, id) => {return ( post?.status_code === status.toUpperCase() )}) );
         
       }
@@ -441,7 +409,7 @@ const Transaction = (transactionDetails) => {
         }
       }
       else{
-        console.log("hhhh")
+        // console.log("hhhh")
         dataFilter = transaction.filter((post, id) => {return ( post?.reference_id?.toLowerCase().includes(referanceId.toLowerCase()) && post?.id?.toLowerCase().includes(transactionId.toLowerCase()) )});
       }
       datatablaScript( dataFilter );
@@ -506,8 +474,6 @@ const Transaction = (transactionDetails) => {
     /* generate XLSX file and send to client */
     XLSX.writeFile(wb, "WPexport.xlsx");
   };
-
-
   function trackActivity() {
     // e.preventDefault();
     // getSessionTimeout();
@@ -518,6 +484,10 @@ const Transaction = (transactionDetails) => {
     }
   }
 
+//   window.onclick = function (event) {
+//     event.preventDefault()
+//     trackActivity()
+//   }
   return (
 
     <div>
@@ -898,4 +868,4 @@ const Transaction = (transactionDetails) => {
   )
 }
 
-export default Transaction;
+export default RefundDataTables;

@@ -60,7 +60,7 @@ import {
   CNavItem,
   CTooltip,
 } from '@coreui/react'
-import { getTransactionData } from '../Data/PageData';
+import { payoutData } from '../Data/PageData';
 import ViewDetails from '../../datatable/ViewDetails';
 import CIcon from '@coreui/icons-react';
 import {
@@ -77,45 +77,12 @@ import {
 import {Helmet} from "react-helmet";
 import Select from 'react-select';
 import * as XLSX from 'xlsx';
-import { getSessionTimeout } from '../../../Utils/Utils'; 
-import Swal from 'sweetalert2';
 
-// test data
-let posts = [
-  {
-    "id": "33bc65a6-70f5-470a-812a-61944b6412f3",
-    "amount": "0.01",
-    "note": "wingipay to MTN ussd GhS 0.01 from Eli",
-    "service": 2,
-    "status_code": "SUCCESSFUL",
-    "status_message": "Transaction completed successfully",
-    "created_at": "2022-06-01T14:38:14.995258Z"
-  },
-  {
-    "id": "33bc65a6-70f5-470a-812a-61944b6412f3",
-    "amount": "0.01",
-    "note": "wingipay to MTN ussd GhS 0.01 from Eli",
-    "service": 2,
-    "status_code": "PENDING",
-    "status_message": "Transaction completed successfully",
-    "created_at": "2022-06-01T14:38:14.995258Z"
-  },
-  {
-    "id": "33bc65a6-70f5-470a-812a-61944b6412f3",
-    "amount": "0.01",
-    "note": "wingipay to MTN ussd GhS 0.01 from Eli",
-    "service": 2,
-    "status_code": "FAILED",
-    "status_message": "Transaction completed successfully",
-    "created_at": "2022-06-01T14:38:14.995258Z"
-  }
-]
-
-let transactionData = getTransactionData();
+let transactionData = payoutData();
 let transaction = []
 transactionData?.transaction?.then(value => { (transaction = value) });
 
-const Transaction = (transactionDetails) => {
+const PayoutDataTables = (transactionDetails) => {
   const [loader, setLoader] = useState('<div class="spinner-border dashboard-loader" style="color: #e0922f;"></div>')
   const [tableData, setTableData] = useState([]);
   const [noData, setNoData] = useState("")
@@ -150,8 +117,8 @@ const Transaction = (transactionDetails) => {
   const toggle = () => setOpenDateRange(!openDateRange);
 
   useEffect(() => {
-    // reset user
-    if(dateRange?.length > 0 && monitorState === 1){
+
+    if(dateRange.length > 0 && monitorState === 1){
       setMonitorState(2)
       performFilter("filterByDate", "none")
       setTransactionStatus("")
@@ -170,11 +137,9 @@ const Transaction = (transactionDetails) => {
       // setMonitorState(3)
     }
     else{
-
-      setLoader('<a></a>')
-      setTimeout(()=>{
-        setNoData("No data")
-      }, 2000)
+        datatablaScript([])
+        setLoader('<a></a>')
+    
     }
 
     // if(transactionStatus && monitorState === 2){
@@ -184,7 +149,7 @@ const Transaction = (transactionDetails) => {
     
     // console.log("props ", dateRange, transaction, transactionStatus, monitorState)
 
-  }, [ dateRange, noData])
+  }, [dateRange, transaction])
 
   // perform filter 
   function datatablaScript(tdata) {
@@ -197,9 +162,6 @@ const Transaction = (transactionDetails) => {
       $('#myTable').DataTable(
         {
           // data: transaction,
-          columnDefs: [
-            { "width": "10%", "targets": 2 }
-          ],
           processing: true,
           deferLoading: true,
           keys: true,
@@ -340,8 +302,7 @@ const Transaction = (transactionDetails) => {
   // Close the dropdown if the user clicks outside of it
   window.onclick = function (event) {
     event.preventDefault()
-    trackActivity();
-    console.log("dropdown ==", dropValue, "e", event.target.matches('.dateRange'), "openDateRange > ", openDateRange)
+    // console.log("dropdown ==", dropValue, "e", event.target.matches('.dateRange'), "openDateRange > ", openDateRange)
     setDropValue(0);
     if (!event.target.matches('.dropbtn') && dropValue === 0) {
       let dropdowns = document.getElementsByClassName("dropdown-content");
@@ -399,7 +360,7 @@ const Transaction = (transactionDetails) => {
     }
     else if(type === "filterByStatus"){
       // 
-      console.log("by status ", status, monitorState )
+      // console.log("by status ", status )
       if(status === "All Transaction" && monitorState === 1){
         datatablaScript(transaction);
       }
@@ -506,17 +467,13 @@ const Transaction = (transactionDetails) => {
     /* generate XLSX file and send to client */
     XLSX.writeFile(wb, "WPexport.xlsx");
   };
-
-
   function trackActivity() {
     // e.preventDefault();
     // getSessionTimeout();
     const currentUser_new = JSON.parse(localStorage.getItem("userDataStore"));    
-    if(currentUser_new){
-      currentUser_new["timeLogout"] = new Date().getTime() + currentUser_new?.counter;
-      localStorage.setItem('userDataStore', JSON.stringify(currentUser_new))
-    }
-  }
+    currentUser_new["timeLogout"] = new Date().getTime() + currentUser_new?.counter;
+    localStorage.setItem('userDataStore', JSON.stringify(currentUser_new));
+  };
 
   return (
 
@@ -758,7 +715,7 @@ const Transaction = (transactionDetails) => {
                 placeholder={"Select date range"} 
                 size="lg"
                 style={{ width: 260, display: 'block', border: "10px solid #080808 !important"}} 
-                className="d-filters"
+                className="d-filters datePicker-0"
                 // open={openDateRange}
                 // toggle={toggle}
                 onChange={(range) => setDateRange(range || {})}
@@ -898,4 +855,4 @@ const Transaction = (transactionDetails) => {
   )
 }
 
-export default Transaction;
+export default PayoutDataTables;
