@@ -731,7 +731,7 @@ const RefundDataTables = (transactionDetails) => {
                 className="d-filters"
                 // open={openDateRange}
                 // toggle={toggle}
-                onChange={(range) => setDateRange(range)}
+                onChange={(range) => setDateRange(range || {})}
                 // ranges={dateRange}
                 // months={2}
                 id="datePicker-0"
@@ -823,7 +823,7 @@ const RefundDataTables = (transactionDetails) => {
         {/* <DateRangePicker
             open={openDateRange}
             toggle={toggle}
-            onChange={(range) => setDateRange(range)}
+            onChange={(range) => setDateRange(range || {})}
             moveRangeOnFirstSelection={false}
             ranges={dateRange}
             months={2}
@@ -832,7 +832,7 @@ const RefundDataTables = (transactionDetails) => {
           <DateRangePicker
             // open={openDateRange}
             // toggle={toggle}
-            // onChange={(range) => setDateRange(range)}
+            // onChange={(range) => setDateRange(range || {})}
           />
         </CModalBody>
         <CModalFooter>

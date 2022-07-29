@@ -41,8 +41,8 @@ const AppHeaderDropdown = (userData) => {
 
 
   return (
-    <CDropdown variant="nav-item">
-      <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
+    <CDropdown variant="nav">
+      <CDropdownToggle placement="bottom-end" className="p-0 profile-img" caret={false}>
         <CAvatar src={(process.env.REACT_APP_MAIN_BASE + userData?.userData?.photo150) || avatar8} size="md" alt="user image"/>
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">

@@ -151,7 +151,7 @@ const Transaction = (transactionDetails) => {
 
   useEffect(() => {
     // reset user
-    if(dateRange.length > 0 && monitorState === 1){
+    if(dateRange?.length > 0 && monitorState === 1){
       setMonitorState(2)
       performFilter("filterByDate", "none")
       setTransactionStatus("")
@@ -761,7 +761,7 @@ const Transaction = (transactionDetails) => {
                 className="d-filters"
                 // open={openDateRange}
                 // toggle={toggle}
-                onChange={(range) => setDateRange(range)}
+                onChange={(range) => setDateRange(range || {})}
                 // ranges={dateRange}
                 // months={2}
                 id="datePicker-0"
@@ -853,7 +853,7 @@ const Transaction = (transactionDetails) => {
         {/* <DateRangePicker
             open={openDateRange}
             toggle={toggle}
-            onChange={(range) => setDateRange(range)}
+            onChange={(range) => setDateRange(range || {})}
             moveRangeOnFirstSelection={false}
             ranges={dateRange}
             months={2}
@@ -862,7 +862,7 @@ const Transaction = (transactionDetails) => {
           <DateRangePicker
             // open={openDateRange}
             // toggle={toggle}
-            // onChange={(range) => setDateRange(range)}
+            // onChange={(range) => setDateRange(range || {})}
           />
         </CModalBody>
         <CModalFooter>

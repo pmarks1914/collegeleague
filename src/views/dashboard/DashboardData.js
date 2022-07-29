@@ -55,7 +55,7 @@ export function getTransactionData(){
 
     let config_transaction_summary_client = {
         method: 'get',
-        url: process.env.REACT_APP_BASE_API + "/transactions/stats/",
+        url: process.env.REACT_APP_BASE_API + "/transactions/collections/stats/",
         headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + userData?.access
@@ -64,7 +64,7 @@ export function getTransactionData(){
     };
     function transactionSummary(){
         return axios(config_transaction_summary_client).then(response => {
-            // console.log("data ==", response?.data);
+            console.log("data ==", response?.data);
             if (response.status === 200) {
                 // 
                 return response.data;

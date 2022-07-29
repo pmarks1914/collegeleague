@@ -44,6 +44,8 @@ import {
   cilUserFemale,
 } from '@coreui/icons'
 
+import moment from 'moment';
+
 import avatar1 from 'src/assets/images/avatars/1.jpg'
 import avatar2 from 'src/assets/images/avatars/2.jpg'
 import avatar3 from 'src/assets/images/avatars/3.jpg'
@@ -335,133 +337,53 @@ const Dashboard = () => {
         </CCol>
 
         <CCol xs={12} sm={12} md={3} xl={3} style={{float: "right" }}>
-          <CCard className="mb-1">
+          <CCard className="mb-4">
               <CCardHeader> Quick Overview </CCardHeader>
           </CCard>
           <div style={{ height: "69em", "overflowY": "auto", whiteSpace: "nowrap" }}>
             {/*  */}
-            <CCol sm={12}>
-              <CCard className="mb-2">
-                <CCardBody>
-                  <div className="border-start border-start-4 border-start-primary py-1 px-3">
-                    <div className="text-medium-emphasis small">BY DAY</div>
-                    <div className="fs-5 fw-semibold">
-                      {summaryDetails?.currency} {summaryDetails?.day_amount || 0.00}
+            
+
+
+
+            <CCard className="mb-4">
+                  <CCardBody>
+                    <div className="border-start border-start-4 border-start-primary py-1 px-3">
+                      <div className="text-medium-emphasis small"> {"TODAY'S "}COLLECTION</div>
+                      <div className="fs-5 fw-semibold">
+                        {summaryDetails?.currency} {summaryDetails?.todays_collections_amount || 0.00}
+                      </div>
+                      <div className="text-medium-emphasis small">COUNT {summaryDetails?.todays_collections_count || 0}</div>
                     </div>
-                    <div className="text-medium-emphasis small">COUNT {summaryDetails?.day_count || 0}</div>
-                  </div>
-                </CCardBody>
-              </CCard>
-              
-              <CCard className="mb-2">
-                <CCardBody>
-                  <div className="border-start border-start-4 border-start-primary py-1 px-3">
-                    <div className="text-medium-emphasis small">WINGIPAY TO WINGIPAY</div>
-                    <div className="fs-5 fw-semibold">
-                      {summaryDetails?.currency} {summaryDetails?.wingipay_amount || 0.00}
-                    </div>
-                    <div className="text-medium-emphasis small">COUNT {summaryDetails?.wingipay || 0}</div>
-                  </div>
-                </CCardBody>
+                  </CCardBody>
               </CCard>
 
-              <CCard className="mb-2">
-                <CCardBody>
-                  <div className="border-start border-start-4 border-start-primary py-1 px-3">
-                    <div className="text-medium-emphasis small">WINGIPAY TO AIRTELTIGO</div>
-                    <div className="fs-5 fw-semibold">
-                      {summaryDetails?.currency} {summaryDetails?.airteltigo_debit_total_amount || 0.00}
+              <CCard className="mb-4">
+                  <CCardBody>
+                    <div className="border-start border-start-4 border-start-danger py-1 px-3">
+                      <div className="text-medium-emphasis small">LAST PAYOUT</div>
+                      <div className="fs-5 fw-semibold">
+                        {summaryDetails?.currency} {summaryDetails?.last_payout_amount || 0.00}
+                      </div>
+                      <div className="text-medium-emphasis small">COUNT {summaryDetails?.last_payout_count || 0}</div>
+                      <div className="text-medium-emphasis small"> {moment(summaryDetails?.last_payout_date || new Date()).format("MMM Do YYYY") }</div>
+                      
                     </div>
-                    <div className="text-medium-emphasis small">COUNT {summaryDetails?.airteltigo_debit || 0}
+                  </CCardBody>
+              </CCard>
+              <CCard className="mb-4">
+                  <CCardBody>
+                    <div className="border-start border-start-4 border-start-warning py-1 px-3">
+                      <div className="text-medium-emphasis small">NEXT PAYOUT</div>
+                      <div className="fs-5 fw-semibold">
+                        {summaryDetails?.currency} {summaryDetails?.next_payout_amount || 0.00}
+                      </div>
+                      <div className="text-medium-emphasis small">COUNT {summaryDetails?.next_payout_count || 0}</div>
+                      <div className="text-medium-emphasis small"> {moment(summaryDetails?.next_payout_date || new Date()).format("MMM Do YYYY") }</div>
                     </div>
-                  </div>
-                </CCardBody>
+                  </CCardBody>
               </CCard>
 
-              <CCard className="mb-2">
-                <CCardBody>
-                  <div className="border-start border-start-4 border-start-warning py-1 px-3">
-                    <div className="text-medium-emphasis small"> WINGIPAY TO MTN </div>
-                    <div className="fs-5 fw-semibold">
-                      {summaryDetails?.currency} {summaryDetails?.mtn_debit_total_amount || 0.00}
-                    </div>
-                    <div className="text-medium-emphasis small">COUNT {summaryDetails?.mtn_debit || 0}</div>
-                  </div>
-                </CCardBody>
-              </CCard>
-
-              <CCard className="mb-2">
-                <CCardBody>
-                  <div className="border-start border-start-4 border-start-danger py-1 px-3">
-                    <div className="text-medium-emphasis small">VODAFONE TO WINGIPAY</div>
-                    <div className="fs-5 fw-semibold">
-                      {summaryDetails?.currency} {summaryDetails?.vodafone_debit_total_amount || 0.00}
-                    </div>
-                    <div className="text-medium-emphasis small">COUNT {summaryDetails?.vodofone_debit || 0}</div>
-                  </div>
-                </CCardBody>
-              </CCard>
-
-              <CCard className="mb-2">
-                <CCardBody>
-                  <div className="border-start border-start-4 border-start-primary py-1 px-3">
-                    <div className="text-medium-emphasis small"> AIRTELTIGO TO WINGIPAY</div>
-                    <div className="fs-5 fw-semibold">
-                      {summaryDetails?.currency} {summaryDetails?.airteltigo_credit_total_amount || 0.00}
-                    </div>
-                    <div className="text-medium-emphasis small">COUNT {summaryDetails?.airtel_credit || 0}</div>
-                  </div>
-                </CCardBody>
-              </CCard>
-
-              <CCard className="mb-2">
-                <CCardBody>
-                  <div className="border-start border-start-4 border-start-warning py-1 px-3">
-                    <div className="text-medium-emphasis small"> MTN TO WINGIPAY</div>
-                    <div className="fs-5 fw-semibold">
-                      {summaryDetails?.currency} {summaryDetails?.mtn_credit_total_amount || 0.00}
-                    </div>
-                    <div className="text-medium-emphasis small">COUNT {summaryDetails?.mtn_credit || 0}</div>
-                  </div>
-                </CCardBody>
-              </CCard>
-            </CCol>
-
-            <CCard className="mb-2">
-              <CCardBody>
-                <div className="border-start border-start-4 border-start-danger py-1 px-3">
-                  <div className="text-medium-emphasis small">VODAFONE TO WINGIPAY</div>
-                  <div className="fs-5 fw-semibold">
-                    {summaryDetails?.currency} {summaryDetails?.vodafone_credit_total_amount || 0.00}
-                  </div>
-                  <div className="text-medium-emphasis small">COUNT {summaryDetails?.vodofone_credit || 0}</div>
-                </div>
-              </CCardBody>
-            </CCard>
-
-            <CCard className="mb-2">
-              <CCardBody>
-                <div className="border-start border-start-4 border-start-danger py-1 px-3">
-                  <div className="text-medium-emphasis small">CASHOUT</div>
-                  <div className="fs-5 fw-semibold">
-                    {summaryDetails?.currency} {summaryDetails?.cashout_total_amount || 0.00}
-                  </div>
-                  {/* <div className="text-medium-emphasis small">COUNT {summaryDetails?.vodofone_credit}</div> */}
-                </div>
-              </CCardBody>
-            </CCard>
-
-            <CCard className="mb-2">
-              <CCardBody>
-                <div className="border-start border-start-4 border-start-danger py-1 px-3">
-                  <div className="text-medium-emphasis small">FAILED</div>
-                  <div className="fs-5 fw-semibold">
-                    {summaryDetails?.currency} {summaryDetails?.failed_amount || 0.00}
-                  </div>
-                  <div className="text-medium-emphasis small">COUNT {summaryDetails?.failed_count || 0}</div>
-                </div>
-              </CCardBody>
-            </CCard>
           </div>
 
           {/* <hr className="mt-0" /> */}

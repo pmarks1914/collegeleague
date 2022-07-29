@@ -37,7 +37,7 @@ const Login = () => {
     setLogin("")
     setLoader('<div class="spinner-border "style="color: #e0922f;"></div>`')
 
-    console.log("fff", process.env.REACT_APP_BASE_API, passwordVar, usernameVar)
+    // console.log("fff", process.env.REACT_APP_BASE_API, passwordVar, usernameVar)
 
     if (usernameVar === "") {
       // document.getElementById("usernameError").style.display = "block";

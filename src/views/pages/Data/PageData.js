@@ -114,7 +114,7 @@ export function apikeyData(){
     let data = '';
     let config_transaction = {
         method: 'get',
-        url: process.env.REACT_APP_BASE_API + "/transactions/refunds/",
+        url: process.env.REACT_APP_BASE_API + "/account/apikeys/",
         headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + userData?.access
