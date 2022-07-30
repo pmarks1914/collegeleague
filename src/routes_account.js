@@ -3,6 +3,7 @@ import React from 'react'
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
+const Compliance = React.lazy(() => import('./views/pages/compliance/Compliance'))
 
 // Base
 const Accordion = React.lazy(() => import('./views/base/accordion/Accordion'))
@@ -52,7 +53,7 @@ const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 
 // main pages components
 // compliance
-const MyAccount = React.lazy(() => import('./views/pages/Compliance/MyAccount'))
+const MyAccount = React.lazy(() => import('./views/pages/compliance/MyAccount'))
 const Transaction = React.lazy(() => import('./views/pages/Transaction/Transaction'))
 const Apikey = React.lazy(() => import('./views/pages/Apikey/Apikey'))
 const Refund = React.lazy(() => import('./views/pages/Refund/Refund'))
@@ -110,6 +111,8 @@ const routes = [
   { path: '/payment/transaction', name: 'Transaction', element: Transaction },
   { path: '/payment/payouts', name: 'Payout', element: Payout },
   { path: '/api-keys', name: 'Api Key', element: Apikey },
+  { path: '/compliance', name: 'Compliance', element: Compliance },
+
   // { path: '/checkout/:id', name: '', element: Checkout },
 
 ]
