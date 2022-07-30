@@ -95,7 +95,9 @@ export default function Checkout() {
     const [isCheckout, setIsCheckout] = useState(false)
     const [merchantId, setMerchantId] = useState("")
     const [sessionData, setSessionData] = useState({})
+    const [sourceMetadata, setSourceMetadata] = useState({})
 
+    const [loader, setLoader] = useState('')
     // Pay now, 
     const [btnText, setBtnText] = useState("Pay now")
 
@@ -126,30 +128,110 @@ export default function Checkout() {
         // 
         if(window.location.pathname.split("/")[1] === "checkout"){
             // 
+            let checkoutId = window.location.pathname.split("/")[2]
+
+            console.log("window", checkoutId)
             
-            console.log("window", window.location.pathname.split("/")[2])
             setIsCheckout(true)
-            if(window.location.pathname.split("/")[2]){
-                setMerchantId(window.location.pathname.split("/")[2]);
-                let transactionData = {
-                    "queryString": window.location.pathname.split("/")[2],
-                    "amount": "0.01",
-                    "fee": "0.00",
-                    "phone": "0543418718"
-                }
-                sessionStorage.setItem("sessionData", JSON.stringify(transactionData))
+            if(checkoutId){
+                setMerchantId(checkoutId);
+                let data = '';
+                let config_ch = {
+                    method: 'get',
+                    url: process.env.REACT_APP_BASE_API + "/checkout/" + checkoutId + "/",
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    data: data
+                };
+            
+                axios(config_ch).then(response => {
+                    console.log("data checkout ==", response?.data);
+                    if (response?.data?.status === true) {
+                        // 
+                        console.log("g>>>")
+                        sessionStorage.setItem("sessionData", JSON.stringify(response?.data))
+                        setSessionData(response?.data)
+                        setAccountNumber(response?.data?.data?.phone)
+                        setPhoneNumber(response?.data?.data?.phone)
+                        setAmount(response?.data?.data?.amount)
+                        setFee(response?.data?.data?.fee || "0.00")
+                        setPrefix(response?.data?.prefix)
+                        setSourceMetadata(response?.data?.data)
+
+                        window.history.pushState("", "", '/checkout')
+
+                    }
+                    else{
+                        Swal.fire({
+                            title: 'Oops',
+                            html: "<div class='pb-0 pt-0'> Invalid Session</div>",
+                            icon: 'error',
+                            showCancelButton: false,
+                            showConfirmButton: false,
+                            allowOutsideClick: false,
+                            // cancelButtonColor: '#d33',
+                            // timer: 4000
+                        }).then((result) => {
+                            // 
+                        })
+                    }
+                    
+        
+                }).catch(function (error) {
+                    // 
+                    if(error){
+                        Swal.fire({
+                            title: 'Application Error',
+                            title: 'Oops',
+                            html: "<div class='pb-0 pt-0'> Try again later </div>",
+                            icon: 'warning',
+                            showCancelButton: false,
+                            showConfirmButton: false,
+                            allowOutsideClick: false,
+                            // cancelButtonColor: '#d33',
+                            // timer: 4000
+                        }).then((result) => {
+                            // 
+                        })
+                    }
+                    if (error.response) {
+                        // console.log("==");
+                        /*
+                        * The request was made and the server responded with a
+                        * status code that falls out of the range of 2xx
+                        */
+        
+                    } else if (error.request) {
+                        /*
+                        * The request was made but no response was received, `error.request`
+                        * is an instance of XMLHttpRequest in the browser and an instance
+                        * of http.ClientRequest in Node.js
+                        */
+        
+                    } else {
+                        // Something happened in setting up the request and triggered an Error
+        
+                    }
+                });
+            }
+            else{
+                Swal.fire({
+                    title: 'Oops',
+                    html: "<div class='pb-0 pt-0'> Invalid Session</div>",
+                    icon: 'error',
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    // cancelButtonColor: '#d33',
+                    // timer: 4000
+                }).then((result) => {
+                    // 
+                })
 
             }
-            window.history.pushState("", "", '/checkout')
-            let tempSession = JSON.parse(sessionStorage.getItem("sessionData"))
-            setSessionData(tempSession)
-            setAccountNumber(tempSession?.phone)
-            setPhoneNumber(tempSession?.phone)
-            setAmount(tempSession?.amount)
-            setFee(tempSession?.fee)
+        
 
-
-            
         }
     }, [])
     const handleDropdownChange = (event) => {
@@ -175,22 +257,34 @@ export default function Checkout() {
             }
             else{
                 setModal1(true)
+                setSourceMetadata(
+                    {
+                    "full_name": fullName,
+                    "first_name": "",
+                    "last_name": "",
+                    "mobile_number": phoneNumber,
+                    "recipient_address": accountNumber
+                }   )
             }
         }
         else if (formType === 2) {
             // for mobile network form fields
-            console.log("accountType ", formType, accountType, accountNumber)
-            if (!accountTypeError && !accountType) {
+            console.log("accountType ", formType, Number(accountType), accountType, accountTypeError, ([1, 5, 6, 7]).includes(accountType), accountNumber)
+            if ( Number(accountType)===0 ) {
+                console.log("<<  >>")
                 setAccountTypeError(true)
             }
-            else if (!accountNumberError && accountNumber.length < 4) {
+            else if (!(expPhone.test(accountNumber))) {
+                // console.log(">>><<<<")
                 setAccountNumberError(true)
             }
-            else{
+            else if(accountNumber && accountType){
+                console.log("fffff")
+                setModal2(true)
                 setModal1(false)
                 setTimeout(() => {
                     genericOpt("sendOtp");
-                    setModal2(true);
+                    // setModal2(true);
                 }, 1000);
             }
         }
@@ -233,6 +327,7 @@ export default function Checkout() {
     ]
     function genericOpt(otpType){
         // 
+
 
         if(otpType === "sendOtp"){
             let data = {"phone": accountNumber};
@@ -288,31 +383,32 @@ export default function Checkout() {
                 console.log("data otp verify==", response?.data);
                 if (response?.data?.status) {
                     // 
-                    let textStr = "Payment of <p> <h6>GHS" + amount + "</h6> for </p>" + accountNumber;
+                    // let textStr = "Payment of <p> <h6>GHS" + amount + "</h6> for </p>" + accountNumber;
 
-                    Swal.fire({
-                    title: 'OPT Verified Successful',
-                    html: textStr.toString(),
-                    icon: 'success',
-                    timer: 4000,
-                    allowOutsideClick: false,
-                    // allowEscapeKey: false,
-                    showCancelButton: false,
-                    showConfirmButton: false,
-                    // confirmButtonColor: '#FF7643',
-                    // cancelButtonColor: '#d33',
-                    // confirmButtonText: ''
-                    }).then((result) => {
-                    // if (result.isConfirmed) {
-                        // 
-                    // setModal1(false);
-                    // window.location.reload()
-                    // }
+                        
                     makePayment();
                     setTimeout(() => {
                         setModal2(false)
                     }, 3000);
-                    });
+                    // Swal.fire({
+                    // title: 'OPT Verified',
+                    // html: textStr.toString(),
+                    // icon: 'success',
+                    // timer: 4000,
+                    // allowOutsideClick: false,
+                    // // allowEscapeKey: false,
+                    // showCancelButton: false,
+                    // showConfirmButton: false,
+                    // // confirmButtonColor: '#FF7643',
+                    // // cancelButtonColor: '#d33',
+                    // // confirmButtonText: ''
+                    // }).then((result) => {
+                        
+                    // makePayment();
+                    // setTimeout(() => {
+                    //     setModal2(false)
+                    // }, 3000);
+                    // });
                 }
                 else{
 
@@ -355,6 +451,7 @@ export default function Checkout() {
 
     function makePayment(){
         // 
+        
         let data = {};
         if(accountType === 1){
             data = {
@@ -364,13 +461,7 @@ export default function Checkout() {
                 "currency": "GHS",
                 "note": "Merchant pay of GHS" + amount.toString() + " from " + fullName,
                 "prefix": prefix,
-                "source_metadata": {
-                    "full_name": fullName,
-                    "first_name": "",
-                    "last_name": "",
-                    "mobile_number": phoneNumber,
-                    "recipient_address": accountNumber
-                }   
+                "source_metadata": sourceMetadata
             }
 
         }
@@ -382,13 +473,7 @@ export default function Checkout() {
                 "currency": "GHS",
                 "note": "Merchant pay of GHS" + amount.toString() + " from " + fullName,
                 "prefix": prefix,
-                "source_metadata": {
-                    "full_name": fullName,
-                    "first_name": "",
-                    "last_name": "",
-                    "mobile_number": phoneNumber,
-                    "recipient_address": accountNumber
-                }   
+                "source_metadata":  sourceMetadata 
             }
 
         }
@@ -402,10 +487,13 @@ export default function Checkout() {
             },
             data: data
         };
+        setLoader('<div class="spinner-border dashboard-loader" style="color: #e0922f; text: center"></div>')
+
         axios(config).then(response => {
             console.log("data otp==", response?.data);
             if (response?.data?.status) {
                 // 
+                setLoader(``)
                 let textStr = "Payment of <p> <h6>GHS" + amount + "</h6> made to WingiPay </p>";
 
                 Swal.fire({
@@ -423,10 +511,15 @@ export default function Checkout() {
                 }).then((result) => {
                 setTimeout(() => {
                     setModal2(false)
+                    if(isCheckout){
+                        // checkout redirect 
+                        window.location.href = sourceMetadata?.callbackurl
+                    }
                 }, 1000);
                 });
             }
             else{
+                setLoader(``)
 
                 Swal.fire({
                     title: 'Payment Failed',
@@ -442,6 +535,8 @@ export default function Checkout() {
                 })
             }
         }).catch(function (error) {
+
+            setLoader(``)
             if (error.response) {
                 // console.log("==");
                 /*
@@ -517,13 +612,13 @@ export default function Checkout() {
                                 <Col sm="7" style={{textAlign: "right"}}>
                                     {/*  */}
                                     <p className='m-0 d-fixed checkout-ps-info'>
-                                        <b component="h1">Fee :</b> GHS {sessionData?.fee}
+                                        <b component="h1">Fee :</b> GHS {fee}
                                     </p>
                                     <p className='m-0 d-fixed checkout-ps-info'>
-                                        <b component="h1">Amount :</b> GHS {sessionData?.amount}
+                                        <b component="h1">Amount :</b> GHS {amount}
                                     </p>
                                     <p className='m-0 d-fixed checkout-ps-info'>
-                                        <b component="h1">Phone :</b> {sessionData?.phone}
+                                        <b component="h1">Phone :</b> {phoneNumber}
                                     </p>
                                     {/* {phoneNumber.replace(/\s+/g, '')} */}
 
@@ -555,7 +650,7 @@ export default function Checkout() {
                         <TextField
                             error={accountNumberError}
                             value={accountNumber}
-                            onChange={(e) => { (setAccountNumber(e.target.value)); (setAccountNumberError(false)) }}
+                            onChange={(e) => { (setAccountNumber(e.target.value)); (setAccountNumberError(false)); (setPhoneNumber(e.target.value)) }}
                             id="accountNumber"
                             name="accountNumber"
                             label="Phone number"
@@ -880,7 +975,11 @@ export default function Checkout() {
                               ),
                             }}
                         />
-
+                        <Row>
+                            <Col xs="5" sm="5" lg="5"></Col>
+                            <Col xs="4" sm="4" lg="4"> <a dangerouslySetInnerHTML={{ __html: loader }}></a> </Col >
+                            
+                        </Row>
 
                         <Button
                             type="submit"
