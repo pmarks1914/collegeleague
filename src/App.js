@@ -26,7 +26,7 @@ const Signup = React.lazy(() => import('./views/pages/register/signup'))
 const Page404 = React.lazy(() => import('./views/pages/page404/Page404'))
 const Page500 = React.lazy(() => import('./views/pages/page500/Page500'))
 const Checkout = React.lazy(() => import('./views/pages/Checkout/Checkout'))
-const Compliance = React.lazy(() => import('./views/pages/compliance/Compliance'))
+const Compliance = React.lazy(() => import('./views/pages/Compliance/Compliance'))
 const Otp = React.lazy(() => import('./views/pages/register/Otp'))
 
 class App extends Component {
