@@ -56,7 +56,7 @@ const Transaction = React.lazy(() => import('./views/pages/Transaction/Transacti
 const Apikey = React.lazy(() => import('./views/pages/Apikey/Apikey'))
 const Refund = React.lazy(() => import('./views/pages/Refund/Refund'))
 const Payout = React.lazy(() => import('./views/pages/Payout/Payout'))
-const Compliance = React.lazy(() => import('./views/pages/compliance/Compliance'))
+const Compliance = React.lazy(() => import('./views/pages/Compliance/Compliance'))
 // const Checkout = React.lazy(() => import('./views/pages/Checkout/Checkout'))
 
 const routes = [
