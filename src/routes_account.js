@@ -3,7 +3,6 @@ import React from 'react'
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
-const Compliance = React.lazy(() => import('./views/pages/compliance/Compliance'))
 
 // Base
 const Accordion = React.lazy(() => import('./views/base/accordion/Accordion'))
@@ -53,11 +52,11 @@ const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 
 // main pages components
 // compliance
-const MyAccount = React.lazy(() => import('./views/pages/compliance/MyAccount'))
 const Transaction = React.lazy(() => import('./views/pages/Transaction/Transaction'))
 const Apikey = React.lazy(() => import('./views/pages/Apikey/Apikey'))
 const Refund = React.lazy(() => import('./views/pages/Refund/Refund'))
 const Payout = React.lazy(() => import('./views/pages/Payout/Payout'))
+const Compliance = React.lazy(() => import('./views/pages/compliance/Compliance'))
 // const Checkout = React.lazy(() => import('./views/pages/Checkout/Checkout'))
 
 const routes = [
@@ -106,7 +105,6 @@ const routes = [
   { path: '/notifications/toasts', name: 'Toasts', element: Toasts },
   { path: '/widgets', name: 'Widgets', element: Widgets },
   // below main pages views 
-  { path: '/compliance', name: 'Compliance', element: MyAccount },
   { path: '/payment/refunds', name: 'Refund', element: Refund },
   { path: '/payment/transaction', name: 'Transaction', element: Transaction },
   { path: '/payment/payouts', name: 'Payout', element: Payout },

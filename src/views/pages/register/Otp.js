@@ -103,7 +103,7 @@ export function Otp() {
                                    
                                 </HStack> 
                                 <br />
-                                    <Button type = "submit" colorScheme='orange' onClick={(e) => handleVerifyOtpSubmit(e)}>Verify</Button>
+                                    <Button type = "submit" colorScheme='orange' onClick={(e) => handleVerifyOtpSubmit(e)} style = {{color: "#fff"}}>Verify</Button>
                             </Box>
                         </ChakraProvider>
                     </CForm>

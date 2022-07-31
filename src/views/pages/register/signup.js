@@ -111,7 +111,7 @@ export default function SignUp() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            Sign Up
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <FormControl fullWidth>
@@ -132,10 +132,8 @@ export default function SignUp() {
               margin="normal"
               required
               fullWidth
-              id="email"
               label="Business Name"
               name="business_name"
-              autoComplete="business_name"
               autoFocus
               variant = "standard"
             />
@@ -143,7 +141,6 @@ export default function SignUp() {
               margin="normal"
               required
               fullWidth
-              id="email"
               label="First Name"
               name="firstname"
               autoFocus
@@ -153,7 +150,6 @@ export default function SignUp() {
               margin="normal"
               required
               fullWidth
-              id="email"
               label="Last Name"
               name="lastname"
               autoFocus
@@ -163,7 +159,6 @@ export default function SignUp() {
               margin="normal"
               required
               fullWidth
-              id="email"
               label="Email"
               name="email"
               autoFocus
@@ -173,7 +168,6 @@ export default function SignUp() {
               margin="normal"
               required
               fullWidth
-              id="phone"
               label="Phone Number"
               name="phone"
               autoFocus
@@ -215,8 +209,6 @@ export default function SignUp() {
               name="password"
               label="Password"
               type="password"
-              id="password"
-              autoComplete="current-password"
               variant = "standard"
             />
           
@@ -225,6 +217,7 @@ export default function SignUp() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              style = {{color: "#fff"}}
             >
               Sign Up
             </Button>

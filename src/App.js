@@ -46,7 +46,7 @@ class App extends Component {
             <Route exact path='/checkout/:id' name="" element={<Checkout />} />
             <Route exact path='/checkout' name="" element={<Checkout />} />
             <Route exact path="/otp" name="Otp Verification" element={<Otp />} />
-            <Route exact path="/compliance" name="Compliance" element={<Compliance />} />
+            {/* <Route exact path="/compliance" name="Compliance" element={<Compliance />} /> */}
 
           </Routes>
         </Suspense>

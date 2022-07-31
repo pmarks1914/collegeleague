@@ -1,56 +1,38 @@
 import React, { useState } from 'react';
-import { Tab, Tabs, TabPanel, TabList, TabPanels,ChakraProvider,Box, Input, Stack, GridItem, Grid, Select, FormLabel, Text, Divider } from '@chakra-ui/react';
+import { Tab, Tabs, TabPanel, TabList, TabPanels,ChakraProvider,Box, Input, Stack, GridItem, Grid, Select, FormLabel, Text, Divider, Button } from '@chakra-ui/react';
 import { CContainer } from '@coreui/react'
 import axios from "axios";
 import 'antd/dist/antd.css';
-import { message, Upload, Button } from 'antd';
+import { message, Upload } from 'antd';
 import { ArrowUpIcon } from '@chakra-ui/icons';
 
 
 // import { UploadOutlined } from '@ant-design/icons';
 
 
-const token = JSON.parse(localStorage.getItem('userDataStore'));
-const accessToken = token?.access
-const account = token?.access
-const businessAdress = token?.access
-const buseinessEmail = token?.access
-const businessGps = token?.access
-const businessTin = token?.access
-const businessPostal = token?.access
-const director1 = token?.access
-const director2 = token?.access
-
-const bankName = token?.access
-const bankAccount = token?.access
-const bankBranch = token?.access
-
-const first_name = token?.access
-const last_name = token?.access
-const personal_email = token?.access
-const personal_phone = token?.access
+const userData = JSON.parse(localStorage.getItem('userDataStore'));
 
 export default function Compliance() {
 
     // Business Information useState declaration
-    const [business_address, setBusinessAddress] = useState(businessAdress)
-    const [business_email, setBusinessEmail] = useState(buseinessEmail)
-    const [gps, setGps] = useState(businessGps)
-    const [business_TIN, setBusinessTIN] = useState(businessTin)
-    const [postal_address, setPostalAddress] = useState(businessPostal)
-    const [NID_director_1, setNID_director_1] = useState(director1)
-    const [NID_director_2, setNID_director_2] = useState(director2)
+    const [postal_address, setPostalAddress] = useState(userData.postal_address)
+    const [business_email, setBusinessEmail] = useState(userData.business_email)
+    const [gps, setGps] = useState(userData.gps)
+    const [business_TIN, setBusinessTIN] = useState(userData.business_TIN)
+    const [NID_director_1, setNID_director_1] = useState(userData.NID_director_1)
+    const [NID_director_2, setNID_director_2] = useState(userData.NID_director_2)
+    const [physical_address, setPhysicalAddress] = useState(userData.physical_address)
 
     // Settlement Information useState declaration
-    const [bank_name, setBankName] = useState(bankName)
-    const [bank_account, setBankAccount] = useState(bankAccount)
-    const [bank_branch, setBankBranch] = useState(bankBranch)
+    const [bank_name, setBankName] = useState(userData.bank_name)
+    const [bank_account, setBankAccount] = useState(userData.bank_account)
+    const [bank_branch, setBankBranch] = useState(userData.bank_branch)
 
     // Personal Information useState declaration
-    const [firstname, setFirstname] = useState(first_name)
-    const [lastname, setLastname] = useState(last_name)
-    const [email, setEmail] = useState(personal_email)
-    const [phone, setPhone] = useState(personal_phone)
+    const [firstname, setFirstname] = useState(userData.firstname)
+    const [lastname, setLastname] = useState(userData.lastname)
+    const [email, setEmail] = useState(userData.email)
+    const [phone, setPhone] = useState(userData.phone)
 
     //State for director One initialization
     const [directorOneList, setDirectorOneList] = useState([]);
@@ -65,12 +47,12 @@ export default function Compliance() {
     const [uploading, setUploading] = useState(false);
 
 
-    
+    //Business Information
     const handleBusinessInfoSubmit = (event) => {
         event.preventDefault();
         
         const payload = {
-          "business_address": business_address,
+          "postal_address": postal_address,
           "business_email": business_email,
           "gps": gps,
           "business_TIN": business_TIN,
@@ -85,13 +67,16 @@ export default function Compliance() {
            
             headers: {
               'Content-Type': 'application/json',
-              "Authorization" : `Bearer ${accessToken}`
+              "Authorization" : `Bearer ${userData.access}`
             },
             data: payload
           };
           console.log(config)
           axios(config).then(function (response){
-              console.log(response)
+            // if (response["data"]["message"] === "Account successfully updated." && response["data"]["status"] === true){
+                message.success('Account successfully updated.');
+            //   }
+
             })
             .catch(function (error) {
             console.log(error);
@@ -115,7 +100,7 @@ export default function Compliance() {
             
             headers: {
                 'Content-Type': 'application/json',
-                "Authorization" : `Bearer ${accessToken}`
+                "Authorization" : `Bearer ${userData.access}`
             },
             data: payload
             };
@@ -145,7 +130,7 @@ export default function Compliance() {
             
             headers: {
                 'Content-Type': 'application/json',
-                "Authorization" : `Bearer ${accessToken}`
+                "Authorization" : `Bearer ${userData.access}`
             },
             data: payload
             };
@@ -168,9 +153,9 @@ export default function Compliance() {
 
           let config = {
             method: 'patch',
-            url: process.env.REACT_APP_BASE_API + '/account/docs/' + token.account,
+            url: process.env.REACT_APP_BASE_API + '/account/docs/' + userData.account,
             headers: {
-                "Authorization" : `Bearer ${token.access}`,
+                "Authorization" : `Bearer ${userData.access}`,
                 'Content-Type': 'application/json',
             },
             data: formData3
@@ -219,9 +204,9 @@ export default function Compliance() {
 
           let config = {
             method: 'patch',
-            url: process.env.REACT_APP_BASE_API + '/account/docs/' + token.account,
+            url: process.env.REACT_APP_BASE_API + '/account/docs/' + userData.account,
             headers: {
-                "Authorization" : `Bearer ${token.access}`,
+                "Authorization" : `Bearer ${userData.access}`,
                 'Content-Type': 'application/json',
             },
             data: formData1
@@ -270,9 +255,9 @@ export default function Compliance() {
 
           let config = {
             method: 'patch',
-            url: process.env.REACT_APP_BASE_API + '/account/docs/' + token.account,
+            url: process.env.REACT_APP_BASE_API + '/account/docs/' + userData.account,
             headers: {
-                "Authorization" : `Bearer ${token.access}`,
+                "Authorization" : `Bearer ${userData.access}`,
                 'Content-Type': 'application/json',
             },
             data: formData2
@@ -312,21 +297,134 @@ export default function Compliance() {
       };
 
 
-
-
-
-
-///////////////////////////////////////////////////////////
-
-      ///////////////////////////////////////////////////////
+      function updateKycInUserSession(type, value){
+        let user_data = {}
+        switch (type) {
+            case "firstname":
+                user_data = {
+                    "firstname": value
+                };
+                Object.keys(user_data)?.map(id=>{
+                    userData[id] =  user_data[id]
+                })
+                break;
+            case "lastname":
+                user_data = {
+                    "lastname": value
+                };
+                Object.keys(user_data)?.map(id=>{
+                    userData[id] =  user_data[id]
+                })
+                break;
+            case "email":
+                user_data = {
+                    "email": value
+                };
+                Object.keys(user_data)?.map(id=>{
+                    userData[id] =  user_data[id]
+                })
+                break;
+            case "business_email":
+                user_data = {
+                    "business_email": value
+                };
+                Object.keys(user_data)?.map(id=>{
+                    userData[id] =  user_data[id]
+                })
+                break;
+            case "gps":
+                user_data = {
+                    "gps": value
+                };
+                Object.keys(user_data)?.map(id=>{
+                    userData[id] =  user_data[id]
+                })
+                break;
+            case "business_TIN":
+                user_data = {
+                    "business_TIN": value
+                };
+                Object.keys(user_data)?.map(id=>{
+                    userData[id] =  user_data[id]
+                })
+                break;
+            case "postal_address":
+                user_data = {
+                    "postal_address": value
+                };
+                Object.keys(user_data)?.map(id=>{
+                    userData[id] =  user_data[id]
+                })
+                break;
+            case "NID_director_1":
+                user_data = {
+                    "NID_director_1": value
+                };
+                Object.keys(user_data)?.map(id=>{
+                    userData[id] =  user_data[id]
+                })
+                break;
+            case "NID_director_2":
+                user_data = {
+                    "NID_director_2": value
+                };
+                Object.keys(user_data)?.map(id=>{
+                    userData[id] =  user_data[id]
+                })
+                break;
+            case "bank_name":
+                user_data = {
+                    "bank_name": value
+                };
+                Object.keys(user_data)?.map(id=>{
+                    userData[id] =  user_data[id]
+                })
+                break;
+            case "bank_account":
+                user_data = {
+                    "bank_account": value
+                };
+                Object.keys(user_data)?.map(id=>{
+                    userData[id] =  user_data[id]
+                })
+                break;
+            case "bank_branch":
+                user_data = {
+                    "bank_branch": value
+                };
+                Object.keys(user_data)?.map(id=>{
+                    userData[id] =  user_data[id]
+                })
+                break;
+            case "phone":
+                user_data = {
+                    "phone": value
+                };
+                Object.keys(user_data)?.map(id=>{
+                    userData[id] =  user_data[id]
+                })
+                break;
+            case "physical_address":
+                user_data = {
+                    "physical_address": value
+                };
+                Object.keys(user_data)?.map(id=>{
+                    userData[id] =  user_data[id]
+                })
+                break;
+            default:
+                break;
+        }
+        localStorage.setItem("userDataStore", JSON.stringify(userData));
+    }
     
 
 
 return(
-    <div className="bg-light min-vh-100 d-flex flex-row align-items-center">
+    <div className="bg-light mt-5 d-flex flex-row align-items-center">
         <CContainer>
         <ChakraProvider>
-            <Box boxShadow='lg' p='6' m='5' rounded='md' bg='white'>                               
+            <Box boxShadow='lg' rounded='md' bg='white'>                               
             <Tabs size='md' variant='enclosed'>
 
                 <TabList>
@@ -346,27 +444,27 @@ return(
                     <p>We&apos;d like to get too know you personally. At Wingipay, we cherish friendships as much as we cherish businesses.</p>
                     </GridItem>
                     <GridItem colStart={3} colEnd={5} h='10'>
-                        <Input placeholder='First Name' focusBorderColor='orange.500' onChange={(e) => { setFirstname(e.target.value) }} value = {firstname} />
+                        <Input placeholder='First Name' focusBorderColor='orange.500' onChange={(e) => { (setFirstname(e.target.value)); (updateKycInUserSession("firstname", e.target.value)) }} value = {firstname} />
                     </GridItem>
                     <GridItem colStart={1} colEnd={3} h='10'>
                     </GridItem>
                     <GridItem colStart={3} colEnd={5} h='10'>
-                        <Input placeholder='Last Name' focusBorderColor='orange.500'  onChange={(e) => { setLastname(e.target.value) }} value = {lastname} />
+                        <Input placeholder='Last Name' focusBorderColor='orange.500'  onChange={(e) => { (setLastname(e.target.value)); (updateKycInUserSession("lastname", e.target.value)) }} value = {lastname} />
                     </GridItem>
                     <GridItem colStart={1} colEnd={3} h='10'>
                     </GridItem>
                     <GridItem colStart={3} colEnd={5} h='10'>
-                        <Input placeholder='Email Address' focusBorderColor='orange.500' disabled type = 'email'  onChange={(e) => { setEmail(e.target.value) }} value = {email}/>
+                        <Input placeholder='Email Address' focusBorderColor='orange.500' disabled type = 'email'  onChange={(e) => { (setEmail(e.target.value)); (updateKycInUserSession("email", e.target.value)) }} value = {email}/>
                     </GridItem>
                     <GridItem colStart={1} colEnd={3} h='10'>
                     </GridItem>
                     <GridItem colStart={3} colEnd={5} h='10'>
-                        <Input placeholder='Phone Number' focusBorderColor='orange.500' disabled  onChange={(e) => { setPhone(e.target.value) }} value = {phone}/>
+                        <Input placeholder='Phone Number' focusBorderColor='orange.500' disabled  onChange={(e) => { (setPhone(e.target.value)); (updateKycInUserSession("phone", e.target.value)) }} value = {phone}/>
                     </GridItem>
                     <GridItem colStart={1} colEnd={3} h='10'>
                     </GridItem>
                     <GridItem colStart={3} colEnd={5} h='10'>
-                    <Button colorScheme='orange' onClick={handlePersonalInfoSubmit}>Save Changes</Button>
+                    <Button colorScheme='orange' onClick={handlePersonalInfoSubmit} style = {{color: "#fff"}}>Save Changes</Button>
                     </GridItem>
                 </Grid>                                   
                 </Stack>
@@ -378,42 +476,42 @@ return(
                     <p>Receving funds should not be a headache. With our platform, your payments are secure and swift.</p>
                     </GridItem>
                     <GridItem colStart={3} colEnd={5} h='10'>
-                        <Input placeholder='Business Physical Address' focusBorderColor='orange.500' onChange={(e) => { setBusinessAddress(e.target.value) }} value = {business_address} />
+                        <Input placeholder='Business Physical Address' focusBorderColor='orange.500' onChange={(e) => { (setPhysicalAddress(e.target.value)); (updateKycInUserSession("physical_address", e.target.value)) }} value = {physical_address} />
                     </GridItem>
                     <GridItem colStart={1} colEnd={3} h='10'>
                     </GridItem>
                     <GridItem colStart={3} colEnd={5} h='10'>
-                        <Input placeholder='Business Email Address' focusBorderColor='orange.500' onChange={(e) => { setBusinessEmail(e.target.value) }} value = {business_email}/>
+                        <Input placeholder='Business Email Address' focusBorderColor='orange.500' onChange={(e) => { (setBusinessEmail(e.target.value)); (updateKycInUserSession("business_email", e.target.value)) }} value = {business_email}/>
                     </GridItem>
                     <GridItem colStart={1} colEnd={3} h='10'>
                     </GridItem>
                     <GridItem colStart={3} colEnd={5} h='10'>
-                        <Input placeholder='Business GPS Address' focusBorderColor='orange.500' onChange={(e) => { setGps(e.target.value) }} value = {gps} />
+                        <Input placeholder='Business GPS Address' focusBorderColor='orange.500' onChange={(e) => { (setGps(e.target.value)); (updateKycInUserSession("gps", e.target.value)) }} value = {gps} />
                     </GridItem>
                     <GridItem colStart={1} colEnd={3} h='10'>
                     </GridItem>
                     <GridItem colStart={3} colEnd={5} h='10'>
-                        <Input placeholder='Business Tax Identification Number (TIN)' focusBorderColor='orange.500' onChange={(e) => { setBusinessTIN(e.target.value) }} value = {business_TIN} />
+                        <Input placeholder='Business Tax Identification Number (TIN)' focusBorderColor='orange.500' onChange={(e) => { (setBusinessTIN(e.target.value)); (updateKycInUserSession("business_TIN", e.target.value)) }} value = {business_TIN} />
                     </GridItem>
                     <GridItem colStart={1} colEnd={3} h='10'>
                     </GridItem>
                     <GridItem colStart={3} colEnd={5} h='10'>
-                        <Input placeholder='Business Postal Address (Optional)' focusBorderColor='orange.500' onChange={(e) => { setPostalAddress(e.target.value) }} value = {postal_address} />
+                        <Input placeholder='Business Postal Address (Optional)' focusBorderColor='orange.500' onChange={(e) => { (setPostalAddress(e.target.value)); (updateKycInUserSession("postal_address", e.target.value)) }} value = {postal_address} />
                     </GridItem>
                     <GridItem colStart={1} colEnd={3} h='10'>
                     </GridItem>
                     <GridItem colStart={3} colEnd={5} h='10'>
-                        <Input placeholder='ID of Director 1' focusBorderColor='orange.500' onChange={(e) => { setNID_director_1(e.target.value) }} value = {NID_director_1} />
+                        <Input placeholder='ID of Director 1' focusBorderColor='orange.500' onChange={(e) => { (setNID_director_1(e.target.value)); (updateKycInUserSession("NID_director_1", e.target.value)) }} value = {NID_director_1} />
                     </GridItem>
                     <GridItem colStart={1} colEnd={3} h='10'>
                     </GridItem>
                     <GridItem colStart={3} colEnd={5} h='10'>
-                        <Input placeholder='ID of Director 2' focusBorderColor='orange.500' onChange={(e) => { setNID_director_2(e.target.value) }} value = {NID_director_2}/>
+                        <Input placeholder='ID of Director 2' focusBorderColor='orange.500' onChange={(e) => { (setNID_director_2(e.target.value)); (updateKycInUserSession("NID_director_2", e.target.value)) }} value = {NID_director_2}/>
                     </GridItem>
                     <GridItem colStart={1} colEnd={3} h='10'>
                     </GridItem>
                     <GridItem colStart={3} colEnd={5} h='10'>
-                    <Button type = "submit" colorScheme='orange' onClick={(e) => handleBusinessInfoSubmit(e)}>Save Changes</Button>
+                    <Button type = "submit" colorScheme='orange' onClick={(e) => handleBusinessInfoSubmit(e)} style = {{color: "#fff"}}>Save Changes</Button>
                     </GridItem>
                     </Grid>
                     </Stack>                    
@@ -427,7 +525,7 @@ return(
                     <p>We&apos;d like to get too know you personally. At Wingipay, we cherish friendships as much as we cherish businesses.</p>
                     </GridItem>
                     <GridItem colStart={3} colEnd={5} h='10'>
-                    <Select placeholder='Select Bank' onChange={(e) => { setBankName(e.target.value) }} value = {bank_name}>
+                    <Select placeholder='Select Bank' onChange={(e) => { (setBankName(e.target.value)); (updateKycInUserSession("bank_name", e.target.value)) }} value = {bank_name}>
                     <option value={"Absa Bank Ghana Ltd"}>Absa Bank Ghana Ltd</option>
                     <option value={"Access Bank"}>Access Bank</option>
                     <option value={"Agricultural Development Bank"}>Agricultural Development Bank</option>
@@ -458,17 +556,17 @@ return(
                     <GridItem colStart={1} colEnd={3} h='10'>
                     </GridItem>
                     <GridItem colStart={3} colEnd={5} h='10'>
-                        <Input placeholder='Bank Account Number' focusBorderColor='orange.500' onChange={(e) => { setBankAccount(e.target.value) }} value = {bank_account}/>
+                        <Input placeholder='Bank Account Number' focusBorderColor='orange.500' onChange={(e) => { (setBankAccount(e.target.value)); (updateKycInUserSession("bank_account", e.target.value)) }} value = {bank_account}/>
                     </GridItem>
                     <GridItem colStart={1} colEnd={3} h='10'>
                     </GridItem>
                     <GridItem colStart={3} colEnd={5} h='10'>
-                        <Input placeholder='Bank Branch' focusBorderColor='orange.500' onChange={(e) => { setBankBranch(e.target.value) }} value = {bank_branch}/>
+                        <Input placeholder='Bank Branch' focusBorderColor='orange.500' onChange={(e) => { (setBankBranch(e.target.value)); (updateKycInUserSession("bank_branch", e.target.value)) }} value = {bank_branch}/>
                     </GridItem>
                     <GridItem colStart={1} colEnd={3} h='10'>
                     </GridItem>
                     <GridItem colStart={3} colEnd={5} h='10'>
-                    <Button colorScheme='orange' onClick={(e) => handleSettlementInfoSubmit(e)}>Save Changes</Button>
+                    <Button colorScheme='orange' onClick={(e) => handleSettlementInfoSubmit(e)} style = {{color: "#fff"}}>Save Changes</Button>
                     </GridItem>
                 </Grid>                                   
                 </Stack>                
@@ -508,7 +606,7 @@ return(
 
 
                    
-                    <Upload {...props}>
+                    <Upload {...props} onChange={(e) => { setBusinessTIN(e.target.value) }} value = {business_TIN} >
                     <Button leftIcon={<ArrowUpIcon />}>Select File</Button>
                     </Upload>
                     <Button
