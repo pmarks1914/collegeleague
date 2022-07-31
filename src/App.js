@@ -26,6 +26,8 @@ const Signup = React.lazy(() => import('./views/pages/register/signup'))
 const Page404 = React.lazy(() => import('./views/pages/page404/Page404'))
 const Page500 = React.lazy(() => import('./views/pages/page500/Page500'))
 const Checkout = React.lazy(() => import('./views/pages/Checkout/Checkout'))
+const Compliance = React.lazy(() => import('./views/pages/compliance/Compliance'))
+const Otp = React.lazy(() => import('./views/pages/register/Otp'))
 
 class App extends Component {
   render() {
@@ -43,6 +45,9 @@ class App extends Component {
             <Route exact path='/merchant/checkout-customer/:id' name="" element={<Checkout />} />
             <Route exact path='/checkout/:id' name="" element={<Checkout />} />
             <Route exact path='/checkout' name="" element={<Checkout />} />
+            <Route exact path="/otp" name="Otp Verification" element={<Otp />} />
+            {/* <Route exact path="/compliance" name="Compliance" element={<Compliance />} /> */}
+
           </Routes>
         </Suspense>
       </BrowserRouter>

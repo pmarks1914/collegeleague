@@ -89,7 +89,7 @@ const AppHeaderDropdown = (userData) => {
         }
         <CDropdownItem>
           <CIcon icon={cilCreditCard} className="me-2" />
-          {userData?.userData?.firstname + " " + userData?.userData?.lastname + " " + userData?.userData?.other_names}
+          {userData?.userData?.firstname + " " + userData?.userData?.lastname}
         </CDropdownItem>
         <CDropdownItem>
           <CIcon icon={cilUser} className="me-2" />
