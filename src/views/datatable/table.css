@@ -2,8 +2,10 @@
     display: contents;
 }
 .dashboard-loader{
-    position: absolute;
-    Left: 50%;
+    position: fixed;
+    z-index: 100;
+    left: 50%;
+    bottom: 50%
 }
 .bg-text-wp{
     background-color: #FF7643;

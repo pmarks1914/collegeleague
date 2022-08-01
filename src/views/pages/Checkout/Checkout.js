@@ -280,10 +280,11 @@ export default function Checkout() {
             }
             else if(accountNumber && accountType){
                 console.log("fffff")
-                setModal2(true)
+                // setModal2(true)
                 setModal1(false)
                 setTimeout(() => {
-                    genericOpt("sendOtp");
+                    // genericOpt("sendOtp");
+                    nameCheck();
                     // setModal2(true);
                 }, 1000);
             }
@@ -327,8 +328,6 @@ export default function Checkout() {
     ]
     function genericOpt(otpType){
         // 
-
-
         if(otpType === "sendOtp"){
             let data = {"phone": accountNumber};
             let config = {
@@ -380,7 +379,7 @@ export default function Checkout() {
                 data: dataVerify
             };
             axios(config).then(response => {
-                console.log("data otp verify==", response?.data);
+                // console.log("data otp verify==", response?.data);
                 if (response?.data?.status) {
                     // 
                     // let textStr = "Payment of <p> <h6>GHS" + amount + "</h6> for </p>" + accountNumber;
@@ -448,7 +447,7 @@ export default function Checkout() {
 
         }
     }
-
+    
     function makePayment(){
         // 
         
@@ -487,17 +486,17 @@ export default function Checkout() {
             },
             data: data
         };
-        setLoader('<div class="spinner-border dashboard-loader" style="color: #e0922f; text: center"></div>')
+        setLoader('<div class="spinner dashboard-loader" style="color: #e0922f; text: center"></div>')
 
         axios(config).then(response => {
             console.log("data otp==", response?.data);
             if (response?.data?.status) {
                 // 
                 setLoader(``)
-                let textStr = "Payment of <p> <h6>GHS" + amount + "</h6> made to WingiPay </p>";
+                let textStr = "<p>Payment of GHS" + amount.toString() + " to " + (sessionData?.merchant_name?.toString() || '') + " </p> <p>1. Kindly approve the payment request on your phone </p>";
 
                 Swal.fire({
-                title: 'Payment Successful',
+                title: 'Pending Approval',
                 html: textStr.toString(),
                 icon: 'success',
                 // timer: 6000,
@@ -519,7 +518,7 @@ export default function Checkout() {
                 });
             }
             else{
-                setLoader(``)
+                // setLoader(``)
 
                 Swal.fire({
                     title: 'Payment Failed',
@@ -560,7 +559,86 @@ export default function Checkout() {
     }
 
     function nameCheck(){
-        
+
+        let data = {}
+        if(accountType === 1){
+            // WINGIPAY
+            data = {
+                "phone": accountNumber,
+                "network": "WINGIPAY"
+            }
+        }
+        else if(accountType === 5){
+            // MTN
+            data = {
+                "phone": accountNumber,
+                "network": "MTN"
+            }
+        }
+        else if(accountType === 6){
+            // VODAFONE
+            data = {
+                "phone": accountNumber,
+                "network": "VODAFONE"
+            }
+        }
+        else if(accountType === 7){
+            // AIRTELTIGO
+            data = {
+                "phone": accountNumber,
+                "network": "AIRTELTIGO"
+            }
+        }
+
+        let config = {
+            method: 'post',
+            url: process.env.REACT_APP_BASE_API + "/namecheck/",
+            headers: {
+                'Content-Type': 'application/json',
+                // 'Authorization': 'Bearer ' + userData?.access
+            },
+            data: data
+        };
+
+        setLoader('<div class="spinner-border dashboard-loader" style="color: #e0922f; text: center"></div>')
+        axios(config).then(response => {
+            console.log("data namecheck verify==", response?.data);
+            if (response?.data?.status) {
+                setLoader('')
+                makePayment();
+                setTimeout(() => {
+                    setModal2(false)
+                }, 3000);
+            }
+            else{
+                setLoader('')
+                genericOpt("sendOtp");
+            }
+        }).catch(function (error) {
+            if(error){
+                setLoader('')
+                genericOpt("sendOtp");
+            }
+            if (error.response) {
+                // console.log("==");
+                /*
+                * The request was made and the server responded with a
+                * status code that falls out of the range of 2xx
+                */
+
+            } else if (error.request) {
+                /*
+                * The request was made but no response was received, `error.request`
+                * is an instance of XMLHttpRequest in the browser and an instance
+                * of http.ClientRequest in Node.js
+                */
+
+            } else {
+                // Something happened in setting up the request and triggered an Error
+
+            }
+        }
+        )
     }
     return (
         <ThemeProvider theme={theme}>
@@ -612,10 +690,10 @@ export default function Checkout() {
                                 <Col sm="7" style={{textAlign: "right"}}>
                                     {/*  */}
                                     <p className='m-0 d-fixed checkout-ps-info'>
-                                        <b component="h1">Fee :</b> GHS {fee}
+                                        <b component="h1">Amount :</b> GHS {amount}
                                     </p>
                                     <p className='m-0 d-fixed checkout-ps-info'>
-                                        <b component="h1">Amount :</b> GHS {amount}
+                                        <b component="h1">Fee :</b> GHS {fee}
                                     </p>
                                     <p className='m-0 d-fixed checkout-ps-info'>
                                         <b component="h1">Phone :</b> {phoneNumber}
@@ -673,6 +751,11 @@ export default function Checkout() {
                             }}
                         />
 
+                        <Row>
+                            <Col xs="5" sm="5" lg="5"></Col>
+                            <Col xs="4" sm="4" lg="4"> <a dangerouslySetInnerHTML={{ __html: loader }}></a> </Col >
+                            
+                        </Row>
 
                         <Button
                             type="submit"
@@ -784,7 +867,11 @@ export default function Checkout() {
                                 }}
                             />
 
-
+                            <Row>
+                                <Col xs="5" sm="5" lg="5"></Col>
+                                <Col xs="4" sm="4" lg="4"> <a dangerouslySetInnerHTML={{ __html: loader }}></a> </Col >
+                                
+                            </Row>
                             <Button
                                 type="submit"
                                 fullWidth
@@ -829,10 +916,10 @@ export default function Checkout() {
                                 <Col sm="7" style={{textAlign: "right"}}>
                                     {/*  */}
                                     <p className='m-0 d-fixed'>
-                                        <b component="h1">Fee :</b> GHS {fee}
+                                        <b component="h1">Amount :</b> GHS {amount}
                                     </p>
                                     <p className='m-0 d-fixed'>
-                                        <b component="h1">Amount :</b> GHS {amount}
+                                        <b component="h1">Fee :</b> GHS {fee}
                                     </p>
                                     <p className='m-0 d-fixed'>
                                         <b component="h1">Phone :</b> {phoneNumber}
@@ -935,10 +1022,10 @@ export default function Checkout() {
                             <Col sm="7" style={{textAlign: "right"}}>
                                     {/*  */}
                                     <p className='m-0 d-fixed'>
-                                        <b component="h1">Fee :</b> GHS {fee}
+                                        <b component="h1">Amount :</b> GHS {amount}
                                     </p>
                                     <p className='m-0 d-fixed'>
-                                        <b component="h1">Amount :</b> GHS {amount}
+                                        <b component="h1">Fee :</b> GHS {fee}
                                     </p>
                                     <p className='m-0 d-fixed'>
                                         <b component="h1">Phone :</b> {phoneNumber}
