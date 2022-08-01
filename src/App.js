@@ -36,7 +36,7 @@ class App extends Component {
     
     return (
       <BrowserRouter>
-      {userData?.access}
+      {/* {userData?.access} */}
         <Suspense fallback={loading}>
           <Routes>
             <Route exact path="/login" name="Login Page" element={<Login />} />
