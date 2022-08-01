@@ -340,7 +340,7 @@ export default function Checkout() {
                 data: data
             };
             axios(config).then(response => {
-                console.log("data otp==", response?.data);
+                // console.log("data otp==", response?.data);
                 if (response.status === 200) {
                     // 
                 }
