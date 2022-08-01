@@ -107,7 +107,7 @@ const Login = () => {
 
           localStorage.setItem("userDataStore", JSON.stringify(userData));
 
-          // window.location.href = "/dashboard";
+          window.location.href = "/dashboard";
 
         }
         else {
