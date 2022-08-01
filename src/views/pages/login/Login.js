@@ -65,12 +65,12 @@ const Login = () => {
         setLoader("<a></a>")
         setLogin("Login")
         console.log(response.status);
-        if (response.status === 200) { 
+        if (response?.data?.status) { 
           console.log(response?.data)
           let counter = 700000;
 
           const userData = {
-            status: response.status,
+            status: response.data.status,
             access: response?.data?.access,
             refresh: response?.data?.refresh,
             account: response?.data?.account,
@@ -107,7 +107,7 @@ const Login = () => {
 
           localStorage.setItem("userDataStore", JSON.stringify(userData));
 
-          window.location.href = "/dashboard";
+          // window.location.href = "/dashboard";
 
         }
         else {
@@ -165,7 +165,7 @@ const Login = () => {
   }
 
   return (
-    <div className="bg-light min-vh-100 d-flex flex-row align-items-center">
+    <div className="bg-light min-vh-100 min-vw-100 d-flex flex-row align-items-center">
       <CContainer>
         <CRow className="justify-content-center">
           <CCol md={8}>
