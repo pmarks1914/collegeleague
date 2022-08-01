@@ -28,6 +28,15 @@ import {
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
+
+
+if(["/dashboard", "/payment/transaction", "/payment/refunds", "/payment/payouts", "/compliance", "/api-keys"].includes(window.location.pathname)){
+  // 
+}
+else{
+  window.location.href = '/404'
+}
+
 const account_nav = [
   {
     component: CNavItem,

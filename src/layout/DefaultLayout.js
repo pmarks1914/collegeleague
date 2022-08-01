@@ -10,6 +10,15 @@ class DefaultLayout extends Component {
     if(!currentUser){
       window.location.href = "/login"
     } 
+    
+    // console.log("path ", window.location.pathname)
+
+    // if(["/dashboard", "/payment/transaction", "/payment/refunds", "/payment/payouts", "/compliance", "/api-keys"].includes(window.location.pathname)){
+    //   // 
+    // }
+    // else{
+    //   window.location.href = '/404'
+    // }
 
     window.onstorage = () => {
       // console.log("storage ", JSON.parse(localStorage.getItem("userDataStore")) )

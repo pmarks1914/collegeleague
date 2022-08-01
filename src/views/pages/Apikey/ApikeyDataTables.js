@@ -494,12 +494,24 @@ const ApikeyDataTables = (apikeyDetails) => {
     };
     axios(config).then(response => {
       console.log(response.status);
-      if (response?.data?.status === true || response?.data?.statu === true) { 
+      if (response?.data?.status === true) { 
         // console.log("api key", tableData)
         // let arryData = [];
-        // apikeyInfo = arryData;
-        // console.log("api key", infoData)
-        let textStr = "The API Key below will be shown only once.<p>Key Prefix: " + response?.data?.key_prefix + "</p>Key Type: " + apikeyInfoStatusInModal + "<p>Key Secret: <h6>" + response?.data?.key + "</h6></p>";
+        // console.log("api key data 1", arryData)
+        // let new_data = {
+        //   "id": response?.data?.id,
+        //   "prefix": response?.data?.prefix,
+        //   "name": response?.data?.name,
+        //   "is_live": response?.data?.is_live,
+        //   "created":  response?.data?.created
+        // }
+        // arryData.push(new_data)
+        // apikeyInfo?.map((post, id)=> {
+        //   arryData.push(post);
+        // })
+        // console.log("api key data 2", arryData)
+        // datatablaScript(arryData)
+        let textStr = "The API Key below will be shown only once.<p id='api-key-copy'>Key Prefix: " + response?.data?.prefix + "</p>Key Type: " + apikeyInfoStatusInModal + "<p>Key Secret: <h6>" + response?.data?.key + "</h6></p>";
 
         Swal.fire({
           title: 'API key Generated',
@@ -512,10 +524,15 @@ const ApikeyDataTables = (apikeyDetails) => {
           // cancelButtonColor: '#d33',
           confirmButtonText: 'Yes, i have copied and saved the API Key!'
         }).then((result) => {
+          // let keyCopyText = document.getElementById("api-key-copy")
+          // keyCopyText.select()
+          // keyCopyText.setSelectionRange(0, 99999)
+          // navigator.clipboard.writeText(keyCopyText.value)
+          // alert(keyCopyText.value)
           // if (result.isConfirmed) {
             // 
           setModal1(false);
-          window.location.reload()
+          // window.location.reload()
           // }
         });
         // setTimeout(() => {

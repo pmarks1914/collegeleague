@@ -31,6 +31,7 @@ const Otp = React.lazy(() => import('./views/pages/register/Otp'))
 
 class App extends Component {
   render() {
+    
     return (
       <BrowserRouter>
         <Suspense fallback={loading}>
