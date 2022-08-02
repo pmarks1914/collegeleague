@@ -690,14 +690,17 @@ export default function Checkout() {
                                 <Col sm="7" style={{textAlign: "right"}}>
                                     {/*  */}
                                     <p className='m-0 d-fixed checkout-ps-info'>
+                                        <b component="h1">Name :</b> {sessionData?.data?.full_name}
+                                    </p>
+                                    <p className='m-0 d-fixed checkout-ps-info'>
                                         <b component="h1">Amount :</b> GHS {amount}
                                     </p>
                                     <p className='m-0 d-fixed checkout-ps-info'>
                                         <b component="h1">Fee :</b> GHS {fee}
                                     </p>
-                                    <p className='m-0 d-fixed checkout-ps-info'>
+                                    {/* <p className='m-0 d-fixed checkout-ps-info'>
                                         <b component="h1">Phone :</b> {phoneNumber}
-                                    </p>
+                                    </p> */}
                                     {/* {phoneNumber.replace(/\s+/g, '')} */}
 
                                 </Col>
