@@ -48,6 +48,8 @@ class App extends Component {
             <Route exact path='/merchant/checkout-customer/:id' name="" element={<Checkout />} />
             <Route exact path='/checkout/:id' name="" element={<Checkout />} />
             <Route exact path='/checkout' name="" element={<Checkout />} />
+            <Route exact path='/pay/:id' name="" element={<Checkout />} />
+            <Route exact path='/pay' name="" element={<Checkout />} />
             <Route exact path="/otp" name="Otp Verification" element={<Otp />} />
             {
               userData?.access ?
