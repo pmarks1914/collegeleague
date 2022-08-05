@@ -520,10 +520,6 @@ export default function Checkout() {
         { "name": "VODAFONE", "id": 6 },
         { "name": "AIRTELTIGO", "id": 7 },
     ]
-    // const typeOfFee = [
-    //     { "name": "Fee 1", "id": 1 },
-    //     { "name": "Fee 2", "id": 5 },
-    // ]
     function genericOpt(otpType){
         // 
         if(otpType === "sendOtp"){
@@ -812,13 +808,21 @@ export default function Checkout() {
 
         setLoader('<div class="spinner-border dashboard-loader" style="color: #e0922f; text: center"></div>')
         axios(config).then(response => {
-            console.log("data namecheck verify==", response?.data);
+            console.log("data namecheck verify==", response?.data, "accountType", accountType);
             if (response?.data?.status) {
                 setLoader('')
-                makePayment();
-                setTimeout(() => {
-                    setModal2(false)
-                }, 3000);
+                // makePayment();
+                if(accountType === 1){
+                    genericOpt("sendOtp")
+                    setModal2(true)
+                }
+                else{
+                    // 
+                    makePayment();
+                }
+                // setTimeout(() => {
+                //     setModal2(false)
+                // }, 3000);
             }
             else{
                 setLoader('')
@@ -951,14 +955,14 @@ export default function Checkout() {
         };
     
         axios(config_ch).then(response => {
-            // console.log("data transaction status ==", response?.data);
+            console.log("data transaction status ==", response?.data);
             if (response?.data?.transaction_status === "SUCCESSFUL") {
                 // console.log("g>>>")
                 // setTrackTransaction(true)
                 clearInterval(intervalWait)
                 sessionStorage.setItem("trackTransaction", true)
                 
-                let textStr = "<p>Payment of GHS" + amount.toString() + " to " + (sessionData?.merchant_name?.toString() || sessionData?.merchant_id || '') + " </p> <p>Reference :</p>" + response?.data?.referance_id;
+                let textStr = "<p>Payment of GHS" + amount.toString() + " to " + (sessionData?.merchant_name?.toString() || sessionData?.merchant_id || '') + " </p> <p>Reference : " + response?.data?.reference_id + "</p>";
 
                 Swal.fire({
                 title: 'Successful',
@@ -973,6 +977,8 @@ export default function Checkout() {
                 // cancelButtonColor: '#d33',
                 confirmButtonText: 'OK'
                 }).then((result) => {
+                    window.location.reload();
+                    
                 setTimeout(() => {
                     if(isCheckout){
                         // checkout redirect 
@@ -1063,7 +1069,7 @@ export default function Checkout() {
                     <img src="https://wingipay.com/static/wingipay/logo/wingipay-2.4086593aa042.png" className='mb-3' />
 
                     <Typography component="h1" variant="h5" className='mb-5 checkout-0'>
-                        WingiPay Transaction
+                        { sessionData?.merchant_id || "WingiPay Transaction" }
                     </Typography>
                 </Box>
 
@@ -1575,7 +1581,7 @@ export default function Checkout() {
                     : ""
                 }
                 <Typography component="h6" className='mt-10' style={{textAlign: "center", fontSize: "15px", margin: "40px auto"}}>
-                    Powered by WingiPay&copy;{(new Date()).getUTCFullYear()}
+                    Powered by <img src='https://wingipay.com/static/wingipay/logo/wingi-pay-favicorn.998e2836f609.png' style={{margin: "-2px -5px 0px 0px"}}/> WingiPay&copy;{(new Date()).getUTCFullYear()}
                 </Typography>
             </Container>
 
@@ -1709,7 +1715,7 @@ export default function Checkout() {
                             </Col>
                             <Col sm="7" style={{textAlign: "right"}}>
                                     {/*  */}
-                                    <p className='m-0 d-fixed'>
+                                    {/* <p className='m-0 d-fixed'>
                                         <b component="h1">Amount :</b> GHS {amount}
                                     </p>
                                     <p className='m-0 d-fixed'>
@@ -1717,13 +1723,18 @@ export default function Checkout() {
                                     </p>
                                     <p className='m-0 d-fixed'>
                                         <b component="h1">Phone :</b> {phoneNumber}
-                                    </p>
+                                    </p> */}
                                     {/* {phoneNumber.replace(/\s+/g, '')} */}
 
                                 </Col>
                         </Row>
                     </FormControl>
-                    <Box noValidate sx={{ m: 2 }} id="form-4">
+                    <Box noValidate sx={{ m: 0 }} id="form-4">
+                        <Row>
+                            <Col sm="4"></Col>
+                            <Col sm="4"><h6>Verify OTP</h6></Col>
+                            <Col sm="4"></Col>
+                        </Row>
 
                         <TextField
                             error={otpError}

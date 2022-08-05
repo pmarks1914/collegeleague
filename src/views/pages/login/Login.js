@@ -253,6 +253,11 @@ const Login = () => {
             </CCardGroup>
           </CCol>
         </CRow>
+
+        <iframe src='https://dashboard.wingipay.com/pay/42LlzbZI/'  width="100%" height="350px" title="Iframe Example">
+          
+        </iframe>
+
       </CContainer>
     </div>
   )
