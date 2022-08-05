@@ -254,9 +254,9 @@ const Login = () => {
           </CCol>
         </CRow>
 
-        <iframe src='https://dashboard.wingipay.com/pay/42LlzbZI/'  width="100%" height="350px" title="Iframe Example">
+        {/* <iframe src='https://dashboard.wingipay.com/pay/42LlzbZI/'  width="100%" height="350px" title="Iframe Example">
           
-        </iframe>
+        </iframe> */}
 
       </CContainer>
     </div>
