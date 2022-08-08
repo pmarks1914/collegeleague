@@ -114,9 +114,10 @@ export default function Checkout() {
     const [phoneNumber, setPhoneNumber] = useState("")
     const [amount, setAmount] = useState("")
     const [accountType, setAccountType] = useState("")
+    const [accountName, setAccountName] = useState("")
     const [accountNumber, setAccountNumber] = useState("")
     const [otp, setOtp] = useState('');
-    const [fee, setFee] = useState('')
+    const [fee, setFee] = useState('0.00')
     const [feeType, setFeeType] = useState("")
     const [admissionId, setAdmissionId] = useState("")
     const [email, setEmail] = useState("")
@@ -384,7 +385,25 @@ export default function Checkout() {
 
             }
         }
-    }, [])
+
+
+        if(accountType === 1){
+            // 
+            setAccountName(methodOfPayment[0].name)
+        }
+        else if(accountType === 5){
+            // 
+            setAccountName(methodOfPayment[1].name)
+        }
+        else if(accountType === 6){
+            // 
+            setAccountName(methodOfPayment[3].name)
+        }
+        else if(accountType === 7){
+            // 
+            setAccountName(methodOfPayment[4].name)
+        }
+    }, [accountType])
     const handleDropdownChange = (event) => {
         // setbusinessType(event.target.value);
     };
@@ -496,7 +515,79 @@ export default function Checkout() {
             }
 
         }
-
+        if(formType === 5){
+            // handle view for user confirmation and verify payment
+            // {sessionData?.data?.full_name || payeeData.fullName}
+            // console.log("sessionData ", sessionData)
+            let txtString = `<table id="table" width="90%" border=0>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr width="100%" class="ml-3">
+                    <td style="float: left">Name :</td>
+                    <td style="float: right; margin-right: -40px">${ (sessionData?.data?.full_name || payeeData?.fullName || fullName ) } </td>
+                </tr>
+                <tr width="100%" class="ml-3">
+                    <td style="float: left">ID :</td>
+                    <td style="float: right; margin-right: -40px">${ payeeData?.studentId || "N/A" } </td>
+                </tr>
+                <tr width="100%" class="ml-3">
+                    <td style="float: left">Email :</td>
+                    <td style="float: right; margin-right: -40px">${ email || "N/A" } </td>
+                </tr>
+                <tr width="100%" class="ml-3">
+                    <td style="float: left">Account No. :</td>
+                    <td style="float: right; margin-right: -40px">${ accountNumber } </td>
+                </tr>
+                <tr width="100%" class="ml-3">
+                    <td style="float: left">Payment method :</td>
+                    <td style="float: right; margin-right: -40px">${ accountName } </td>
+                </tr>
+                <tr width="100%" class="ml-3">
+                    <td style="float: left">Amount :</td>
+                    <td style="float: right; margin-right: -40px">${ amount } </td>
+                </tr>
+                <tr width="100%" class="ml-3">
+                    <td style="float: left">Fee :</td>
+                    <td style="float: right; margin-right: -40px">${ fee } </td>
+                </tr>
+            </tbody>
+            </table>`
+            if ( Number(accountType)===0 ) {
+                setAccountTypeError(true)
+            }
+            else if (!(expPhone.test(accountNumber))) {
+                setAccountNumberError(true)
+            }            
+            else if(accountNumber && accountType){
+                Swal.fire({
+                    title: 'Verify!',
+                    html: txtString,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    showConfirmButton: true,
+                    confirmButtonColor: '#FF7643',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Confirm',
+                    reverseButtons: true,
+                    allowOutsideClick: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        handleSubmit(event, 2)
+                    }
+                    else{
+                        setPagePaymentMethod(false)
+                    }
+                })
+            }
+        }
         // check btn text for pay now
         // if (btnText === "Pay now") {
         //     setBtnText("Pay now")
@@ -916,7 +1007,7 @@ export default function Checkout() {
         };
 
         axios(config).then(response => {
-            console.log("data setFeeData ==", response?.data);
+            // console.log("data setFeeData ==", response?.data);
             if (response?.data?.status) {
                 setFeeData(response?.data?.payment_types)
             }
@@ -1230,7 +1321,7 @@ export default function Checkout() {
                                     style={{background: "#FF7643"}}
                                     onClick={(e) => {handleSubmit(e, 3)}}
                                 >
-                                    {btnText}
+                                    PROCEED
                                 </Button>
 
                             </Box>
@@ -1340,7 +1431,7 @@ export default function Checkout() {
                                     variant="contained"
                                     sx={{ mt: 3, mb: 2 }}
                                     style={{background: "#FF7643"}}
-                                    onClick={(e) => handleSubmit(e, 2)}
+                                    onClick={(e) => handleSubmit(e, 5)}
                                 >
                                     PAY NOW
                                 </Button>
@@ -1572,7 +1663,7 @@ export default function Checkout() {
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
                             style={{background: "#FF7643"}}
-                            onClick={(e) => handleSubmit(e, 2)}
+                            onClick={(e) => handleSubmit(e, 5)}
                         >
                             PAY NOW
                         </Button>
@@ -1581,7 +1672,7 @@ export default function Checkout() {
                     : ""
                 }
                 <Typography component="h6" className='mt-10' style={{textAlign: "center", fontSize: "15px", margin: "40px auto"}}>
-                    Powered by <img src='https://wingipay.com/static/wingipay/logo/wingi-pay-favicorn.998e2836f609.png' style={{margin: "-2px -5px 0px 0px"}}/> WingiPay&copy;{(new Date()).getUTCFullYear()}
+                    Powered by <img src='https://wingipay.com/static/wingipay/logo/wingi-pay-favicorn.998e2836f609.png' style={{margin: "-2px -2px 0px 0px"}}/> WingiPay &copy; {(new Date()).getUTCFullYear()}
                 </Typography>
             </Container>
 
@@ -1678,7 +1769,7 @@ export default function Checkout() {
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
                             style={{background: "#FF7643"}}
-                            onClick={(e) => handleSubmit(e, 2)}
+                            onClick={(e) => handleSubmit(e, 5)}
                         >
                             Continue
                         </Button>
@@ -1775,7 +1866,7 @@ export default function Checkout() {
                             style={{background: "#FF7643"}}
                             onClick={(e) => handleSubmit(e, 4)}
                         >
-                            Continue
+                            CONTINUE
                         </Button>
 
                     </Box>
