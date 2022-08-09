@@ -301,7 +301,7 @@ export default function Checkout() {
                 };
                 
                 axios(config_ch).then(response => {
-                    // console.log("data custom checkout ==", response?.data);
+                    console.log("data custom checkout s==", response?.data);
                     if (response?.data?.status === true) {
                         // console.log("g>>>")
                         sessionStorage.setItem("sessionData", JSON.stringify(response?.data))
@@ -309,9 +309,9 @@ export default function Checkout() {
                         // setAccountNumber(response?.data?.data?.phone)
                         // setPhoneNumber(response?.data?.data?.phone)
                         // setAmount(response?.data?.data?.amount)
-                        setFee(response?.data?.data?.fee || "0.00")
+                        setFee(response?.data?.fee || "0.00")
                         setPrefix(response?.data?.prefix)
-                        setSourceMetadata(response?.data?.data)
+                        setSourceMetadata(response?.data)
 
                         // window.history.pushState("", "", '/pay')
 
@@ -802,7 +802,7 @@ export default function Checkout() {
                     setTrackTransaction(sessionStorage.getItem("trackTransaction"))
                     intervalWait = setInterval(function(){
                         statusTransaction(response?.data?.transaction_id, response?.data?.reference_id)
-                    }, 15000)
+                    }, 5000)
                 },
                 willClose: () => {
                     // clearInterval(timerInterval)
@@ -903,7 +903,7 @@ export default function Checkout() {
 
         setLoader('<div class="spinner-border dashboard-loader" style="color: #e0922f; text: center"></div>')
         axios(config).then(response => {
-            // console.log("data namecheck verify==", response?.data, "accountType", accountType);
+            console.log("data namecheck verify==", response?.data, "accountType", accountType);
             if (response?.data?.status) {
                 setLoader('')
                 // makePayment();
@@ -970,7 +970,7 @@ export default function Checkout() {
             };
 
             axios(config).then(response => {
-                // console.log("data setPayeeData verify==", response?.data);
+                console.log("data setPayeeData verify==", response?.data);
                 if (response?.data?.status) {
                     setPayeeData(response?.data?.student)
                 }
@@ -1040,7 +1040,6 @@ export default function Checkout() {
         )
     }
     function statusTransaction(id, refId){
-        // /transaction/status/nsano/
 
         let data = '';
         let config_ch = {
@@ -1053,7 +1052,7 @@ export default function Checkout() {
         };
     
         axios(config_ch).then(response => {
-            // console.log("data transaction status ==", response?.data);
+            console.log("data transaction status ==", response?.data);
             if (response?.data?.transaction_status === "SUCCESSFUL") {
                 // console.log("g>>>")
                 // setTrackTransaction(true)
@@ -1594,7 +1593,7 @@ export default function Checkout() {
                                         console.log("", )
                                     }
                                     <p className='m-0 d-fixed checkout-ps-info'>
-                                        <b component="h1">{sessionData?.data?.full_name || payeeData.fullName} </b> 
+                                        <b component="h1">{sessionData?.data?.full_name || payeeData?.fullName} </b> 
                                     </p>
                                     <p className='m-0 d-fixed checkout-ps-info'>
                                         <b component="h1">Amount :</b> GHS {amount}
