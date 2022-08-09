@@ -75,6 +75,7 @@ import Swal from 'sweetalert2';
 let userData = JSON.parse(localStorage.getItem("userDataStore"));
 sessionStorage.setItem("trackTransaction", false)
 let intervalWait;
+let ccount = 0;
 
 function Copyright(props) {
     return (
@@ -100,6 +101,7 @@ export default function Checkout() {
 
     const [pagePaymentMethod, setPagePaymentMethod] = useState(false)
     const [trackTransaction, setTrackTransaction] = useState(false)
+    const [counterWaitingVal, setCounterWaitingVal] = useState(0)
 
     const [transactionId, setTransactionId] = useState("")
     const [merchantId, setMerchantId] = useState("")
@@ -783,7 +785,7 @@ export default function Checkout() {
                 // 
                 setTransactionId(response?.data?.transaction_id)
                 setLoader(``)
-                let textStr = "<p>Payment of GHS" + amount.toString() + " to " + (sessionData?.merchant_name?.toString() || '') + " </p> <p>1. Kindly approve the payment request on your phone </p>";
+                let textStr = "<p>Payment of GHS" + amount.toString() + " to " + (sessionData?.merchant_name?.toString() || '') + " </p> <p>Kindly approve the payment request on your phone </p>";
 
                 Swal.fire({
                 title: 'Pending Approval',
@@ -800,9 +802,11 @@ export default function Checkout() {
                 didOpen: () => {
                     Swal.showLoading()
                     setTrackTransaction(sessionStorage.getItem("trackTransaction"))
-                    intervalWait = setInterval(function(){
-                        statusTransaction(response?.data?.transaction_id, response?.data?.reference_id)
-                    }, 5000)
+                        intervalWait = setInterval(function(){
+                            ccount = ccount + 1;
+                            statusTransaction(response?.data?.transaction_id, response?.data?.reference_id, ccount)
+                        }, 5000)
+                    
                 },
                 willClose: () => {
                     // clearInterval(timerInterval)
@@ -1039,8 +1043,8 @@ export default function Checkout() {
         }
         )
     }
-    function statusTransaction(id, refId){
-
+    function statusTransaction(id, refId, interCount){
+        // setCounterWaitingVal(counterWaitingVal + 1);
         let data = '';
         let config_ch = {
             method: 'get',
@@ -1050,103 +1054,129 @@ export default function Checkout() {
             },
             data: data
         };
-    
-        axios(config_ch).then(response => {
-            console.log("data transaction status ==", response?.data);
-            if (response?.data?.transaction_status === "SUCCESSFUL") {
-                // console.log("g>>>")
-                // setTrackTransaction(true)
-                clearInterval(intervalWait)
-                sessionStorage.setItem("trackTransaction", true)
-                
-                let textStr = "<p>Payment of GHS" + amount.toString() + " to " + (sessionData?.merchant_name?.toString() || sessionData?.merchant_id || '') + " </p> <p>Reference : " + " " + response?.data?.reference_id + "</p>";
+        console.log("cccc", ccount)
 
-                Swal.fire({
-                title: 'Successful',
-                html: textStr.toString(),
-                icon: 'success',
-                // timer: 6000,
-                allowOutsideClick: false,
-                // allowEscapeKey: false,
-                showCancelButton: false,
-                showConfirmButton: true,
-                confirmButtonColor: '#FF7643',
-                // cancelButtonColor: '#d33',
-                confirmButtonText: 'OK'
-                }).then((result) => {
-                    window.location.reload();
+        if(interCount < 6){
+            axios(config_ch).then(response => {
+                // console.log("data transaction status ==", response?.data);
+                if (response?.data?.transaction_status === "SUCCESSFUL") {
+                    // console.log("g>>>")
+                    // setTrackTransaction(true)
+                    clearInterval(intervalWait)
+                    ccount = 0;
+                    sessionStorage.setItem("trackTransaction", true)
                     
-                setTimeout(() => {
-                    if(isCheckout){
-                        // checkout redirect 
-                        if(sourceMetadata?.callbackurl){
-                            // 
-                            window.location.href = sourceMetadata?.callbackurl
-                        }
-                    }
-                }, 1000);
-                });
+                    let textStr = "<p>Payment of GHS" + amount.toString() + " to " + (sessionData?.merchant_name?.toString() || sessionData?.merchant_id || '') + " </p> <p>Reference : " + " " + response?.data?.reference_id + "</p>";
 
-            }  
-            else if(response?.data?.transaction_status === "FAILED") {
-                // console.log("g>>>")
-                // setTrackTransaction(true)
-                clearInterval(intervalWait)                
-                let textStr = "<p>Payment not successful </p> <p> Reference:" + refId + "</p>";
+                    Swal.fire({
+                    title: 'Successful',
+                    html: textStr.toString(),
+                    icon: 'success',
+                    // timer: 6000,
+                    allowOutsideClick: false,
+                    // allowEscapeKey: false,
+                    showCancelButton: false,
+                    showConfirmButton: true,
+                    confirmButtonColor: '#FF7643',
+                    // cancelButtonColor: '#d33',
+                    confirmButtonText: 'OK'
+                    }).then((result) => {
+                        window.location.reload();
+                        // setTimeout(() => {
+                        //     if(isCheckout){
+                        //         // checkout redirect 
+                        //         if(sourceMetadata?.callbackurl){
+                        //             // 
+                        //             window.location.href = sourceMetadata?.callbackurl
+                        //         }
+                        //     }
+                        // }, 1000);
+                    });
 
-                Swal.fire({
-                title: 'Failed',
-                html: textStr.toString(),
-                icon: 'error',
-                // timer: 6000,
-                allowOutsideClick: false,
-                // allowEscapeKey: false,
-                showCancelButton: false,
-                showConfirmButton: true,
-                confirmButtonColor: '#FF7643',
-                // cancelButtonColor: '#d33',
-                confirmButtonText: 'OK'
-                }).then((result) => {
-                    
-                    
-                });
+                }  
+                else if(response?.data?.transaction_status === "FAILED") {
+                    // console.log("g>>>")
+                    // setTrackTransaction(true)
+                    clearInterval(intervalWait)  
+                    ccount = 0;              
+                    let textStr = "<p>Payment not successful </p> <p> Reference:" + refId + "</p>";
 
-            }           
+                    Swal.fire({
+                    title: 'Failed',
+                    html: textStr.toString(),
+                    icon: 'error',
+                    // timer: 6000,
+                    allowOutsideClick: false,
+                    // allowEscapeKey: false,
+                    showCancelButton: false,
+                    showConfirmButton: true,
+                    confirmButtonColor: '#FF7643',
+                    // cancelButtonColor: '#d33',
+                    confirmButtonText: 'OK'
+                    }).then((result) => {
+                        
+                        
+                    });
 
-        }).catch(function (error) {
+                }           
+
+            }).catch(function (error) {
+                // 
+                // if(error){
+                //     Swal.fire({
+                //         title: 'Application Error',
+                //         title: 'Oops',
+                //         html: "<div class='pb-0 pt-0'> Try again later </div>",
+                //         icon: 'warning',
+                //         showCancelButton: false,
+                //         showConfirmButton: false,
+                //         allowOutsideClick: false,
+                //     }).then((result) => {
+                //         // 
+                //     })
+                // }
+                if (error.response) {
+                    // console.log("==");
+                    /*
+                    * The request was made and the server responded with a
+                    * status code that falls out of the range of 2xx
+                    */
+
+                } else if (error.request) {
+                    /*
+                    * The request was made but no response was received, `error.request`
+                    * is an instance of XMLHttpRequest in the browser and an instance
+                    * of http.ClientRequest in Node.js
+                    */
+
+                } else {
+                    // Something happened in setting up the request and triggered an Error
+
+                }
+            });
+        }
+        else{
             // 
-            // if(error){
-            //     Swal.fire({
-            //         title: 'Application Error',
-            //         title: 'Oops',
-            //         html: "<div class='pb-0 pt-0'> Try again later </div>",
-            //         icon: 'warning',
-            //         showCancelButton: false,
-            //         showConfirmButton: false,
-            //         allowOutsideClick: false,
-            //     }).then((result) => {
-            //         // 
-            //     })
-            // }
-            if (error.response) {
-                // console.log("==");
-                /*
-                * The request was made and the server responded with a
-                * status code that falls out of the range of 2xx
-                */
+            clearInterval(intervalWait)             
+            let textStr = "<p> <p> Reference: " + refId + "</p>";
+            ccount = 0;
 
-            } else if (error.request) {
-                /*
-                * The request was made but no response was received, `error.request`
-                * is an instance of XMLHttpRequest in the browser and an instance
-                * of http.ClientRequest in Node.js
-                */
-
-            } else {
-                // Something happened in setting up the request and triggered an Error
-
-            }
-        });
+            Swal.fire({
+            title: 'Pending',
+            html: textStr.toString(),
+            icon: 'info',
+            // timer: 6000,
+            allowOutsideClick: false,
+            // allowEscapeKey: false,
+            showCancelButton: false,
+            showConfirmButton: true,
+            confirmButtonColor: '#FF7643',
+            // cancelButtonColor: '#d33',
+            confirmButtonText: 'OK'
+            }).then((result) => {
+                
+            });
+        }
     }
     return (
         <ThemeProvider theme={theme}>
@@ -1828,9 +1858,9 @@ export default function Checkout() {
                     </FormControl>
                     <Box noValidate sx={{ m: 0 }} id="form-4">
                         <Row>
-                            <Col sm="4"></Col>
-                            <Col sm="4"><h6>Verify OTP</h6></Col>
-                            <Col sm="4"></Col>
+                            <Col sm="1"></Col>
+                            <Col sm="10" style={{textAlign: "center"}}><h6><p>Please check your mobile phone and type the code here!</p></h6></Col>
+                            <Col sm="1"></Col>
                         </Row>
 
                         <TextField
