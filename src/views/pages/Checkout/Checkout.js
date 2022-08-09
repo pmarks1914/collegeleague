@@ -1105,6 +1105,7 @@ export default function Checkout() {
                 else if(response?.data?.transaction_status === "FAILED") {
                     // console.log("g>>>")
                     // setTrackTransaction(true)
+                    Swal.close() 
                     clearInterval(intervalWait)  
                     ccount = 0;              
                     let textStr = "<p>Payment not successful </p> <p> Reference:" + refId + "</p>";
@@ -1113,8 +1114,8 @@ export default function Checkout() {
                     title: 'Failed',
                     html: textStr.toString(),
                     icon: 'error',
-                    // timer: 6000,
-                    allowOutsideClick: false,
+                    timer: 3000,
+                    allowOutsideClick: true,
                     // allowEscapeKey: false,
                     showCancelButton: false,
                     showConfirmButton: true,
@@ -1122,12 +1123,13 @@ export default function Checkout() {
                     // cancelButtonColor: '#d33',
                     confirmButtonText: 'OK'
                     }).then((result) => {
-                        Swal.close()
-                        
-                        
+                        Swal.close()                        
                     });
 
-                }           
+                } 
+                else{
+                    Swal.close() 
+                }          
 
             }).catch(function (error) {
                 // 
