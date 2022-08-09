@@ -1114,6 +1114,8 @@ export default function Checkout() {
                     // cancelButtonColor: '#d33',
                     confirmButtonText: 'OK'
                     }).then((result) => {
+                        ccount = 0;
+                        Swal.close()
                     });
                     setTimeout(() => {
                         Swal.close()
@@ -1175,8 +1177,13 @@ export default function Checkout() {
             // cancelButtonColor: '#d33',
             confirmButtonText: 'OK'
             }).then((result) => {
-                
+                ccount = 0;
+                Swal.close()
             });
+            setTimeout(() => {
+                Swal.close()
+            }, 3000);
+            
         }
     }
     return (
