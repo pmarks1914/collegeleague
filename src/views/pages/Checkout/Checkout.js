@@ -191,6 +191,7 @@ export default function Checkout() {
                             allowOutsideClick: false,
                         }).then((result) => {
                             // 
+                            Swal.close()
                         })
                     }
                     
@@ -277,6 +278,7 @@ export default function Checkout() {
                     allowOutsideClick: false,
                 }).then((result) => {
                     // 
+                    Swal.close()
                 })
 
             }
@@ -349,6 +351,7 @@ export default function Checkout() {
                             // timer: 4000
                         }).then((result) => {
                             // 
+                            Swal.close()
                         })
                     }
                     if (error.response) {
@@ -383,6 +386,7 @@ export default function Checkout() {
                     // timer: 4000
                 }).then((result) => {
                     // 
+                    Swal.close()
                 })
 
             }
@@ -591,6 +595,7 @@ export default function Checkout() {
                     else{
                         setPagePaymentMethod(false)
                     }
+                    Swal.close()
                 })
             }
         }
@@ -712,6 +717,7 @@ export default function Checkout() {
                         timer: 4000
                     }).then((result) => {
                         // 
+                        Swal.close()
                     })
                 }
             }).catch(function (error) {
@@ -805,7 +811,7 @@ export default function Checkout() {
                         intervalWait = setInterval(function(){
                             ccount = ccount + 1;
                             statusTransaction(response?.data?.transaction_id, response?.data?.reference_id, ccount)
-                        }, 5000)
+                        }, 8000)
                     
                 },
                 willClose: () => {
@@ -835,6 +841,7 @@ export default function Checkout() {
                     // timer: 4000
                 }).then((result) => {
                     // 
+                    Swal.close()
                 })
             }
         }).catch(function (error) {
@@ -1081,6 +1088,7 @@ export default function Checkout() {
                     // cancelButtonColor: '#d33',
                     confirmButtonText: 'OK'
                     }).then((result) => {
+                        Swal.close()
                         window.location.reload();
                         // setTimeout(() => {
                         //     if(isCheckout){
@@ -1114,6 +1122,7 @@ export default function Checkout() {
                     // cancelButtonColor: '#d33',
                     confirmButtonText: 'OK'
                     }).then((result) => {
+                        Swal.close()
                         
                         
                     });
@@ -1174,6 +1183,7 @@ export default function Checkout() {
             // cancelButtonColor: '#d33',
             confirmButtonText: 'OK'
             }).then((result) => {
+                Swal.close()
                 
             });
         }
