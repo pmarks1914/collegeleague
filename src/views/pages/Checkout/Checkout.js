@@ -903,7 +903,7 @@ export default function Checkout() {
 
         setLoader('<div class="spinner-border dashboard-loader" style="color: #e0922f; text: center"></div>')
         axios(config).then(response => {
-            console.log("data namecheck verify==", response?.data, "accountType", accountType);
+            // console.log("data namecheck verify==", response?.data, "accountType", accountType);
             if (response?.data?.status) {
                 setLoader('')
                 // makePayment();
@@ -970,7 +970,7 @@ export default function Checkout() {
             };
 
             axios(config).then(response => {
-                console.log("data setPayeeData verify==", response?.data);
+                // console.log("data setPayeeData verify==", response?.data);
                 if (response?.data?.status) {
                     setPayeeData(response?.data?.student)
                 }
@@ -1053,7 +1053,7 @@ export default function Checkout() {
         };
     
         axios(config_ch).then(response => {
-            console.log("data transaction status ==", response?.data);
+            // console.log("data transaction status ==", response?.data);
             if (response?.data?.transaction_status === "SUCCESSFUL") {
                 // console.log("g>>>")
                 // setTrackTransaction(true)
