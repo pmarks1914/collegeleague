@@ -397,11 +397,11 @@ export default function Checkout() {
         }
         else if(accountType === 6){
             // 
-            setAccountName(methodOfPayment[3].name)
+            setAccountName(methodOfPayment[2].name)
         }
         else if(accountType === 7){
             // 
-            setAccountName(methodOfPayment[4].name)
+            setAccountName(methodOfPayment[3].name)
         }
     }, [accountType])
     const handleDropdownChange = (event) => {
@@ -551,6 +551,10 @@ export default function Checkout() {
                     <td style="float: right; margin-right: -40px">${ accountName } </td>
                 </tr>
                 <tr width="100%" class="ml-3">
+                    <td style="float: left">Service type :</td>
+                    <td style="float: right; margin-right: -40px">${ feeType } </td>
+                </tr>
+                <tr width="100%" class="ml-3">
                     <td style="float: left">Amount :</td>
                     <td style="float: right; margin-right: -40px">${ amount } </td>
                 </tr>
@@ -570,7 +574,7 @@ export default function Checkout() {
                 Swal.fire({
                     title: 'Verify!',
                     html: txtString,
-                    icon: 'warning',
+                    // icon: 'warning',
                     showCancelButton: true,
                     showConfirmButton: true,
                     confirmButtonColor: '#FF7643',
@@ -797,8 +801,8 @@ export default function Checkout() {
                     Swal.showLoading()
                     setTrackTransaction(sessionStorage.getItem("trackTransaction"))
                     intervalWait = setInterval(function(){
-                        statusTransaction(response?.data?.transaction_id)
-                    }, 5000)
+                        statusTransaction(response?.data?.transaction_id, response?.data?.reference_id)
+                    }, 15000)
                 },
                 willClose: () => {
                     // clearInterval(timerInterval)
@@ -883,7 +887,7 @@ export default function Checkout() {
             // AIRTELTIGO
             data = {
                 "phone": accountNumber,
-                "network": "AIRTELTIGO"
+                "network": "AIRTEL_TIGO"
             }
         }
 
@@ -903,14 +907,16 @@ export default function Checkout() {
             if (response?.data?.status) {
                 setLoader('')
                 // makePayment();
-                if(accountType === 1){
-                    genericOpt("sendOtp")
-                    setModal2(true)
-                }
-                else{
-                    // 
-                    makePayment();
-                }
+                genericOpt("sendOtp")
+                setModal2(true)
+                // if(accountType === 1){
+                //     genericOpt("sendOtp")
+                //     setModal2(true)
+                // }
+                // else{
+                //     // 
+                //     makePayment();
+                // }
                 // setTimeout(() => {
                 //     setModal2(false)
                 // }, 3000);
@@ -1033,7 +1039,8 @@ export default function Checkout() {
         }
         )
     }
-    function statusTransaction(id){
+    function statusTransaction(id, refId){
+        // /transaction/status/nsano/
 
         let data = '';
         let config_ch = {
@@ -1053,7 +1060,7 @@ export default function Checkout() {
                 clearInterval(intervalWait)
                 sessionStorage.setItem("trackTransaction", true)
                 
-                let textStr = "<p>Payment of GHS" + amount.toString() + " to " + (sessionData?.merchant_name?.toString() || sessionData?.merchant_id || '') + " </p> <p>Reference : " + response?.data?.reference_id + "</p>";
+                let textStr = "<p>Payment of GHS" + amount.toString() + " to " + (sessionData?.merchant_name?.toString() || sessionData?.merchant_id || '') + " </p> <p>Reference : " + " " + response?.data?.reference_id + "</p>";
 
                 Swal.fire({
                 title: 'Successful',
@@ -1086,7 +1093,7 @@ export default function Checkout() {
                 // console.log("g>>>")
                 // setTrackTransaction(true)
                 clearInterval(intervalWait)                
-                let textStr = "<p>Payment not successful </p>";
+                let textStr = "<p>Payment not successful </p> <p> Reference:" + refId + "</p>";
 
                 Swal.fire({
                 title: 'Failed',
@@ -1294,7 +1301,7 @@ export default function Checkout() {
                                         // id="demo-simple-select-standard"
                                         error={feeTypeError}
                                         value={feeType}
-                                        onChange={(e) => { (setFeeType(e.target.value)); (setFeeTypeError(false)) }}
+                                        onChange={(e) => { (setFeeType(e.target.value)); (setFeeTypeError(false)) } }
                                         label="Select"
                                     >
                                         <MenuItem value="">
@@ -1302,7 +1309,7 @@ export default function Checkout() {
                                         </MenuItem>
                                         {
                                             feeData?.map((post, id) =>
-                                                <MenuItem value={post.id} key={post.id}>{post.paymentName}</MenuItem>
+                                                <MenuItem value={post.paymentName} key={post.paymentName}>{post.paymentName}</MenuItem>
                                             )
                                         }
                                     </Select>
