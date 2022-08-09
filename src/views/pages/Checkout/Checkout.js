@@ -191,7 +191,6 @@ export default function Checkout() {
                             allowOutsideClick: false,
                         }).then((result) => {
                             // 
-                            Swal.close()
                         })
                     }
                     
@@ -278,7 +277,6 @@ export default function Checkout() {
                     allowOutsideClick: false,
                 }).then((result) => {
                     // 
-                    Swal.close()
                 })
 
             }
@@ -351,7 +349,6 @@ export default function Checkout() {
                             // timer: 4000
                         }).then((result) => {
                             // 
-                            Swal.close()
                         })
                     }
                     if (error.response) {
@@ -386,7 +383,6 @@ export default function Checkout() {
                     // timer: 4000
                 }).then((result) => {
                     // 
-                    Swal.close()
                 })
 
             }
@@ -595,7 +591,6 @@ export default function Checkout() {
                     else{
                         setPagePaymentMethod(false)
                     }
-                    Swal.close()
                 })
             }
         }
@@ -717,7 +712,6 @@ export default function Checkout() {
                         timer: 4000
                     }).then((result) => {
                         // 
-                        Swal.close()
                     })
                 }
             }).catch(function (error) {
@@ -841,7 +835,6 @@ export default function Checkout() {
                     // timer: 4000
                 }).then((result) => {
                     // 
-                    Swal.close()
                 })
             }
         }).catch(function (error) {
@@ -1088,7 +1081,6 @@ export default function Checkout() {
                     // cancelButtonColor: '#d33',
                     confirmButtonText: 'OK'
                     }).then((result) => {
-                        Swal.close()
                         window.location.reload();
                         // setTimeout(() => {
                         //     if(isCheckout){
@@ -1105,7 +1097,6 @@ export default function Checkout() {
                 else if(response?.data?.transaction_status === "FAILED") {
                     // console.log("g>>>")
                     // setTrackTransaction(true)
-                    Swal.close() 
                     clearInterval(intervalWait)  
                     ccount = 0;              
                     let textStr = "<p>Payment not successful </p> <p> Reference:" + refId + "</p>";
@@ -1114,8 +1105,8 @@ export default function Checkout() {
                     title: 'Failed',
                     html: textStr.toString(),
                     icon: 'error',
-                    timer: 3000,
-                    allowOutsideClick: true,
+                    // timer: 3000,
+                    allowOutsideClick: false,
                     // allowEscapeKey: false,
                     showCancelButton: false,
                     showConfirmButton: true,
@@ -1123,13 +1114,12 @@ export default function Checkout() {
                     // cancelButtonColor: '#d33',
                     confirmButtonText: 'OK'
                     }).then((result) => {
-                        Swal.close()                        
                     });
+                    setTimeout(() => {
+                        Swal.close()
+                    }, 3000);
 
-                } 
-                else{
-                    Swal.close() 
-                }          
+                }           
 
             }).catch(function (error) {
                 // 
@@ -1185,7 +1175,6 @@ export default function Checkout() {
             // cancelButtonColor: '#d33',
             confirmButtonText: 'OK'
             }).then((result) => {
-                Swal.close()
                 
             });
         }
