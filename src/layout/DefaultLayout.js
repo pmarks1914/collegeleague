@@ -11,7 +11,7 @@ class DefaultLayout extends Component {
       window.location.href = "/login"
     } 
     
-    // console.log("path ", window.location.pathname)
+    // // console.log("path ", window.location.pathname)
 
     // if(["/dashboard", "/payment/transaction", "/payment/refunds", "/payment/payouts", "/compliance", "/api-keys"].includes(window.location.pathname)){
     //   // 
@@ -21,9 +21,9 @@ class DefaultLayout extends Component {
     // }
 
     window.onstorage = () => {
-      // console.log("storage ", JSON.parse(localStorage.getItem("userDataStore")) )
+      // // console.log("storage ", JSON.parse(localStorage.getItem("userDataStore")) )
       if(JSON.parse(localStorage.getItem("userDataStore")) === null){
-        // console.log("storage ")
+        // // console.log("storage ")
         window.location.href="/";
       }
     };
@@ -46,9 +46,9 @@ export default DefaultLayout;
 
 
 
-// console.log("storage listener")
+// // console.log("storage listener")
 // window.addEventListener('storage', function(event){
-//   console.log("storage listener")
+//   // console.log("storage listener")
 //   if (event.key == 'logout-event') { 
 //       // ..
 //   }

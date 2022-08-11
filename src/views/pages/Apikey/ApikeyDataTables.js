@@ -155,7 +155,7 @@ const ApikeyDataTables = (apikeyDetails) => {
     // }
 
     
-    // console.log("props ", dateRange, apikeyInfo, apikeyInfoStatus, monitorState)
+    // // console.log("props ", dateRange, apikeyInfo, apikeyInfoStatus, monitorState)
 
   }, [dateRange, apikeyInfo])
 
@@ -258,13 +258,13 @@ const ApikeyDataTables = (apikeyDetails) => {
   function getFilterData(e) {
     // 
     e.preventDefault();
-    console.log("post tableData ", tableData);
+    // console.log("post tableData ", tableData);
     // apikeyInfo = posts;
     try {
       // setTableData(posts);
       let newFilterData = apikeyDetails?.apikeyDetails.filter((post) => { return moment(post?.created).format('LLLL') <= moment(dateFrom).format('LLLL') })
-      // console.log("post tableData ", apikeyDetails?.apikeyDetails);
-      console.log("post tableData ", newFilterData);
+      // // console.log("post tableData ", apikeyDetails?.apikeyDetails);
+      // console.log("post tableData ", newFilterData);
       datatablaScript(newFilterData);
       setModal1(false)
     } catch (error) {
@@ -295,9 +295,9 @@ const ApikeyDataTables = (apikeyDetails) => {
   }
   function toggleFilter(e, type) {
     e.preventDefault();
-    console.log("test>>> ", dropValue)
+    // console.log("test>>> ", dropValue)
     setDropValue(1);
-    console.log("test ", dropValue, "type", type, "openDateRange", openDateRange)
+    // console.log("test ", dropValue, "type", type, "openDateRange", openDateRange)
     if(type === "filter"){
       document.getElementById("filterDropdown").classList.toggle("show");
       // document.getElementById("dateRangeDropdown").classList.remove('show');
@@ -314,14 +314,14 @@ const ApikeyDataTables = (apikeyDetails) => {
   window.onclick = function (event) {
     event.preventDefault()
     trackActivity();
-    console.log("dropdown ==", dropValue, "e", event.target.matches('.dateRange'), "openDateRange > ", openDateRange)
+    // console.log("dropdown ==", dropValue, "e", event.target.matches('.dateRange'), "openDateRange > ", openDateRange)
     setDropValue(0);
     if (!event.target.matches('.dropbtn') && dropValue === 0) {
       let dropdowns = document.getElementsByClassName("dropdown-content");
       let i;
       for (i = 0; i < dropdowns.length; i++) {
         let openDropdown = dropdowns[i];
-        // console.log("list ==> ", openDropdown.classList.contains('show'))
+        // // console.log("list ==> ", openDropdown.classList.contains('show'))
         if (openDropdown.classList.contains('show')) {
           openDropdown.classList.remove('show');
         }
@@ -367,7 +367,7 @@ const ApikeyDataTables = (apikeyDetails) => {
   ];
   function performFilter(type, status){
 
-    // console.log("by status ", apikeyInfoStatus, "type", type )
+    // // console.log("by status ", apikeyInfoStatus, "type", type )
     // perform filter by date range
     if(type === "filterByDate"){
       // 
@@ -379,7 +379,7 @@ const ApikeyDataTables = (apikeyDetails) => {
     }
     else if(type === "filterByStatus"){
       // 
-      // console.log("by status",status, monitorState, apikeyDetails )
+      // // console.log("by status",status, monitorState, apikeyDetails )
       if(status === "All apikeyInfo" && monitorState === 1){
         datatablaScript(apikeyDetails?.apikeyDetails);
       }
@@ -414,9 +414,9 @@ const ApikeyDataTables = (apikeyDetails) => {
     let result;
     const columnDelimiter = ',';
     const lineDelimiter = '\n';
-    // console.log("array 0>>", array);
+    // // console.log("array 0>>", array);
     const keys = Object.keys(array[0]);
-    // console.log("keys", keys );
+    // // console.log("keys", keys );
     result = '';
     result += keys.join(columnDelimiter);
     result += lineDelimiter;
@@ -435,9 +435,9 @@ const ApikeyDataTables = (apikeyDetails) => {
 
   function downloadCSV(array) {
     const link = document.createElement('a');
-    // console.log("exp downloadCSV==>", array  );
+    // // console.log("exp downloadCSV==>", array  );
     let csv = convertArrayOfObjectsToCSV(array);
-    console.log("csv", csv);
+    // console.log("csv", csv);
     if (csv == null) {return};
   
     const filename = 'WPexport.csv';
@@ -495,9 +495,9 @@ const ApikeyDataTables = (apikeyDetails) => {
     axios(config).then(response => {
       console.log(response.status);
       if (response?.data?.status === true) { 
-        // console.log("api key", tableData)
+        // // console.log("api key", tableData)
         // let arryData = [];
-        // console.log("api key data 1", arryData)
+        // // console.log("api key data 1", arryData)
         // let new_data = {
         //   "id": response?.data?.id,
         //   "prefix": response?.data?.prefix,
@@ -509,7 +509,7 @@ const ApikeyDataTables = (apikeyDetails) => {
         // apikeyInfo?.map((post, id)=> {
         //   arryData.push(post);
         // })
-        // console.log("api key data 2", arryData)
+        // // console.log("api key data 2", arryData)
         // datatablaScript(arryData)
         let textStr = "The API Key below will be shown only once.<p id='api-key-copy'>Key Prefix: " + response?.data?.prefix + "</p>Key Type: " + apikeyInfoStatusInModal + "<p>Key Secret: <h6>" + response?.data?.key + "</h6></p>";
 
@@ -575,7 +575,7 @@ const ApikeyDataTables = (apikeyDetails) => {
       }
 
       if (error.response) {
-        // console.log("==>");
+        // // console.log("==>");
         /*
           * The request was made and the server responded with a
           * status code that falls out of the range of 2xx
@@ -597,7 +597,7 @@ const ApikeyDataTables = (apikeyDetails) => {
   return (
 
     <div>
-      {/* {console.log("dateRange ", dateRange)} */}
+      {/* {// console.log("dateRange ", dateRange)} */}
 
       {/* open modal for filter date range */}
       {/* <CButton onClick={() => setModal1(!modal1)} icon={cilArrowRight} className="float-end" >Filter</CButton> */}
@@ -891,7 +891,7 @@ const ApikeyDataTables = (apikeyDetails) => {
       <table id="myTable" className="display" style={{ width: '100%' }}>
         <thead>
           <tr>
-            <th>ID</th>
+            <th>No.</th>
             <th>Prefix</th>
             <th>Description</th>
             <th>Status</th>

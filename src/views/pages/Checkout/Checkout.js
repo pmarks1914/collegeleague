@@ -150,7 +150,7 @@ export default function Checkout() {
         if(window.location.pathname.split("/")[1] === "checkout"){
             // 
             let checkoutId = window.location.pathname.split("/")[2]
-            // console.log("window", checkoutId)
+            // // console.log("window", checkoutId)
             setIsCheckout(true)
             if(checkoutId){
                 setMerchantId(checkoutId);
@@ -165,10 +165,10 @@ export default function Checkout() {
                 };
             
                 axios(config_ch).then(response => {
-                    // console.log("data checkout ==", response?.data);
+                    // // console.log("data checkout 1 ==", response?.data);
                     if (response?.data?.status === true) {
                         // 
-                        // console.log("g>>>")
+                        // // console.log("g>>>")
                         sessionStorage.setItem("sessionData", JSON.stringify(response?.data))
                         setSessionData(response?.data)
                         setAccountNumber(response?.data?.data?.phone)
@@ -213,7 +213,7 @@ export default function Checkout() {
                         })
                     }
                     if (error.response) {
-                        // console.log("==");
+                        // // console.log("==");
                         /*
                         * The request was made and the server responded with a
                         * status code that falls out of the range of 2xx
@@ -241,14 +241,14 @@ export default function Checkout() {
                 };
             
                 axios(config_fee_list).then(response => {
-                    // console.log("data checkout ==", response?.data);
+                    // // console.log("data checkout ==", response?.data);
                     if (response?.data?.status === true) {
                         // 
                     }
                 }).catch(function (error) {
                     // 
                     if (error.response) {
-                        // console.log("==");
+                        // // console.log("==");
                         /*
                         * The request was made and the server responded with a
                         * status code that falls out of the range of 2xx
@@ -286,7 +286,7 @@ export default function Checkout() {
         else if(window.location.pathname.split("/")[1] === "pay"){
             // for custom checkout
             let prefix = window.location.pathname.split("/")[2]
-            // console.log("window", checkoutId)
+            // // console.log("window", checkoutId)
             setPrefix(prefix)
             setIsCheckout(true)
             setIsCustomCheckout(true)
@@ -303,9 +303,9 @@ export default function Checkout() {
                 };
                 
                 axios(config_ch).then(response => {
-                    console.log("data custom checkout s==", response?.data);
+                    // console.log("data custom checkout s ==", response?.data);
                     if (response?.data?.status === true) {
-                        // console.log("g>>>")
+                        // // console.log("g>>>")
                         sessionStorage.setItem("sessionData", JSON.stringify(response?.data))
                         setSessionData(response?.data)
                         // setAccountNumber(response?.data?.data?.phone)
@@ -352,7 +352,7 @@ export default function Checkout() {
                         })
                     }
                     if (error.response) {
-                        // console.log("==");
+                        // // console.log("==");
                         /*
                         * The request was made and the server responded with a
                         * status code that falls out of the range of 2xx
@@ -411,10 +411,10 @@ export default function Checkout() {
     };
     function handleSubmit(event, formType) {
         event.preventDefault();
-        // console.log("window.location pathname ", window.location.pathname.split("/")[1])
+        // // console.log("window.location pathname ", window.location.pathname.split("/")[1])
         let expPhone = /(020|023|024|025|026|027|028|050|054|055|059)[\s.-]?\d{7}$/;
         // expPhone.test(phoneNumber)  
-        // console.log("amountError ", formType, expPhone.test(phoneNumber), (Number(amount) ? true : false), admissionId.length)
+        // // console.log("amountError ", formType, expPhone.test(phoneNumber), (Number(amount) ? true : false), admissionId.length)
         if (formType === 1) {
             // for initial form fields 
             if (!fullNameError && fullName.length < 4) {
@@ -424,10 +424,11 @@ export default function Checkout() {
                 setPhoneNumberError(true)
             }
             else if (!amountError && (amount.length < 1) || !(Number(amount) ? true : false)) {
-                // console.log("amount ", amount)
+                // // console.log("amount ", amount)
                 setAmountError(true)
             }
             else{
+                // for payment method which is selected from modal
                 setModal1(true)
                 setSourceMetadata(
                     {
@@ -441,17 +442,17 @@ export default function Checkout() {
         }
         else if (formType === 2) {
             // for mobile network form fields
-            // console.log("accountType ", formType, Number(accountType), accountType, accountTypeError, ([1, 5, 6, 7]).includes(accountType), accountNumber)
+            // // console.log("accountType ", formType, Number(accountType), accountType, accountTypeError, ([1, 5, 6, 7]).includes(accountType), accountNumber)
             if ( Number(accountType)===0 ) {
-                console.log("<<  >>")
+                // console.log("<<  >>")
                 setAccountTypeError(true)
             }
             else if (!(expPhone.test(accountNumber))) {
-                // console.log(">>><<<<")
+                // // console.log(">>><<<<")
                 setAccountNumberError(true)
             }
             else if(accountNumber && accountType){
-                console.log("fffff")
+                // console.log("fffff")
                 // setModal2(true)
                 setModal1(false)
                 setTimeout(() => {
@@ -477,7 +478,7 @@ export default function Checkout() {
                 setPhoneNumberError(true)
             }
             else if (!(Number(amount) ? !(amount.length < 1) : false)) {
-                // console.log("amount ", amount)
+                // // console.log("amount ", amount)
                 setAmountError(true)
             }
             else{
@@ -506,7 +507,7 @@ export default function Checkout() {
             }
         }
         if (formType === 4) {
-            // console.log("otp >>>>", otpError, otp.charAt(3))
+            // // console.log("otp >>>>", otpError, otp.charAt(3))
             if (!otpError && (otp.length < 4) || !(otp.charAt(3)) || !(Number(otp) ? true : false) ) {
                 // add verify otp to the if checks
                 setOtpError(true)
@@ -520,7 +521,7 @@ export default function Checkout() {
         if(formType === 5){
             // handle view for user confirmation and verify payment
             // {sessionData?.data?.full_name || payeeData.fullName}
-            // console.log("sessionData ", sessionData)
+            // // console.log("sessionData ", sessionData)
             let txtString = `<table id="table" width="90%" border=0>
             <thead>
                 <tr>
@@ -631,13 +632,13 @@ export default function Checkout() {
                 data: data
             };
             axios(config).then(response => {
-                // console.log("data otp==", response?.data);
+                // // console.log("data otp==", response?.data);
                 if (response.status === 200) {
                     // 
                 }
             }).catch(function (error) {
                 if (error.response) {
-                    // console.log("==");
+                    // // console.log("==");
                     /*
                     * The request was made and the server responded with a
                     * status code that falls out of the range of 2xx
@@ -670,7 +671,7 @@ export default function Checkout() {
                 data: dataVerify
             };
             axios(config).then(response => {
-                // console.log("data otp verify==", response?.data);
+                // // console.log("data otp verify==", response?.data);
                 if (response?.data?.status) {
                     // 
                     // let textStr = "Payment of <p> <h6>GHS" + amount + "</h6> for </p>" + accountNumber;
@@ -716,7 +717,7 @@ export default function Checkout() {
                 }
             }).catch(function (error) {
                 if (error.response) {
-                    // console.log("==");
+                    // // console.log("==");
                     /*
                     * The request was made and the server responded with a
                     * status code that falls out of the range of 2xx
@@ -743,6 +744,7 @@ export default function Checkout() {
         // 
         
         let data = {};
+        // (sessionData?.data?.full_name || payeeData?.fullName || fullName )
         if(accountType === 1){
             data = {
                 "service": accountType,
@@ -751,7 +753,7 @@ export default function Checkout() {
                 "currency": "GHS",
                 "note": "Merchant pay of GHS" + amount.toString() + " from " + fullName,
                 "prefix": prefix,
-                "source_metadata": sourceMetadata
+                "source_metadata": {...sourceMetadata, ...sessionData?.data, ...payeeData, ...{"feeType": feeType}, ...{"fee": fee}, ...{"email": email}, ...{"accountNumber": accountNumber}} 
             }
 
         }
@@ -763,9 +765,8 @@ export default function Checkout() {
                 "currency": "GHS",
                 "note": "Merchant pay of GHS" + amount.toString() + " from " + fullName,
                 "prefix": prefix,
-                "source_metadata":  sourceMetadata 
+                "source_metadata":  {...sourceMetadata, ...sessionData?.data, ...payeeData, ...{"feeType": feeType}, ...{"fee": fee}, ...{"email": email}, ...{"accountNumber": accountNumber}} 
             }
-
         }
         
         let config = {
@@ -780,7 +781,7 @@ export default function Checkout() {
         setLoader('<div class="spinner dashboard-loader" style="color: #e0922f; text: center"></div>')
 
         axios(config).then(response => {
-            // console.log("data otp==", response?.data);
+            // // console.log("data otp==", response?.data);
             if (response?.data?.status) {
                 // 
                 setTransactionId(response?.data?.transaction_id)
@@ -841,7 +842,7 @@ export default function Checkout() {
 
             setLoader(``)
             if (error.response) {
-                // console.log("==");
+                // // console.log("==");
                 /*
                 * The request was made and the server responded with a
                 * status code that falls out of the range of 2xx
@@ -907,7 +908,7 @@ export default function Checkout() {
 
         setLoader('<div class="spinner-border dashboard-loader" style="color: #e0922f; text: center"></div>')
         axios(config).then(response => {
-            console.log("data namecheck verify==", response?.data, "accountType", accountType);
+            // console.log("data namecheck verify==", response?.data, "accountType", accountType);
             if (response?.data?.status) {
                 setLoader('')
                 // makePayment();
@@ -935,7 +936,7 @@ export default function Checkout() {
                 genericOpt("sendOtp");
             }
             if (error.response) {
-                // console.log("==");
+                // // console.log("==");
                 /*
                 * The request was made and the server responded with a
                 * status code that falls out of the range of 2xx
@@ -974,13 +975,13 @@ export default function Checkout() {
             };
 
             axios(config).then(response => {
-                console.log("data setPayeeData verify==", response?.data);
+                // console.log("data setPayeeData verify==", response?.data);
                 if (response?.data?.status) {
                     setPayeeData(response?.data?.student)
                 }
             }).catch(function (error) {
                 if (error.response) {
-                    // console.log("==");
+                    // // console.log("==");
                     /*
                     * The request was made and the server responded with a
                     * status code that falls out of the range of 2xx
@@ -1017,13 +1018,13 @@ export default function Checkout() {
         };
 
         axios(config).then(response => {
-            // console.log("data setFeeData ==", response?.data);
+            // // console.log("data setFeeData ==", response?.data);
             if (response?.data?.status) {
                 setFeeData(response?.data?.payment_types)
             }
         }).catch(function (error) {
             if (error.response) {
-                // console.log("==");
+                // // console.log("==");
                 /*
                 * The request was made and the server responded with a
                 * status code that falls out of the range of 2xx
@@ -1054,13 +1055,13 @@ export default function Checkout() {
             },
             data: data
         };
-        console.log("cccc", ccount)
+        // console.log("cccc", ccount)
 
         if(interCount < 6){
             axios(config_ch).then(response => {
-                // console.log("data transaction status ==", response?.data);
+                // // console.log("data transaction status ==", response?.data);
                 if (response?.data?.transaction_status === "SUCCESSFUL") {
-                    // console.log("g>>>")
+                    // // console.log("g>>>")
                     // setTrackTransaction(true)
                     clearInterval(intervalWait)
                     ccount = 0;
@@ -1095,7 +1096,7 @@ export default function Checkout() {
 
                 }  
                 else if(response?.data?.transaction_status === "FAILED") {
-                    // console.log("g>>>")
+                    // // console.log("g>>>")
                     // setTrackTransaction(true)
                     clearInterval(intervalWait)  
                     ccount = 0;              
@@ -1139,7 +1140,7 @@ export default function Checkout() {
                 //     })
                 // }
                 if (error.response) {
-                    // console.log("==");
+                    // // console.log("==");
                     /*
                     * The request was made and the server responded with a
                     * status code that falls out of the range of 2xx
@@ -1628,7 +1629,7 @@ export default function Checkout() {
                                 <Col sm="7" style={{textAlign: "right"}}>
                                     {/*  */}
                                     {
-                                        console.log("", )
+                                        // console.log("", )
                                     }
                                     <p className='m-0 d-fixed checkout-ps-info'>
                                         <b component="h1">{sessionData?.data?.full_name || payeeData?.fullName} </b> 

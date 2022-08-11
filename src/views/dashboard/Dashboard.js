@@ -73,7 +73,7 @@ const Dashboard = () => {
     summaryData?.summary?.then(value => { setSummaryDetails(value) });
    
   }, [])
-  // console.log("summarry ", summaryDetails)
+  // // console.log("summarry ", summaryDetails)
 
   const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
 

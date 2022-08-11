@@ -71,7 +71,7 @@ const DatatableMain = (transactionDetails) => {
 
       setLoader('<a></a>')
     }
-    console.log("props ", transaction)
+    // console.log("props ", transaction)
   }, [transaction])
 
   // perform filter 
@@ -108,13 +108,13 @@ const DatatableMain = (transactionDetails) => {
   function getFilterData(e){
     // 
     e.preventDefault();
-    console.log("post tableData ", tableData);
+    // console.log("post tableData ", tableData);
     // transaction = posts;
     try {
       // setTableData(posts);
       let newFilterData = transactionDetails?.transactionDetails.filter((post)=> { return moment(post.created_at).format('LLLL') <= moment(dateFrom).format('LLLL') })
-      // console.log("post tableData ", transactionDetails?.transactionDetails);
-      console.log("post tableData ", newFilterData);
+      // // console.log("post tableData ", transactionDetails?.transactionDetails);
+      // console.log("post tableData ", newFilterData);
       datatablaScript(newFilterData);
       setModal1(false)
     } catch (error) {
@@ -162,7 +162,7 @@ const DatatableMain = (transactionDetails) => {
       <table id="myTable" className="display" style={{ width: '100%' }}>
         <thead>
           <tr>
-            <th>ID</th>
+            <th>No.</th>
             <th>Reference</th>
             <th>Note</th>
             <th>Status</th>

@@ -20,7 +20,7 @@ export function getTransactionData(){
 
     function transactionDetails(){
         return axios(config_transaction).then(response => {
-            // console.log("data ==", response?.data);
+            // // console.log("data ==", response?.data);
             if (response.status === 200) {
                 // 
                 return response.data;
@@ -30,7 +30,7 @@ export function getTransactionData(){
         }).catch(function (error) {
 
             if (error.response) {
-                // console.log("==");
+                // // console.log("==");
                 /*
                 * The request was made and the server responded with a
                 * status code that falls out of the range of 2xx
@@ -72,7 +72,7 @@ export function refundData(){
 
     function refundDetails(){
         return axios(config_transaction).then(response => {
-            // console.log("data ==", response?.data);
+            // // console.log("data ==", response?.data);
             if (response.status === 200) {
                 // 
                 return response.data;
@@ -82,7 +82,7 @@ export function refundData(){
         }).catch(function (error) {
 
             if (error.response) {
-                // console.log("==");
+                // // console.log("==");
                 /*
                 * The request was made and the server responded with a
                 * status code that falls out of the range of 2xx
@@ -124,7 +124,7 @@ export function apikeyData(){
 
     function apikeyDetails(){
         return axios(config_transaction).then(response => {
-            // console.log("data ==", response?.data);
+            // // console.log("data ==", response?.data);
             if (response.status === 200) {
                 // 
                 return response.data;
@@ -134,7 +134,7 @@ export function apikeyData(){
         }).catch(function (error) {
 
             if (error.response) {
-                // console.log("==");
+                // // console.log("==");
                 /*
                 * The request was made and the server responded with a
                 * status code that falls out of the range of 2xx
@@ -176,7 +176,7 @@ export function payoutData(){
 
     function payoutDetails(){
         return axios(config_transaction).then(response => {
-            // console.log("data ==", response?.data);
+            // // console.log("data ==", response?.data);
             if (response.status === 200) {
                 // 
                 return response.data;
@@ -186,7 +186,7 @@ export function payoutData(){
         }).catch(function (error) {
 
             if (error.response) {
-                // console.log("==");
+                // // console.log("==");
                 /*
                 * The request was made and the server responded with a
                 * status code that falls out of the range of 2xx

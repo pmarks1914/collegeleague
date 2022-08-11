@@ -69,7 +69,7 @@ const Transaction = () => {
     useEffect(() => {
         // 
         // getSessionTimeout();
-        // console.log("getSessionTimeout", getSessionTimeout())
+        // // console.log("getSessionTimeout", getSessionTimeout())
         let transactionData = getTransactionData();
         transactionData?.transaction?.then(value => { setTransactionDetails(value) });
 

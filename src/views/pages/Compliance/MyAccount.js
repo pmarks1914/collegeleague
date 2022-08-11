@@ -73,7 +73,7 @@ class MyAccount extends Component {
     };
     openSection(hashURL){
         // 
-        console.log("hash ", hashURL)
+        // console.log("hash ", hashURL)
         $(".under-line-1").css("text-decoration", "none");
         $(".under-line-2").css("text-decoration", "none");
         $(".under-line-3").css("text-decoration", "none");

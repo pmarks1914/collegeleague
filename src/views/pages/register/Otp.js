@@ -50,7 +50,7 @@ export function Otp() {
                 "password": signup.password,
               }
               console.log(RegisterPayload)
-              console.log("password", signup?.password,)
+              // console.log("password", signup?.password,)
                 let config = {
                   method: 'post',
                   url: process.env.REACT_APP_BASE_API + '/auth/signup/',

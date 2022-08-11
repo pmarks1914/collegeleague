@@ -149,7 +149,7 @@ const RefundDataTables = (transactionDetails) => {
     // }
 
     
-    // console.log("props ", dateRange, transaction, transactionStatus, monitorState)
+    // // console.log("props ", dateRange, transaction, transactionStatus, monitorState)
 
   }, [dateRange, transaction])
 
@@ -252,13 +252,13 @@ const RefundDataTables = (transactionDetails) => {
   function getFilterData(e) {
     // 
     e.preventDefault();
-    console.log("post tableData ", tableData);
+    // console.log("post tableData ", tableData);
     // transaction = posts;
     try {
       // setTableData(posts);
       let newFilterData = transactionDetails?.transactionDetails.filter((post) => { return moment(post.created_at).format('LLLL') <= moment(dateFrom).format('LLLL') })
-      // console.log("post tableData ", transactionDetails?.transactionDetails);
-      console.log("post tableData ", newFilterData);
+      // // console.log("post tableData ", transactionDetails?.transactionDetails);
+      // console.log("post tableData ", newFilterData);
       datatablaScript(newFilterData);
       setModal1(false)
     } catch (error) {
@@ -289,9 +289,9 @@ const RefundDataTables = (transactionDetails) => {
   }
   function toggleFilter(e, type) {
     e.preventDefault();
-    console.log("test>>> ", dropValue)
+    // console.log("test>>> ", dropValue)
     setDropValue(1);
-    console.log("test ", dropValue, "type", type, "openDateRange", openDateRange)
+    // console.log("test ", dropValue, "type", type, "openDateRange", openDateRange)
     if(type === "filter"){
       document.getElementById("filterDropdown").classList.toggle("show");
       // document.getElementById("dateRangeDropdown").classList.remove('show');
@@ -308,14 +308,14 @@ const RefundDataTables = (transactionDetails) => {
   window.onclick = function (event) {
     event.preventDefault()
     trackActivity();
-    console.log("dropdown ==", dropValue, "e", event.target.matches('.dateRange'), "openDateRange > ", openDateRange)
+    // console.log("dropdown ==", dropValue, "e", event.target.matches('.dateRange'), "openDateRange > ", openDateRange)
     setDropValue(0);
     if (!event.target.matches('.dropbtn') && dropValue === 0) {
       let dropdowns = document.getElementsByClassName("dropdown-content");
       let i;
       for (i = 0; i < dropdowns.length; i++) {
         let openDropdown = dropdowns[i];
-        // console.log("list ==> ", openDropdown.classList.contains('show'))
+        // // console.log("list ==> ", openDropdown.classList.contains('show'))
         if (openDropdown.classList.contains('show')) {
           openDropdown.classList.remove('show');
         }
@@ -329,15 +329,45 @@ const RefundDataTables = (transactionDetails) => {
     setTransactionStatus(valSelected);
     performFilter("filterByStatus", valSelected)
   };
+
   const handleChangeExport = (valSelected) => {
     setTransactionExport(valSelected);
+    // restructure data for export 
+    let transformData = Object.keys(tableData).map((post, id) => {
+      return {
+        "ID": tableData[id]?.id,
+        "Reference ID": tableData[id]?.reference_id,
+        "Amount": tableData[id]?.amount,
+        "Note": tableData[id]?.note,
+        "Payment Type": (
+          ( tableData[id]?.service === 1 ? "WINGIPAY TO WINGIPAY" :
+          ( tableData[id]?.service === 2 ? "WINGIPAY TO MTN" :
+          ( tableData[id]?.service === 3 ? "WINGIPAY TO VODAFONE" :
+          ( tableData[id]?.service === 4 ? "WINGIPAY TO AIRTELTIGO" :
+          ( tableData[id]?.service === 5 ? "MTN TO WINGIPAY" :
+          ( tableData[id]?.service === 6 ? "VODAFONE TO WINGIPAY" :
+          ( tableData[id]?.service === 7 ? "AIRTELTIGO TO WINGIPAY" :
+          ( tableData[id]?.service === 8 ? "WINGIPAY TO AGENT" : "None") )))))))
+        )
+        ,
+        "Status Code": tableData[id]?.status_code,
+        "Status Message": tableData[id]?.status_message,
+        "Created At": tableData[id]?.created_at,
+        "Customer Id": tableData[id]?.source_metadata?.studentId || tableData[id]?.id,
+        "FullName": tableData[id]?.source_metadata?.fullName,
+        "Fee Type": tableData[id]?.source_metadata?.feeType,
+        "Merchant": tableData[id]?.source_metadata?.merchant_id,
+        "Program": tableData[id]?.source_metadata?.program,
+        "Current Level": tableData[id]?.source_metadata?.currentLevel,
+      }
+    })
     if(valSelected === "Export to excel"){
       // 
-      downloadExcel(tableData);
+      downloadExcel(transformData);
     }
     else if(valSelected === "Export to csv"){
       // 
-      downloadCSV(tableData);
+      downloadCSV(transformData);
     }
   };
   const optionsStatus = [
@@ -355,7 +385,7 @@ const RefundDataTables = (transactionDetails) => {
   ];
   function performFilter(type, status){
 
-    // console.log("by status ", transactionStatus, "type", type )
+    // // console.log("by status ", transactionStatus, "type", type )
     // perform filter by date range
     if(type === "filterByDate"){
       // 
@@ -367,7 +397,7 @@ const RefundDataTables = (transactionDetails) => {
     }
     else if(type === "filterByStatus"){
       // 
-      // console.log("by status ", status )
+      // // console.log("by status ", status )
       if(status === "All Transaction" && monitorState === 1){
         datatablaScript(transaction);
       }
@@ -409,7 +439,7 @@ const RefundDataTables = (transactionDetails) => {
         }
       }
       else{
-        // console.log("hhhh")
+        // // console.log("hhhh")
         dataFilter = transaction.filter((post, id) => {return ( post?.reference_id?.toLowerCase().includes(referanceId.toLowerCase()) && post?.id?.toLowerCase().includes(transactionId.toLowerCase()) )});
       }
       datatablaScript( dataFilter );
@@ -429,9 +459,9 @@ const RefundDataTables = (transactionDetails) => {
     let result;
     const columnDelimiter = ',';
     const lineDelimiter = '\n';
-    // console.log("array 0>>", array);
+    // // console.log("array 0>>", array);
     const keys = Object.keys(array[0]);
-    // console.log("keys", keys );
+    // // console.log("keys", keys );
     result = '';
     result += keys.join(columnDelimiter);
     result += lineDelimiter;
@@ -450,9 +480,9 @@ const RefundDataTables = (transactionDetails) => {
 
   function downloadCSV(array) {
     const link = document.createElement('a');
-    // console.log("exp downloadCSV==>", array  );
+    // // console.log("exp downloadCSV==>", array  );
     let csv = convertArrayOfObjectsToCSV(array);
-    console.log("csv", csv);
+    // console.log("csv", csv);
     if (csv == null) {return};
   
     const filename = 'WPexport.csv';
@@ -491,7 +521,7 @@ const RefundDataTables = (transactionDetails) => {
   return (
 
     <div>
-      {/* {console.log("dateRange ", dateRange)} */}
+      {/* {// console.log("dateRange ", dateRange)} */}
 
       {/* open modal for filter date range */}
       {/* <CButton onClick={() => setModal1(!modal1)} icon={cilArrowRight} className="float-end" >Filter</CButton> */}
@@ -785,7 +815,7 @@ const RefundDataTables = (transactionDetails) => {
       <table id="myTable" className="display" style={{ width: '100%' }}>
         <thead>
           <tr>
-            <th>ID</th>
+            <th>No.</th>
             <th>Reference</th>
             <th>Note</th>
             <th>Status</th>
