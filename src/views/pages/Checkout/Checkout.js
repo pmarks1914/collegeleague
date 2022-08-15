@@ -413,8 +413,8 @@ export default function Checkout() {
         event.preventDefault();
         // // console.log("window.location pathname ", window.location.pathname.split("/")[1])
         let expPhone = /(020|023|024|025|026|027|028|050|054|055|059)[\s.-]?\d{7}$/;
-        // expPhone.test(phoneNumber)  
-        // // console.log("amountError ", formType, expPhone.test(phoneNumber), (Number(amount) ? true : false), admissionId.length)
+        // expPhone.test(phoneNumber.replace(/\s+/g, ''))  
+        // // console.log("amountError ", formType, expPhone.test(phoneNumber.replace(/\s+/g, '')), (Number(amount) ? true : false), admissionId.length)
         if (formType === 1) {
             // for initial form fields 
             if (!fullNameError && fullName.length < 4) {
@@ -474,7 +474,7 @@ export default function Checkout() {
             if (!feeTypeError && feeType.length < 4) {
                 setFeeTypeError(true)
             }
-            else if (!(expPhone.test(phoneNumber))) {
+            else if (!(expPhone.test(phoneNumber.replace(/\s+/g, ''))) ) {
                 setPhoneNumberError(true)
             }
             else if (!(Number(amount) ? !(amount.length < 1) : false)) {

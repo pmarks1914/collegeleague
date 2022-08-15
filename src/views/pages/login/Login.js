@@ -18,7 +18,8 @@ import { cilLockLocked, cilUser } from '@coreui/icons'
 import axios from 'axios';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-
+import { Col, Row } from 'reactstrap'
+import Box from '@mui/material/Box';
 
 // import swal from 'sweetalert2'
 
@@ -167,8 +168,19 @@ const Login = () => {
   return (
     <div className="bg-light min-vh-100 min-vw-100 d-flex flex-row align-items-center">
       <CContainer>
+      <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        marginBottom: '10px'
+                    }}
+                >
+                    <img src="https://wingipay.com/static/wingipay/logo/wingipay-2.4086593aa042.png" className='mb-3' style={{ width: "160px"}}/>
+
+                </Box>
         <CRow className="justify-content-center">
-          <CCol md={8}>
+          <CCol lg={5} xl={5}>
             <CCardGroup>
               <CCard className="p-4">
                 <CCardBody>
@@ -204,7 +216,7 @@ const Login = () => {
 
                     <p className="text-medium-emphasis">{loginError}</p>
                     <CRow>
-                      <CCol xs={6}>
+                      <CCol xs={12}>
                         
                       {login === "Login" ? 
 
@@ -213,16 +225,18 @@ const Login = () => {
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
-                        onClick={(e) => CheckLogin(e)}>
+                        onClick={(e) => CheckLogin(e)}
+                        style={{ background: "#FF7643"}}
+                        >
                         {login}
                         </Button>
                         // <CButton color="primary" className="px-4 " onClick={(e) => CheckLogin(e)}>
                         //   {login}
                         // </CButton>
                         :
-                        <CButton color="primary" className="px-4 ">
+                        // <CButton style={{ background: "#fff"}} className="px-4 ">
                           <a dangerouslySetInnerHTML={{ __html: loader }}></a>
-                        </CButton>
+                        // </CButton>
                         }
                       </CCol>
                       {/* <CCol xs={6} className="text-right">

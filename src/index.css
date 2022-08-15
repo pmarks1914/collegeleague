@@ -21,6 +21,12 @@ body, .dash-info-des-0{
     line-height: 1.5 !important;
 }
 
+
+.bg-text-com-wp{
+    background-color: #FF7643;
+    color: #fff;
+}
+
 .body, .header, .footer, .bg-light{
     background-color: #fff !important;
 }
