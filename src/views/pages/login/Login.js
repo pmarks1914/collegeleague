@@ -35,8 +35,6 @@ const Login = () => {
 
   function CheckLogin(e) {
     e.preventDefault();
-    setLogin("")
-    setLoader('<div class="spinner-border "style="color: #e0922f;"></div>`')
 
     // // console.log("fff", process.env.REACT_APP_BASE_API, passwordVar, usernameVar)
 
@@ -48,6 +46,8 @@ const Login = () => {
       document.getElementById("usernameError").style.display = "none";
     }
     else {
+      setLogin("")
+      setLoader('<div class="spinner-border "style="color: #e0922f;"></div>`')
       // console.log(" login ")
       let data = JSON.stringify({
         "username": usernameVar,

@@ -606,7 +606,7 @@ return(
 
 
                    
-                    <Upload {...props} onChange={(e) => { setBusinessTIN(e.target.value) }} value = {business_TIN} >
+                    <Upload {...props} onChange={(e) => { setBusinessTIN(e.target.value) }} value = {business_TIN} maxCount={1} >
                     <Button leftIcon={<ArrowUpIcon />}>Select File</Button>
                     </Upload>
                     <Button
@@ -625,7 +625,7 @@ return(
                     <Divider />
     
                     <br />
-                    <Upload {...props1}>
+                    <Upload {...props1} maxCount={1} >
                     <Button >Select File</Button>
                     </Upload>
                     <Button
@@ -643,7 +643,7 @@ return(
                     <br />
                     <Divider />
                     <br />
-                    <Upload {...props2}>
+                    <Upload {...props2} maxCount={1} >
                     <Button >Select File</Button>
                     </Upload>
                     <Button

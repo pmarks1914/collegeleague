@@ -11,6 +11,11 @@
     background-color: #FF7643;
     color: #fff;
 }
+.bg-excel-wp{
+    background-color: green;
+    color: #fff;
+    border: 1px solid #fff;
+}
 .icon-wp{
     text-align: "center";
     border-radius: 100%;
@@ -102,10 +107,18 @@
       /* height: 35px; */
       width: 180px;
   }
+  .bulk-pay-name form div div{
+    height: 32px;
+    padding: 0px 0px 0px 5px;
+    margin-top: 0px;
+}
   .filterDrop form div div{
       height: 32px;
       padding: 0px 0px 5px 5px;
       margin-top: 13px;
+  }
+  .add-item{
+    margin-right: 10px;
   }
   /* #filterDrop form div div, #other-input-select{
     height: 30px;
