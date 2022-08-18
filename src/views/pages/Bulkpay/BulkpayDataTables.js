@@ -96,6 +96,7 @@ let banktelcosList = getbanksandtelcos();
 let banktelcosListInfo = []
 banktelcosList.list.then(value => banktelcosListInfo = value)
 console.log("getbanksandtelcos ", banktelcosListInfo )
+
 const BulkpayDataTables = (apikeyDetails) => {
   const [loader, setLoader] = useState('<div class="spinner-border dashboard-loader" style="color: #e0922f;"></div>')
   const [tableData, setTableData] = useState([]);
@@ -299,8 +300,8 @@ const BulkpayDataTables = (apikeyDetails) => {
     // apikeyInfo = posts;
     try {
       // setTableData(posts);
-      let newFilterData = apikeyDetails?.apikeyDetails.filter((post) => { return moment(post?.created).format('LLLL') <= moment(dateFrom).format('LLLL') })
-      // // console.log("post tableData ", apikeyDetails?.apikeyDetails);
+      let newFilterData = apikeyInfo.filter((post) => { return moment(post?.created).format('LLLL') <= moment(dateFrom).format('LLLL') })
+      // // console.log("post tableData ", apikeyInfo);
       // console.log("post tableData ", newFilterData);
       datatablaScript(newFilterData);
       setModal1(false)
@@ -432,16 +433,16 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
       // 
       // // console.log("by status",status, monitorState, apikeyDetails )
       if(status === "All apikeyInfo" && monitorState === 1){
-        datatablaScript(apikeyDetails?.apikeyDetails);
+        datatablaScript(apikeyInfo);
       }
       else if(status === "All apikeyInfo" && monitorState === 2){
         datatablaScript(dateFilterData);
       }
       else if(status === "test" && monitorState === 1){
-        datatablaScript( apikeyDetails?.apikeyDetails?.filter((post, id) => {return ( post?.is_live === false )}) );
+        datatablaScript( apikeyInfo?.filter((post, id) => {return ( post?.is_live === false )}) );
       }
       else if(status === "live" && monitorState === 1){
-        datatablaScript( apikeyDetails?.apikeyDetails?.filter((post, id) => {return ( post?.is_live === true )}) );
+        datatablaScript( apikeyInfo?.filter((post, id) => {return ( post?.is_live === true )}) );
       }
       else if(status === "test" && monitorState === 2){
         datatablaScript( dateFilterData?.filter((post, id) => {return ( post?.is_live === false )}) );
@@ -584,6 +585,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
     reader.readAsBinaryString(file);
   }
   function trackActivity() {
+    getbanksandtelcos()
     // e.preventDefault();
     // getSessionTimeout();
     const currentUser_new = JSON.parse(localStorage.getItem("userDataStore"));    
