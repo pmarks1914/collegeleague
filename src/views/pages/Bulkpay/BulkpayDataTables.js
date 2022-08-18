@@ -138,6 +138,25 @@ const BulkpayDataTables = (apikeyDetails) => {
   const [list, setList] = useState(null);
 
 
+  const [email, setEmail] = useState(null);
+  const [accountNumber, setAccountNumber] = useState(null);
+  const [bankCode, setBankCode] = useState(null);
+  const [accountName, setAccountName] = useState(null);
+  const [amount, setAmount] = useState(null);
+  const [note, setNote] = useState(null);
+  const [bankDropdownInModal, setBankDropdownInModal] = useState({});
+  const [batchName, setBatchName] = useState("");
+  console.log(email);
+  console.log(accountNumber);
+  console.log(bankCode);
+  console.log(accountName);
+  console.log(amount);
+  console.log(note);
+  console.log(batchName);
+  console.log(bankDropdownInModal);
+
+
+
   const toggle = () => setOpenDateRange(!openDateRange);
 
   useEffect(() => {
@@ -384,6 +403,7 @@ const optionBankList = Object.keys(banktelcosListInfo?.bank_list || []).map((pos
       "value": banktelcosListInfo?.bank_list[id].BankSortCode,
       "label": banktelcosListInfo?.bank_list[id].BankName
     }});
+    console.log(optionBankList);
   
 const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || []).map((post, id) => {
   return {
@@ -727,6 +747,10 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
       return false;
     },
     excelFileList,
+  };
+
+  const handleChangeBankListInModal = (valSelected, nameSelected) => {
+    setBankDropdownInModal({"bankName": valSelected, "name": nameSelected});
   };
 
   
@@ -1202,8 +1226,8 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
                   <Label for="apikeyInfoStatus" className="label-dc"> Batch name </Label>
                   <TextField 
                     // id='filters-d'
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)} 
+                    value={batchName}
+                    onChange={(e) => setBatchName(e.target.value)} 
                     // label="Filter"
                     placeholder="Eg. my batch name"
                     style={{height: "30px !important" }}
@@ -1239,8 +1263,8 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
                   fullWidth
                     // id='filters-d'
                     // xs="12" sm="12" md={12} lg={12}
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)} 
+                    value={accountName}
+                    onChange={(e) => setAccountName(e.target.value)} 
                     // label="Filter"
                     placeholder="Michael Amoo"
                     style={{height: "30px !important" }}
@@ -1256,11 +1280,11 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
             <Select
               maxWidth
               placeholder={"Select bank"}
-              options={optionsAccTypeInModal}
+              options={optionBankList}
               id="apikeyInfoStatus"
               className='other-input-select'
               // components={{ Option: paymentOption }}
-              onChange={(e) => handleChangeInfoAccTypeInModal(e.value)}
+              onChange={(e) => handleChangeBankListInModal(e.value, e.label)}
             />
             </Col>
 
@@ -1276,8 +1300,8 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
                   fullWidth
                     // id='filters-d'
                     // xs="12" sm="12" md={12} lg={12}
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)} 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)} 
                     // label="Filter"
                     placeholder="youremail@email.com"
                     style={{height: "30px !important" }}
@@ -1298,8 +1322,8 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
                 <Label for="apikeyInfoStatus" className="label-dc"> Bank Code </Label>
                 <TextField 
                   // id='filters-d'
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)} 
+                  value={bankCode}
+                  onChange={(e) => setBankCode(e.target.value)} 
                   // label="Filter"
                   placeholder="12032123"
                   style={{height: "30px !important" }}
@@ -1318,8 +1342,8 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
                 <Label for="apikeyInfoStatus" className="label-dc"> Bank Account Number </Label>
                 <TextField 
                   // id='filters-d'
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)} 
+                  value={accountNumber}
+                  onChange={(e) => setAccountNumber(e.target.value)} 
                   // label="Filter"
                   placeholder="110324000000"
                   style={{height: "30px !important" }}
@@ -1339,8 +1363,8 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
                 <Label for="apikeyInfoStatus" className="label-dc"> Amount </Label>
                 <TextField 
                   // id='filters-d'
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)} 
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)} 
                   // label="Filter"
                   placeholder="12032123"
                   style={{height: "30px !important" }}
@@ -1360,8 +1384,8 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
                 <Label for="apikeyInfoStatus" className="label-dc"> Note </Label>
                 <TextField 
                   // id='filters-d'
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)} 
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)} 
                   // label="Filter"
                   placeholder="Salaries"
                   style={{height: "30px !important" }}
