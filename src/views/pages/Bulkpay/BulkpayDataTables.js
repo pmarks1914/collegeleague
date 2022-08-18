@@ -378,11 +378,11 @@ const BulkpayDataTables = (apikeyDetails) => {
     {value: "mobile", label: "Mobile Money" },
     {value: "bank", label: "Bank Account" },
   ];
-  const iii = Object.keys(tableData).map((post, id) => {
-    return {
-      ""
+  // const iii = Object.keys(tableData).map((post, id) => {
+  //   return {
+  //     ""
 
-    }})
+  //   }})
 
   const optionsExport = [
     // {value: "", label: "Se", icon: "", isDisabled: true },
