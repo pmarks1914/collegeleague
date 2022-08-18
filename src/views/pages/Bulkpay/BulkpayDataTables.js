@@ -378,11 +378,18 @@ const BulkpayDataTables = (apikeyDetails) => {
     {value: "mobile", label: "Mobile Money" },
     {value: "bank", label: "Bank Account" },
   ];
-  // const iii = Object.keys(tableData).map((post, id) => {
-  //   return {
-  //     ""
-
-  //   }})
+  
+const optionBankList = Object.keys(banktelcosListInfo?.bank_list || []).map((post, id) => {
+    return {
+      "value": banktelcosListInfo?.bank_list[id].BankSortCode,
+      "label": banktelcosListInfo?.bank_list[id].BankName
+    }});
+  
+const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || []).map((post, id) => {
+  return {
+    "value": banktelcosListInfo?.telcos_list[id].BankSortCode,
+    "label": banktelcosListInfo?.telcos_list[id].BankName
+  }});
 
   const optionsExport = [
     // {value: "", label: "Se", icon: "", isDisabled: true },
@@ -694,7 +701,7 @@ const BulkpayDataTables = (apikeyDetails) => {
 
   const handleFileOneUpload = () => {
     const formData1 = new FormData();
-    console.log("rtghrghhrthrhrthrthrthrtrtrtgrt", excelFileList)
+    // console.log("rtghrghhrthrhrthrthrthrtrtrtgrt", excelFileList)
     readExcelFile(excelFileList);
 
     // if (response["data"]) {
@@ -1131,7 +1138,7 @@ const BulkpayDataTables = (apikeyDetails) => {
             <Label for="apikeyInfoStatus" className="label-dc mb-1"> Payment method </Label>
             <Select
               placeholder={"Select status"}
-              options={optionsAccTypeInModal}
+              // options={optionBankList}
               id="apikeyInfoStatus"
               className='other-input-select'
               // components={{ Option: paymentOption }}
@@ -1167,7 +1174,7 @@ const BulkpayDataTables = (apikeyDetails) => {
           <CButton color="secondary" className='text-white' onClick={(e) => setModal1(false)}> 
           Cancel
           </CButton>
-          <CButton color="" className='text-white bg-text-wp' onClick={(e) => generateApikey(e)}> 
+          <CButton color="" className='text-white bg-text-wp' onClick={(e) => handleFileOneUpload()}> 
           Create
           </CButton>
         </CModalFooter>
