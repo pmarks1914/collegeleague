@@ -133,6 +133,7 @@ const ApikeyDataTables = (apikeyDetails) => {
     }
     else if (apikeyInfo?.length > 0 && monitorState === 1) {
       // setMonitorState(2)
+      // console.log("info ", apikeyInfo )
       datatablaScript(apikeyInfo);
 
       setLoader('<a></a>')
@@ -155,7 +156,7 @@ const ApikeyDataTables = (apikeyDetails) => {
     // }
 
     
-    // // console.log("props ", dateRange, apikeyInfo, apikeyInfoStatus, monitorState)
+    // console.log("props ", dateRange, apikeyInfo, apikeyInfoStatus, monitorState)
 
   }, [dateRange, apikeyInfo])
 
@@ -262,8 +263,8 @@ const ApikeyDataTables = (apikeyDetails) => {
     // apikeyInfo = posts;
     try {
       // setTableData(posts);
-      let newFilterData = apikeyDetails?.apikeyDetails.filter((post) => { return moment(post?.created).format('LLLL') <= moment(dateFrom).format('LLLL') })
-      // // console.log("post tableData ", apikeyDetails?.apikeyDetails);
+      let newFilterData = apikeyInfo.filter((post) => { return moment(post?.created).format('LLLL') <= moment(dateFrom).format('LLLL') })
+      // // console.log("post tableData ", apikeyInfo);
       // console.log("post tableData ", newFilterData);
       datatablaScript(newFilterData);
       setModal1(false)
@@ -381,16 +382,16 @@ const ApikeyDataTables = (apikeyDetails) => {
       // 
       // // console.log("by status",status, monitorState, apikeyDetails )
       if(status === "All apikeyInfo" && monitorState === 1){
-        datatablaScript(apikeyDetails?.apikeyDetails);
+        datatablaScript(apikeyInfo);
       }
       else if(status === "All apikeyInfo" && monitorState === 2){
         datatablaScript(dateFilterData);
       }
       else if(status === "test" && monitorState === 1){
-        datatablaScript( apikeyDetails?.apikeyDetails?.filter((post, id) => {return ( post?.is_live === false )}) );
+        datatablaScript( apikeyInfo?.filter((post, id) => {return ( post?.is_live === false )}) );
       }
       else if(status === "live" && monitorState === 1){
-        datatablaScript( apikeyDetails?.apikeyDetails?.filter((post, id) => {return ( post?.is_live === true )}) );
+        datatablaScript( apikeyInfo?.filter((post, id) => {return ( post?.is_live === true )}) );
       }
       else if(status === "test" && monitorState === 2){
         datatablaScript( dateFilterData?.filter((post, id) => {return ( post?.is_live === false )}) );
@@ -495,6 +496,10 @@ const ApikeyDataTables = (apikeyDetails) => {
     axios(config).then(response => {
       console.log(response.status);
       if (response?.data?.status === true) { 
+
+        let apikeyInfoDataNew = apikeyData();
+        let apikeyInfoNew = []
+        apikeyInfoDataNew?.apikey?.then(value => { (apikeyInfoNew = value) });
         // // console.log("api key", tableData)
         // let arryData = [];
         // // console.log("api key data 1", arryData)
@@ -531,7 +536,9 @@ const ApikeyDataTables = (apikeyDetails) => {
           // alert(keyCopyText.value)
           // if (result.isConfirmed) {
             // 
-          setModal1(false);
+            // console.log( "old ", apikeyInfo,  " new ", apikeyInfoNew)
+            apikeyInfo = apikeyInfoNew
+            setModal1(false);
           // window.location.reload()
           // }
         });
