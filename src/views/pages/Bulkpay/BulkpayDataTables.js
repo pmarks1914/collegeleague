@@ -1082,7 +1082,7 @@ const BulkpayDataTables = (apikeyDetails) => {
       <a dangerouslySetInnerHTML={{ __html: loader }}></a>
 
       {/* modals */}
-      {/* modal for filter date range */}
+      {/* modal for bulk upload */}
       <CModal visible={modal1} alignment="center" onClose={() => setModal1(false)}>
         <CModalHeader> Bulk Upload  </CModalHeader>
         <CModalBody> 
@@ -1154,7 +1154,7 @@ const BulkpayDataTables = (apikeyDetails) => {
         </CModalFooter>
       </CModal>
 
-      {/* modal for filter date range */}
+      {/* modal for create batch list in app */}
       <CModal visible={modal2} fullscreen="xl" alignment='center' onClose={() => setModal2(false)}>
         <CModalHeader>
           <CModalTitle>  </CModalTitle>
@@ -1163,23 +1163,43 @@ const BulkpayDataTables = (apikeyDetails) => {
           <p className="success rounded" style={{ textAlign: "center" }} >
             {/* <h6> apikeyInfo Details </h6> */}
           </p>
-
-
           <Row>
 
-            <Col xs="12" sm="12" md={5} lg={5} className="mt-1" >
-              <Label for="apikeyInfoStatus" className="label-dc"> Account type </Label>
-              <Select
-                placeholder={"Select status"}
-                options={optionsAccTypeInModal}
-                id="apikeyInfoStatus"
-                className='other-input-select'
-                // components={{ Option: paymentOption }}
-                onChange={(e) => handleChangeInfoAccTypeInModal(e.value)}
-              />
-            </Col>
 
+          <Col xs="12" sm="12" md={6} lg={6} className="mt-0" > 
+            <div className='bulk-pay-name'  >
+              <Box 
+                component="form"
+                noValidate
+                autoComplete="off"
+                >
+                <Label for="apikeyInfoStatus" className="label-dc"> Batch name </Label>
+                <TextField 
+                  // id='filters-d'
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)} 
+                  // label="Filter"
+                  placeholder="Eg. my batch name"
+                  style={{height: "30px !important" }}
+                  
+                  />
+              </Box>
+              </div>
+          </Col>
+          <Col xs="12" sm="12" md={5} lg={5} className="mt-0" >
+            <Label for="apikeyInfoStatus" className="label-dc mb-1"> Payment method </Label>
+            <Select
+              placeholder={"Select status"}
+              options={optionsAccTypeInModal}
+              id="apikeyInfoStatus"
+              className='other-input-select'
+              // components={{ Option: paymentOption }}
+              onChange={(e) => handleChangeInfoAccTypeInModal(e.value)}
+            />
+          </Col>
           </Row>
+
+
         </CModalBody>
         <CModalFooter>
           <CButton color="secondary" className='text-white' onClick={() => setModal2(false)}>
