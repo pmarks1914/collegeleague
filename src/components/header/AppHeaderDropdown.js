@@ -22,7 +22,7 @@ import {
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import $ from 'jquery'
-import avatar8 from './../../assets/images/avatars/8.jpg'
+import avatar9 from './../../assets/brand/logo.png'
 
 const AppHeaderDropdown = (userData) => {
   function logoutUser(){
@@ -34,7 +34,7 @@ const AppHeaderDropdown = (userData) => {
 // $(document).ready(function () {
 //     window.addEventListener('storage', function(event){
 
-//       console.log("storage ")
+//       // console.log("storage ")
 //     });
     
 // });
@@ -43,49 +43,13 @@ const AppHeaderDropdown = (userData) => {
   return (
     <CDropdown variant="nav">
       <CDropdownToggle placement="bottom-end" className="p-0 profile-img" caret={false}>
-        <CAvatar src={(process.env.REACT_APP_MAIN_BASE + userData?.userData?.photo150) || avatar8} size="md" alt="user image"/>
+        <CAvatar src={ userData?.userData?.photo150 ? ( process.env.REACT_APP_MAIN_BASE + userData?.userData?.photo150) : avatar9 } size="md" alt="user image"/>
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
         <CDropdownHeader className="bg-light fw-semibold py-2">User Profile</CDropdownHeader>
-        {/* <CDropdownItem href="#">
-          <CIcon icon={cilBell} className="me-2" />
-          Updates
-          <CBadge color="info" className="ms-2">
-            42
-          </CBadge>
-        </CDropdownItem>
-        <CDropdownItem href="#">
-          <CIcon icon={cilEnvelopeOpen} className="me-2" />
-          Messages
-          <CBadge color="success" className="ms-2">
-            42
-          </CBadge>
-        </CDropdownItem>
-        <CDropdownItem href="#">
-          <CIcon icon={cilTask} className="me-2" />
-          Tasks
-          <CBadge color="danger" className="ms-2">
-            42
-          </CBadge>
-        </CDropdownItem>
-        <CDropdownItem href="#">
-          <CIcon icon={cilCommentSquare} className="me-2" />
-          Comments
-          <CBadge color="warning" className="ms-2">
-            42
-          </CBadge>
-        </CDropdownItem>
-        <CDropdownHeader className="bg-light fw-semibold py-2">Settings</CDropdownHeader>
-        <CDropdownItem href="#">
-          <CIcon icon={cilUser} className="me-2" />
-          Profile
-        </CDropdownItem>
-        <CDropdownItem href="#">
-          <CIcon icon={cilSettings} className="me-2" />
-          Settings
-        </CDropdownItem> */}
+
         {
-          // console.log("userData ", process.env.REACT_APP_MAIN_BASE + userData?.userData?.photo50, userData?.userData)
+          // // console.log("userData ", process.env.REACT_APP_MAIN_BASE + userData?.userData?.photo50, userData?.userData)
         }
         <CDropdownItem>
           <CIcon icon={cilCreditCard} className="me-2" />

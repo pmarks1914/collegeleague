@@ -10,6 +10,8 @@ import './scss/style.scss'
 // import 'https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js'
 // import 'https://cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js'
 
+let userData = JSON.parse(localStorage.getItem("userDataStore"));
+
 const loading = (
   <div className="pt-3 text-center">
     <div className="sk-spinner sk-spinner-pulse"></div>
@@ -31,8 +33,10 @@ const Otp = React.lazy(() => import('./views/pages/register/Otp'))
 
 class App extends Component {
   render() {
+    
     return (
       <BrowserRouter>
+      {/* {userData?.access} */}
         <Suspense fallback={loading}>
           <Routes>
             <Route exact path="/login" name="Login Page" element={<Login />} />
@@ -41,11 +45,18 @@ class App extends Component {
             <Route exact path="/signup" name="SignUp Page" element={<Signup />} />
             <Route exact path="/404" name="Page 404" element={<Page404 />} />
             <Route exact path="/500" name="Page 500" element={<Page500 />} />
-            <Route path="*" name="Home" element={<DefaultLayout />} />
             <Route exact path='/merchant/checkout-customer/:id' name="" element={<Checkout />} />
             <Route exact path='/checkout/:id' name="" element={<Checkout />} />
             <Route exact path='/checkout' name="" element={<Checkout />} />
+            <Route exact path='/pay/:id' name="" element={<Checkout />} />
+            <Route exact path='/pay' name="" element={<Checkout />} />
             <Route exact path="/otp" name="Otp Verification" element={<Otp />} />
+            {
+              userData?.access ?
+              <Route path="*" name="Home" element={<DefaultLayout />} />
+              :
+              ""
+            }
             {/* <Route exact path="/compliance" name="Compliance" element={<Compliance />} /> */}
 
           </Routes>

@@ -18,7 +18,8 @@ import { cilLockLocked, cilUser } from '@coreui/icons'
 import axios from 'axios';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-
+import { Col, Row } from 'reactstrap'
+import Box from '@mui/material/Box';
 
 // import swal from 'sweetalert2'
 
@@ -34,10 +35,8 @@ const Login = () => {
 
   function CheckLogin(e) {
     e.preventDefault();
-    setLogin("")
-    setLoader('<div class="spinner-border "style="color: #e0922f;"></div>`')
 
-    // console.log("fff", process.env.REACT_APP_BASE_API, passwordVar, usernameVar)
+    // // console.log("fff", process.env.REACT_APP_BASE_API, passwordVar, usernameVar)
 
     if (usernameVar === "") {
       // document.getElementById("usernameError").style.display = "block";
@@ -47,7 +46,9 @@ const Login = () => {
       document.getElementById("usernameError").style.display = "none";
     }
     else {
-      console.log(" login ")
+      setLogin("")
+      setLoader('<div class="spinner-border "style="color: #e0922f;"></div>`')
+      // console.log(" login ")
       let data = JSON.stringify({
         "username": usernameVar,
         "password": passwordVar
@@ -65,12 +66,12 @@ const Login = () => {
         setLoader("<a></a>")
         setLogin("Login")
         console.log(response.status);
-        if (response.status === 200) { 
+        if (response?.data?.status) { 
           console.log(response?.data)
           let counter = 700000;
 
           const userData = {
-            status: response.status,
+            status: response.data.status,
             access: response?.data?.access,
             refresh: response?.data?.refresh,
             account: response?.data?.account,
@@ -118,7 +119,7 @@ const Login = () => {
       }).catch(function (error) {
 
         if (error.response) {
-          // console.log("==>");
+          // // console.log("==>");
           
           setLoader("<a></a>")
           setLogin("Login")
@@ -165,10 +166,21 @@ const Login = () => {
   }
 
   return (
-    <div className="bg-light min-vh-100 d-flex flex-row align-items-center">
+    <div className="bg-light min-vh-100 min-vw-100 d-flex flex-row align-items-center">
       <CContainer>
+      <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        marginBottom: '10px'
+                    }}
+                >
+                    <img src="https://wingipay.com/static/wingipay/logo/wingipay-2.4086593aa042.png" className='mb-3' style={{ width: "160px"}}/>
+
+                </Box>
         <CRow className="justify-content-center">
-          <CCol md={8}>
+          <CCol lg={5} xl={5}>
             <CCardGroup>
               <CCard className="p-4">
                 <CCardBody>
@@ -204,7 +216,7 @@ const Login = () => {
 
                     <p className="text-medium-emphasis">{loginError}</p>
                     <CRow>
-                      <CCol xs={6}>
+                      <CCol xs={12}>
                         
                       {login === "Login" ? 
 
@@ -213,16 +225,18 @@ const Login = () => {
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
-                        onClick={(e) => CheckLogin(e)}>
+                        onClick={(e) => CheckLogin(e)}
+                        style={{ background: "#FF7643"}}
+                        >
                         {login}
                         </Button>
                         // <CButton color="primary" className="px-4 " onClick={(e) => CheckLogin(e)}>
                         //   {login}
                         // </CButton>
                         :
-                        <CButton color="primary" className="px-4 ">
+                        // <CButton style={{ background: "#fff"}} className="px-4 ">
                           <a dangerouslySetInnerHTML={{ __html: loader }}></a>
-                        </CButton>
+                        // </CButton>
                         }
                       </CCol>
                       {/* <CCol xs={6} className="text-right">
@@ -253,6 +267,11 @@ const Login = () => {
             </CCardGroup>
           </CCol>
         </CRow>
+
+        {/* <iframe src='https://dashboard.wingipay.com/pay/42LlzbZI/'  width="100%" height="350px" title="Iframe Example">
+          
+        </iframe> */}
+
       </CContainer>
     </div>
   )

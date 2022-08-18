@@ -73,7 +73,9 @@ import {
 import Swal from 'sweetalert2';
 
 let userData = JSON.parse(localStorage.getItem("userDataStore"));
-
+sessionStorage.setItem("trackTransaction", false)
+let intervalWait;
+let ccount = 0;
 
 function Copyright(props) {
     return (
@@ -92,7 +94,16 @@ const theme = createTheme();
 
 export default function Checkout() {
 
+    // for checkout page 
     const [isCheckout, setIsCheckout] = useState(false)
+    // for custom checkout page
+    const [isCustomCheckout, setIsCustomCheckout] = useState(false)
+
+    const [pagePaymentMethod, setPagePaymentMethod] = useState(false)
+    const [trackTransaction, setTrackTransaction] = useState(false)
+    const [counterWaitingVal, setCounterWaitingVal] = useState(0)
+
+    const [transactionId, setTransactionId] = useState("")
     const [merchantId, setMerchantId] = useState("")
     const [sessionData, setSessionData] = useState({})
     const [sourceMetadata, setSourceMetadata] = useState({})
@@ -105,11 +116,15 @@ export default function Checkout() {
     const [phoneNumber, setPhoneNumber] = useState("")
     const [amount, setAmount] = useState("")
     const [accountType, setAccountType] = useState("")
+    const [accountName, setAccountName] = useState("")
     const [accountNumber, setAccountNumber] = useState("")
     const [otp, setOtp] = useState('');
-    const [fee, setFee] = useState('')
+    const [fee, setFee] = useState('0.00')
+    const [feeType, setFeeType] = useState("")
+    const [admissionId, setAdmissionId] = useState("")
+    const [email, setEmail] = useState("")
     const [prefix, setPrefix] = useState(window.location.pathname.split("/")[3]);
-
+      
     // error states
     const [fullNameError, setFullNameError] = useState(false);
     const [phoneNumberError, setPhoneNumberError] = useState(false);
@@ -117,7 +132,13 @@ export default function Checkout() {
     const [accountTypeError, setAccountTypeError] = useState(false);
     const [accountNumberError, setAccountNumberError] = useState(false);
     const [otpError, setOtpError] = useState(false);
+    const [feeTypeError, setFeeTypeError] = useState(false)
+    const [admissionIdError, setAdmissionIdError] = useState(false)
+    const [emailError, setEmailError] = useState(false)
     
+    // data
+    const [payeeData, setPayeeData] = useState({})
+    const [feeData, setFeeData] = useState([])
 
     // modals
     const [modal1, setModal1] = useState(false)
@@ -125,13 +146,11 @@ export default function Checkout() {
     const [modal2, setModal2] = useState(false)
 
     useEffect(()=>{
-        // 
+        // condition for only normal checkout
         if(window.location.pathname.split("/")[1] === "checkout"){
             // 
             let checkoutId = window.location.pathname.split("/")[2]
-
-            console.log("window", checkoutId)
-            
+            // // console.log("window", checkoutId)
             setIsCheckout(true)
             if(checkoutId){
                 setMerchantId(checkoutId);
@@ -146,10 +165,10 @@ export default function Checkout() {
                 };
             
                 axios(config_ch).then(response => {
-                    console.log("data checkout ==", response?.data);
+                    // // console.log("data checkout 1 ==", response?.data);
                     if (response?.data?.status === true) {
                         // 
-                        console.log("g>>>")
+                        // // console.log("g>>>")
                         sessionStorage.setItem("sessionData", JSON.stringify(response?.data))
                         setSessionData(response?.data)
                         setAccountNumber(response?.data?.data?.phone)
@@ -170,8 +189,6 @@ export default function Checkout() {
                             showCancelButton: false,
                             showConfirmButton: false,
                             allowOutsideClick: false,
-                            // cancelButtonColor: '#d33',
-                            // timer: 4000
                         }).then((result) => {
                             // 
                         })
@@ -196,7 +213,146 @@ export default function Checkout() {
                         })
                     }
                     if (error.response) {
-                        // console.log("==");
+                        // // console.log("==");
+                        /*
+                        * The request was made and the server responded with a
+                        * status code that falls out of the range of 2xx
+                        */
+        
+                    } else if (error.request) {
+                        /*
+                        * The request was made but no response was received, `error.request`
+                        * is an instance of XMLHttpRequest in the browser and an instance
+                        * of http.ClientRequest in Node.js
+                        */
+        
+                    } else {
+                        // Something happened in setting up the request and triggered an Error
+        
+                    }
+                });
+                let config_fee_list = {
+                    method: 'get',
+                    url: process.env.REACT_APP_BASE_API + "/list/" + checkoutId + "/",
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    data: data
+                };
+            
+                axios(config_fee_list).then(response => {
+                    // // console.log("data checkout ==", response?.data);
+                    if (response?.data?.status === true) {
+                        // 
+                    }
+                }).catch(function (error) {
+                    // 
+                    if (error.response) {
+                        // // console.log("==");
+                        /*
+                        * The request was made and the server responded with a
+                        * status code that falls out of the range of 2xx
+                        */
+        
+                    } else if (error.request) {
+                        /*
+                        * The request was made but no response was received, `error.request`
+                        * is an instance of XMLHttpRequest in the browser and an instance
+                        * of http.ClientRequest in Node.js
+                        */
+        
+                    } else {
+                        // Something happened in setting up the request and triggered an Error
+        
+                    }
+                });
+            }
+            else{
+                Swal.fire({
+                    title: 'Oops',
+                    html: "<div class='pb-0 pt-0'> Invalid Session</div>",
+                    icon: 'error',
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                }).then((result) => {
+                    // 
+                })
+
+            }
+        
+
+        }
+        else if(window.location.pathname.split("/")[1] === "pay"){
+            // for custom checkout
+            let prefix = window.location.pathname.split("/")[2]
+            // // console.log("window", checkoutId)
+            setPrefix(prefix)
+            setIsCheckout(true)
+            setIsCustomCheckout(true)
+            if(prefix){
+                // setMerchantId(checkoutId);
+                let data = '';
+                let config_ch = {
+                    method: 'get',
+                    url: process.env.REACT_APP_BASE_API + "/verify/paymentlink/" + prefix + "/",
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    data: data
+                };
+                
+                axios(config_ch).then(response => {
+                    // console.log("data custom checkout s ==", response?.data);
+                    if (response?.data?.status === true) {
+                        // // console.log("g>>>")
+                        sessionStorage.setItem("sessionData", JSON.stringify(response?.data))
+                        setSessionData(response?.data)
+                        // setAccountNumber(response?.data?.data?.phone)
+                        // setPhoneNumber(response?.data?.data?.phone)
+                        // setAmount(response?.data?.data?.amount)
+                        setFee(response?.data?.fee || "0.00")
+                        setPrefix(response?.data?.prefix)
+                        setSourceMetadata(response?.data)
+
+                        // window.history.pushState("", "", '/pay')
+
+                        getFeeType()
+
+                    }
+                    else{
+                        // Swal.fire({
+                        //     title: 'Oops',
+                        //     html: "<div class='pb-0 pt-0'> Invalid Session</div>",
+                        //     icon: 'error',
+                        //     showCancelButton: false,
+                        //     showConfirmButton: false,
+                        //     allowOutsideClick: false,
+                        // }).then((result) => {
+                        //     // 
+                        // })
+                    }
+                    
+        
+                }).catch(function (error) {
+                    // 
+                    if(error){
+                        Swal.fire({
+                            title: 'Application Error',
+                            title: 'Oops',
+                            html: "<div class='pb-0 pt-0'> Try again later </div>",
+                            icon: 'warning',
+                            showCancelButton: false,
+                            showConfirmButton: false,
+                            allowOutsideClick: false,
+                            // cancelButtonColor: '#d33',
+                            // timer: 4000
+                        }).then((result) => {
+                            // 
+                        })
+                    }
+                    if (error.response) {
+                        // // console.log("==");
                         /*
                         * The request was made and the server responded with a
                         * status code that falls out of the range of 2xx
@@ -230,21 +386,37 @@ export default function Checkout() {
                 })
 
             }
-        
-
         }
-    }, [])
+
+
+        if(accountType === 1){
+            // 
+            setAccountName(methodOfPayment[0].name)
+        }
+        else if(accountType === 5){
+            // 
+            setAccountName(methodOfPayment[1].name)
+        }
+        else if(accountType === 6){
+            // 
+            setAccountName(methodOfPayment[2].name)
+        }
+        else if(accountType === 7){
+            // 
+            setAccountName(methodOfPayment[3].name)
+        }
+    }, [accountType])
     const handleDropdownChange = (event) => {
         // setbusinessType(event.target.value);
     };
     function handleSubmit(event, formType) {
         event.preventDefault();
-        console.log("window.location pathname ", window.location.pathname.split("/")[1])
+        // // console.log("window.location pathname ", window.location.pathname.split("/")[1])
         let expPhone = /(020|023|024|025|026|027|028|050|054|055|059)[\s.-]?\d{7}$/;
-        // expPhone.test(phoneNumber)  
-        // console.log("amountError ", formType, expPhone.test(phoneNumber), (Number(amount) ? true : false) )
+        // expPhone.test(phoneNumber.replace(/\s+/g, ''))  
+        // // console.log("amountError ", formType, expPhone.test(phoneNumber.replace(/\s+/g, '')), (Number(amount) ? true : false), admissionId.length)
         if (formType === 1) {
-            // for initial form fields
+            // for initial form fields 
             if (!fullNameError && fullName.length < 4) {
                 setFullNameError(true)
             }
@@ -252,10 +424,11 @@ export default function Checkout() {
                 setPhoneNumberError(true)
             }
             else if (!amountError && (amount.length < 1) || !(Number(amount) ? true : false)) {
-                // console.log("amount ", amount)
+                // // console.log("amount ", amount)
                 setAmountError(true)
             }
             else{
+                // for payment method which is selected from modal
                 setModal1(true)
                 setSourceMetadata(
                     {
@@ -269,27 +442,72 @@ export default function Checkout() {
         }
         else if (formType === 2) {
             // for mobile network form fields
-            console.log("accountType ", formType, Number(accountType), accountType, accountTypeError, ([1, 5, 6, 7]).includes(accountType), accountNumber)
+            // // console.log("accountType ", formType, Number(accountType), accountType, accountTypeError, ([1, 5, 6, 7]).includes(accountType), accountNumber)
             if ( Number(accountType)===0 ) {
-                console.log("<<  >>")
+                // console.log("<<  >>")
                 setAccountTypeError(true)
             }
             else if (!(expPhone.test(accountNumber))) {
-                // console.log(">>><<<<")
+                // // console.log(">>><<<<")
                 setAccountNumberError(true)
             }
             else if(accountNumber && accountType){
-                console.log("fffff")
-                setModal2(true)
+                // console.log("fffff")
+                // setModal2(true)
                 setModal1(false)
                 setTimeout(() => {
-                    genericOpt("sendOtp");
+                    // genericOpt("sendOtp");
+                    nameCheck();
                     // setModal2(true);
                 }, 1000);
             }
         }
+        if (formType === 3) {
+            // for custom checkout initial form fields 
+            if (admissionId.length < 8) {
+                setAdmissionIdError(true)
+            }
+
+            if (!emailError && email.length < 4) {
+                setEmailError(true)
+            }
+            if (!feeTypeError && feeType.length < 4) {
+                setFeeTypeError(true)
+            }
+            else if (!(expPhone.test(phoneNumber.replace(/\s+/g, ''))) ) {
+                setPhoneNumberError(true)
+            }
+            else if (!(Number(amount) ? !(amount.length < 1) : false)) {
+                // // console.log("amount ", amount)
+                setAmountError(true)
+            }
+            else{
+                // setModal1(true) payeed
+                setPagePaymentMethod(true)
+                setSourceMetadata(
+                    {
+                    "full_name": payeeData.fullName,
+                    "first_name": "",
+                    "last_name": "",
+                    "email": email,
+                    "admission_id": admissionId,
+                    "fee_type": feeType,
+                    "mobile_number": phoneNumber,
+                    "recipient_address": accountNumber,
+                    "studentId": payeeData.studentId,
+                    "currentLevel": payeeData.currentLevel,
+                    "sex": payeeData.sex,
+                    "program": payeeData.program,
+                    "sessionName": payeeData.sessionName,
+                    "mobileNo": payeeData.mobileNo,
+                    "currency": payeeData.currency,
+                    "accountNo": payeeData.accountNo,
+                    "balance": payeeData.balance
+                })
+            }
+        }
         if (formType === 4) {
-            console.log("otp >>>>", otpError, otp.charAt(3))
+            // // console.log("otp >>>>", otpError, otp.charAt(3))
             if (!otpError && (otp.length < 4) || !(otp.charAt(3)) || !(Number(otp) ? true : false) ) {
                 // add verify otp to the if checks
                 setOtpError(true)
@@ -300,12 +518,87 @@ export default function Checkout() {
             }
 
         }
-
-        // check btn text for pay now
-        if (btnText === "Pay now") {
-            // 
-            setBtnText("Pay now")
+        if(formType === 5){
+            // handle view for user confirmation and verify payment
+            // {sessionData?.data?.full_name || payeeData.fullName}
+            // // console.log("sessionData ", sessionData)
+            let txtString = `<table id="table" width="90%" border=0>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr width="100%" class="ml-3">
+                    <td style="float: left">Name :</td>
+                    <td style="float: right; margin-right: -40px">${ (sessionData?.data?.full_name || payeeData?.fullName || fullName ) } </td>
+                </tr>
+                <tr width="100%" class="ml-3">
+                    <td style="float: left">ID :</td>
+                    <td style="float: right; margin-right: -40px">${ payeeData?.studentId || "N/A" } </td>
+                </tr>
+                <tr width="100%" class="ml-3">
+                    <td style="float: left">Email :</td>
+                    <td style="float: right; margin-right: -40px">${ email || "N/A" } </td>
+                </tr>
+                <tr width="100%" class="ml-3">
+                    <td style="float: left">Account No. :</td>
+                    <td style="float: right; margin-right: -40px">${ accountNumber } </td>
+                </tr>
+                <tr width="100%" class="ml-3">
+                    <td style="float: left">Payment method :</td>
+                    <td style="float: right; margin-right: -40px">${ accountName } </td>
+                </tr>
+                <tr width="100%" class="ml-3">
+                    <td style="float: left">Service type :</td>
+                    <td style="float: right; margin-right: -40px">${ feeType } </td>
+                </tr>
+                <tr width="100%" class="ml-3">
+                    <td style="float: left">Amount :</td>
+                    <td style="float: right; margin-right: -40px">${ amount } </td>
+                </tr>
+                <tr width="100%" class="ml-3">
+                    <td style="float: left">Fee :</td>
+                    <td style="float: right; margin-right: -40px">${ fee } </td>
+                </tr>
+            </tbody>
+            </table>`
+            if ( Number(accountType)===0 ) {
+                setAccountTypeError(true)
+            }
+            else if (!(expPhone.test(accountNumber))) {
+                setAccountNumberError(true)
+            }            
+            else if(accountNumber && accountType){
+                Swal.fire({
+                    title: 'Verify!',
+                    html: txtString,
+                    // icon: 'warning',
+                    showCancelButton: true,
+                    showConfirmButton: true,
+                    confirmButtonColor: '#FF7643',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Confirm',
+                    reverseButtons: true,
+                    allowOutsideClick: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        handleSubmit(event, 2)
+                    }
+                    else{
+                        setPagePaymentMethod(false)
+                    }
+                })
+            }
         }
+        // check btn text for pay now
+        // if (btnText === "Pay now") {
+        //     setBtnText("Pay now")
+        // }
         // const data = new FormData(event.currentTarget);
         // console.log({
         //   email: data.get('email'),
@@ -327,8 +620,6 @@ export default function Checkout() {
     ]
     function genericOpt(otpType){
         // 
-
-
         if(otpType === "sendOtp"){
             let data = {"phone": accountNumber};
             let config = {
@@ -341,13 +632,13 @@ export default function Checkout() {
                 data: data
             };
             axios(config).then(response => {
-                console.log("data otp==", response?.data);
+                // // console.log("data otp==", response?.data);
                 if (response.status === 200) {
                     // 
                 }
             }).catch(function (error) {
                 if (error.response) {
-                    // console.log("==");
+                    // // console.log("==");
                     /*
                     * The request was made and the server responded with a
                     * status code that falls out of the range of 2xx
@@ -380,7 +671,7 @@ export default function Checkout() {
                 data: dataVerify
             };
             axios(config).then(response => {
-                console.log("data otp verify==", response?.data);
+                // // console.log("data otp verify==", response?.data);
                 if (response?.data?.status) {
                     // 
                     // let textStr = "Payment of <p> <h6>GHS" + amount + "</h6> for </p>" + accountNumber;
@@ -426,7 +717,7 @@ export default function Checkout() {
                 }
             }).catch(function (error) {
                 if (error.response) {
-                    // console.log("==");
+                    // // console.log("==");
                     /*
                     * The request was made and the server responded with a
                     * status code that falls out of the range of 2xx
@@ -448,11 +739,12 @@ export default function Checkout() {
 
         }
     }
-
+    
     function makePayment(){
         // 
         
         let data = {};
+        // (sessionData?.data?.full_name || payeeData?.fullName || fullName )
         if(accountType === 1){
             data = {
                 "service": accountType,
@@ -461,7 +753,7 @@ export default function Checkout() {
                 "currency": "GHS",
                 "note": "Merchant pay of GHS" + amount.toString() + " from " + fullName,
                 "prefix": prefix,
-                "source_metadata": sourceMetadata
+                "source_metadata": {...sourceMetadata, ...sessionData?.data, ...payeeData, ...{"feeType": feeType}, ...{"fee": fee}, ...{"email": email}, ...{"accountNumber": accountNumber}} 
             }
 
         }
@@ -473,9 +765,8 @@ export default function Checkout() {
                 "currency": "GHS",
                 "note": "Merchant pay of GHS" + amount.toString() + " from " + fullName,
                 "prefix": prefix,
-                "source_metadata":  sourceMetadata 
+                "source_metadata":  {...sourceMetadata, ...sessionData?.data, ...payeeData, ...{"feeType": feeType}, ...{"fee": fee}, ...{"email": email}, ...{"accountNumber": accountNumber}} 
             }
-
         }
         
         let config = {
@@ -487,39 +778,52 @@ export default function Checkout() {
             },
             data: data
         };
-        setLoader('<div class="spinner-border dashboard-loader" style="color: #e0922f; text: center"></div>')
+        setLoader('<div class="spinner dashboard-loader" style="color: #e0922f; text: center"></div>')
 
         axios(config).then(response => {
-            console.log("data otp==", response?.data);
+            // // console.log("data otp==", response?.data);
             if (response?.data?.status) {
                 // 
+                setTransactionId(response?.data?.transaction_id)
                 setLoader(``)
-                let textStr = "Payment of <p> <h6>GHS" + amount + "</h6> made to WingiPay </p>";
+                let textStr = "<p>Payment of GHS" + amount.toString() + " to " + (sessionData?.merchant_name?.toString() || '') + " </p> <p>Kindly approve the payment request on your phone </p>";
 
                 Swal.fire({
-                title: 'Payment Successful',
+                title: 'Pending Approval',
                 html: textStr.toString(),
-                icon: 'success',
+                // icon: 'success',
                 // timer: 6000,
                 allowOutsideClick: false,
                 // allowEscapeKey: false,
                 showCancelButton: false,
-                showConfirmButton: true,
+                showConfirmButton: false,
                 confirmButtonColor: '#FF7643',
                 // cancelButtonColor: '#d33',
-                confirmButtonText: 'OK'
+                // confirmButtonText: 'OK'
+                didOpen: () => {
+                    Swal.showLoading()
+                    setTrackTransaction(sessionStorage.getItem("trackTransaction"))
+                        intervalWait = setInterval(function(){
+                            ccount = ccount + 1;
+                            statusTransaction(response?.data?.transaction_id, response?.data?.reference_id, ccount)
+                        }, 8000)
+                    
+                },
+                willClose: () => {
+                    // clearInterval(timerInterval)
+                }
                 }).then((result) => {
                 setTimeout(() => {
                     setModal2(false)
                     if(isCheckout){
                         // checkout redirect 
-                        window.location.href = sourceMetadata?.callbackurl
+                        // window.location.href = sourceMetadata?.callbackurl
                     }
                 }, 1000);
                 });
             }
             else{
-                setLoader(``)
+                // setLoader(``)
 
                 Swal.fire({
                     title: 'Payment Failed',
@@ -538,7 +842,7 @@ export default function Checkout() {
 
             setLoader(``)
             if (error.response) {
-                // console.log("==");
+                // // console.log("==");
                 /*
                 * The request was made and the server responded with a
                 * status code that falls out of the range of 2xx
@@ -559,8 +863,329 @@ export default function Checkout() {
         )
     }
 
+    // telcos
     function nameCheck(){
-        
+
+        let data = {}
+        if(accountType === 1){
+            // WINGIPAY
+            data = {
+                "phone": accountNumber,
+                "network": "WINGIPAY"
+            }
+        }
+        else if(accountType === 5){
+            // MTN
+            data = {
+                "phone": accountNumber,
+                "network": "MTN"
+            }
+        }
+        else if(accountType === 6){
+            // VODAFONE
+            data = {
+                "phone": accountNumber,
+                "network": "VODAFONE"
+            }
+        }
+        else if(accountType === 7){
+            // AIRTELTIGO
+            data = {
+                "phone": accountNumber,
+                "network": "AIRTEL_TIGO"
+            }
+        }
+
+        let config = {
+            method: 'post',
+            url: process.env.REACT_APP_BASE_API + "/namecheck/",
+            headers: {
+                'Content-Type': 'application/json',
+                // 'Authorization': 'Bearer ' + userData?.access
+            },
+            data: data
+        };
+
+        setLoader('<div class="spinner-border dashboard-loader" style="color: #e0922f; text: center"></div>')
+        axios(config).then(response => {
+            // console.log("data namecheck verify==", response?.data, "accountType", accountType);
+            if (response?.data?.status) {
+                setLoader('')
+                // makePayment();
+                genericOpt("sendOtp")
+                setModal2(true)
+                // if(accountType === 1){
+                //     genericOpt("sendOtp")
+                //     setModal2(true)
+                // }
+                // else{
+                //     // 
+                //     makePayment();
+                // }
+                // setTimeout(() => {
+                //     setModal2(false)
+                // }, 3000);
+            }
+            else{
+                setLoader('')
+                genericOpt("sendOtp");
+            }
+        }).catch(function (error) {
+            if(error){
+                setLoader('')
+                genericOpt("sendOtp");
+            }
+            if (error.response) {
+                // // console.log("==");
+                /*
+                * The request was made and the server responded with a
+                * status code that falls out of the range of 2xx
+                */
+
+            } else if (error.request) {
+                /*
+                * The request was made but no response was received, `error.request`
+                * is an instance of XMLHttpRequest in the browser and an instance
+                * of http.ClientRequest in Node.js
+                */
+
+            } else {
+                // Something happened in setting up the request and triggered an Error
+
+            }
+        }
+        )
+    }
+    // schools name check
+    function nameOrganizationCheck(organizationType, admissionInputValue){
+        let data = {}
+        if(organizationType === 1 && admissionInputValue.length > 7){
+            // atu
+            data = {
+                "StudentID": admissionId,
+            }
+            let config = {
+                method: 'get',
+                url: process.env.REACT_APP_BASE_API + "/atu/student/lookup/" + admissionInputValue + "/",
+                headers: {
+                    'Content-Type': 'application/json',
+                    // 'Authorization': 'Bearer ' + userData?.access
+                },
+                data: data
+            };
+
+            axios(config).then(response => {
+                // console.log("data setPayeeData verify==", response?.data);
+                if (response?.data?.status) {
+                    setPayeeData(response?.data?.student)
+                }
+            }).catch(function (error) {
+                if (error.response) {
+                    // // console.log("==");
+                    /*
+                    * The request was made and the server responded with a
+                    * status code that falls out of the range of 2xx
+                    */
+
+                } else if (error.request) {
+                    /*
+                    * The request was made but no response was received, `error.request`
+                    * is an instance of XMLHttpRequest in the browser and an instance
+                    * of http.ClientRequest in Node.js
+                    */
+
+                } else {
+                    // Something happened in setting up the request and triggered an Error
+
+                }
+            }
+            )
+        }
+    }
+    // fee types orga
+
+    function getFeeType(){
+        let data = {}
+
+        let config = {
+            method: 'get',
+            url: process.env.REACT_APP_BASE_API + "/atu/fee/type/",
+            headers: {
+                'Content-Type': 'application/json',
+                // 'Authorization': 'Bearer ' + userData?.access
+            },
+            data: data
+        };
+
+        axios(config).then(response => {
+            // // console.log("data setFeeData ==", response?.data);
+            if (response?.data?.status) {
+                setFeeData(response?.data?.payment_types)
+            }
+        }).catch(function (error) {
+            if (error.response) {
+                // // console.log("==");
+                /*
+                * The request was made and the server responded with a
+                * status code that falls out of the range of 2xx
+                */
+
+            } else if (error.request) {
+                /*
+                * The request was made but no response was received, `error.request`
+                * is an instance of XMLHttpRequest in the browser and an instance
+                * of http.ClientRequest in Node.js
+                */
+
+            } else {
+                // Something happened in setting up the request and triggered an Error
+
+            }
+        }
+        )
+    }
+    function statusTransaction(id, refId, interCount){
+        // setCounterWaitingVal(counterWaitingVal + 1);
+        let data = '';
+        let config_ch = {
+            method: 'get',
+            url: process.env.REACT_APP_BASE_API + "/transaction/status/" + id + "/",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            data: data
+        };
+        // console.log("cccc", ccount)
+
+        if(interCount < 6){
+            axios(config_ch).then(response => {
+                // // console.log("data transaction status ==", response?.data);
+                if (response?.data?.transaction_status === "SUCCESSFUL") {
+                    // // console.log("g>>>")
+                    // setTrackTransaction(true)
+                    clearInterval(intervalWait)
+                    ccount = 0;
+                    sessionStorage.setItem("trackTransaction", true)
+                    
+                    let textStr = "<p>Payment of GHS" + amount.toString() + " to " + (sessionData?.merchant_name?.toString() || sessionData?.merchant_id || '') + " </p> <p>Reference : " + " " + response?.data?.reference_id + "</p>";
+
+                    Swal.fire({
+                    title: 'Successful',
+                    html: textStr.toString(),
+                    icon: 'success',
+                    // timer: 6000,
+                    allowOutsideClick: false,
+                    // allowEscapeKey: false,
+                    showCancelButton: false,
+                    showConfirmButton: true,
+                    confirmButtonColor: '#FF7643',
+                    // cancelButtonColor: '#d33',
+                    confirmButtonText: 'OK'
+                    }).then((result) => {
+                        window.location.reload();
+                        // setTimeout(() => {
+                        //     if(isCheckout){
+                        //         // checkout redirect 
+                        //         if(sourceMetadata?.callbackurl){
+                        //             // 
+                        //             window.location.href = sourceMetadata?.callbackurl
+                        //         }
+                        //     }
+                        // }, 1000);
+                    });
+
+                }  
+                else if(response?.data?.transaction_status === "FAILED") {
+                    // // console.log("g>>>")
+                    // setTrackTransaction(true)
+                    clearInterval(intervalWait)  
+                    ccount = 0;              
+                    let textStr = "<p>Payment not successful </p> <p> Reference:" + refId + "</p>";
+
+                    Swal.fire({
+                    title: 'Failed',
+                    html: textStr.toString(),
+                    icon: 'error',
+                    // timer: 3000,
+                    allowOutsideClick: false,
+                    // allowEscapeKey: false,
+                    showCancelButton: false,
+                    showConfirmButton: true,
+                    confirmButtonColor: '#FF7643',
+                    // cancelButtonColor: '#d33',
+                    confirmButtonText: 'OK'
+                    }).then((result) => {
+                        ccount = 0;
+                        Swal.close()
+                    });
+                    setTimeout(() => {
+                        Swal.close()
+                    }, 3000);
+
+                }           
+
+            }).catch(function (error) {
+                // 
+                // if(error){
+                //     Swal.fire({
+                //         title: 'Application Error',
+                //         title: 'Oops',
+                //         html: "<div class='pb-0 pt-0'> Try again later </div>",
+                //         icon: 'warning',
+                //         showCancelButton: false,
+                //         showConfirmButton: false,
+                //         allowOutsideClick: false,
+                //     }).then((result) => {
+                //         // 
+                //     })
+                // }
+                if (error.response) {
+                    // // console.log("==");
+                    /*
+                    * The request was made and the server responded with a
+                    * status code that falls out of the range of 2xx
+                    */
+
+                } else if (error.request) {
+                    /*
+                    * The request was made but no response was received, `error.request`
+                    * is an instance of XMLHttpRequest in the browser and an instance
+                    * of http.ClientRequest in Node.js
+                    */
+
+                } else {
+                    // Something happened in setting up the request and triggered an Error
+
+                }
+            });
+        }
+        else{
+            // 
+            clearInterval(intervalWait)             
+            let textStr = "<p> <p> Reference: " + refId + "</p>";
+            ccount = 0;
+
+            Swal.fire({
+            title: 'Pending',
+            html: textStr.toString(),
+            icon: 'info',
+            // timer: 6000,
+            allowOutsideClick: false,
+            // allowEscapeKey: false,
+            showCancelButton: false,
+            showConfirmButton: true,
+            confirmButtonColor: '#FF7643',
+            // cancelButtonColor: '#d33',
+            confirmButtonText: 'OK'
+            }).then((result) => {
+                ccount = 0;
+                Swal.close()
+            });
+            setTimeout(() => {
+                Swal.close()
+            }, 3000);
+            
+        }
     }
     return (
         <ThemeProvider theme={theme}>
@@ -580,26 +1205,418 @@ export default function Checkout() {
                     <img src="https://wingipay.com/static/wingipay/logo/wingipay-2.4086593aa042.png" className='mb-3' />
 
                     <Typography component="h1" variant="h5" className='mb-5 checkout-0'>
-                        WingiPay Transaction
+                        { sessionData?.merchant_id || "WingiPay Transaction" }
                     </Typography>
                 </Box>
 
                 <CssBaseline />
                 {
-                    isCheckout ?
+                    !pagePaymentMethod ? (
+                        (isCheckout && isCustomCheckout) ?
+                        (
+                            <Box
+                            sx={{
+                                paddingTop: 0,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                border: 'solid 1px #f2e5e5',
+                                borderRadius: '15px'
+                            }}
+                            >
+
+                            {/* custom checkout form fields */} 
+                            <Box noValidate sx={{ m: 2 }} id="form-1">
+
+                                <TextField
+                                    error={admissionIdError}
+                                    value={admissionId}
+                                    onChange={(e) => { (setAdmissionId(e.target.value)); (setAdmissionIdError(false)); (nameOrganizationCheck(1, e.target.value)) }}
+                                    id="admissionId"
+                                    name="admissionId"
+                                    label="Student ID or Reference No."
+                                    variant="standard"
+                                    margin="normal"
+                                    type="text"
+                                    fullWidth
+                                    required
+                                    autoComplete='on'
+                                    InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end" >
+                                            <CTooltip
+                                                content="This field is required."
+                                                placement="top"
+                                            >
+                                            <CIcon icon={cilInfo} className="me-2" />
+                                            </CTooltip>
+                                        </InputAdornment>
+                                    ),
+                                    }}
+                                />
+                                <TextField
+                                    error={emailError}
+                                    value={email}
+                                    onChange={(e) => { (setEmail(e.target.value)); (setEmailError(false)) }}
+                                    id="email"
+                                    name="email"
+                                    label="Email"
+                                    variant="standard"
+                                    margin="normal"
+                                    type="email"
+                                    fullWidth
+                                    required
+                                    autoComplete='on'
+                                    InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end" >
+                                            <CTooltip
+                                                content="This field is required."
+                                                placement="top"
+                                            >
+                                            <CIcon icon={cilInfo} className="me-2" />
+                                            </CTooltip>
+                                        </InputAdornment>
+                                    ),
+                                    }}
+                                />
+                                <TextField
+                                    error={phoneNumberError}
+                                    value={phoneNumber}
+                                    onChange={(e) => { (setPhoneNumber(e.target.value)); (setAccountNumber(e.target.value)); (setPhoneNumberError(false)) }}
+                                    id="phoneNumber"
+                                    name="phoneNumber"
+                                    label="Phone number"
+                                    variant="standard"
+                                    margin="normal"
+                                    type="text"
+                                    fullWidth
+                                    required
+                                    InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end" >
+                                            <CTooltip
+                                                content="This field is required, provide a valid phone number in the form eg. 0xx xxxx xxx"
+                                                placement="top"
+                                            >
+                                            <CIcon icon={cilInfo} className="me-2" />
+                                            </CTooltip>
+                                        </InputAdornment>
+                                    ),
+                                    }}
+                                />
+
+                                <TextField
+                                    error={amountError}
+                                    value={amount}
+                                    onChange={(e) => { (setAmount(e.target.value)); (setAmountError(false)) }}
+                                    id="amount"
+                                    name="amount"
+                                    label="Amount"
+                                    variant="standard"
+                                    margin="normal"
+                                    type="text"
+                                    fullWidth
+                                    required
+                                    InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end" >
+                                            <CTooltip
+                                                content="This field is required."
+                                                placement="top"
+                                            >
+                                            <CIcon icon={cilInfo} className="me-2" />
+                                            </CTooltip>
+                                        </InputAdornment>
+                                    ),
+                                    }}
+                                />
+                                <FormControl fullWidth className='m-0' variant="standard">
+        
+                                    <InputLabel id="fee-type">Select fee type</InputLabel>
+                                    <Select
+                                        labelId="fee-type"
+                                        // id="demo-simple-select-standard"
+                                        error={feeTypeError}
+                                        value={feeType}
+                                        onChange={(e) => { (setFeeType(e.target.value)); (setFeeTypeError(false)) } }
+                                        label="Select"
+                                    >
+                                        <MenuItem value="">
+                                            <em>None</em>
+                                        </MenuItem>
+                                        {
+                                            feeData?.map((post, id) =>
+                                                <MenuItem value={post.paymentName} key={post.paymentName}>{post.paymentName}</MenuItem>
+                                            )
+                                        }
+                                    </Select>
+                                </FormControl>
+
+                                <Row>
+                                    <Col xs="5" sm="5" lg="5"></Col>
+                                    <Col xs="4" sm="4" lg="4"> <a dangerouslySetInnerHTML={{ __html: loader }}></a> </Col >
+                                    
+                                </Row>
+                                <Button
+                                    type="submit"
+                                    fullWidth
+                                    variant="contained"
+                                    sx={{ mt: 3, mb: 2 }}
+                                    style={{background: "#FF7643"}}
+                                    onClick={(e) => {handleSubmit(e, 3)}}
+                                >
+                                    PROCEED
+                                </Button>
+
+                            </Box>
+
+                            </Box>
+                            )
+                            :
+                            ( isCheckout ?
+                            <Box 
+                                sx={{
+                                    paddingTop: 0,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    border: 'solid 1px #f2e5e5',
+                                    borderRadius: '15px'
+                                }}
+                            >
+                            {/* {merchantId} */}
+                        
+                            <Box noValidate sx={{ m: 2 }} id="form-1">
+                                <FormControl fullWidth className='m-0' variant="standard">
+                                    {/*  */}
+                                    <Row>
+                                        <Col sm="4" style={{textAlign: "right"}}>
+                                            {/*  */}
+                                        </Col>
+                                        <Col sm="1" style={{textAlign: "right"}}>
+                                            {/*  */}
+                                        </Col>
+                                        <Col sm="7" style={{textAlign: "right"}}>
+                                            {/*  */}
+                                            <p className='m-0 d-fixed checkout-ps-info'>
+                                                <b component="h1">{sessionData?.data?.full_name} </b> 
+                                            </p>
+                                            <p className='m-0 d-fixed checkout-ps-info'>
+                                                <b component="h1">Amount :</b> GHS {amount}
+                                            </p>
+                                            <p className='m-0 d-fixed checkout-ps-info'>
+                                                <b component="h1">Fee :</b> GHS {fee}
+                                            </p>
+                                            {/* <p className='m-0 d-fixed checkout-ps-info'>
+                                                <b component="h1">Phone :</b> {phoneNumber}
+                                            </p> */}
+                                            {/* {phoneNumber.replace(/\s+/g, '')} */}
+
+                                        </Col>
+                                    </Row>
+                                </FormControl>
+                                <FormControl fullWidth className='m-0' variant="standard">
+
+                                    <InputLabel id="demo-simple-select-standard-label">Select mobile operator</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-standard-label"
+                                        id="demo-simple-select-standard"
+                                        error={accountTypeError}
+                                        value={accountType}
+                                        onChange={(e) => { (setAccountType(e.target.value)); (setAccountTypeError(false)) }}
+                                        label="Select"
+                                    >
+                                        <MenuItem value="">
+                                            <em>None</em>
+                                        </MenuItem>
+                                        {
+                                            methodOfPayment?.map((post, id) =>
+                                                <MenuItem value={post.id} key={post.id}>{post.name}</MenuItem>
+                                            )
+                                        }
+                                    </Select>
+                                </FormControl>
+
+                                <TextField
+                                    error={accountNumberError}
+                                    value={accountNumber}
+                                    onChange={(e) => { (setAccountNumber(e.target.value)); (setAccountNumberError(false)); (setPhoneNumber(e.target.value)) }}
+                                    id="accountNumber"
+                                    name="accountNumber"
+                                    label="Phone number"
+                                    variant="standard"
+                                    margin="normal"
+                                    type="tel"
+                                    fullWidth
+                                    required
+                                    InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end" >
+                                            <CTooltip
+                                                content=" This field is required, provide a valid phone number in the form eg. 0xx xxxx xxx"
+                                                placement="top"
+                                            >
+                                            <CIcon icon={cilInfo} className="me-2" />
+                                            </CTooltip>
+                                        </InputAdornment>
+                                    ),
+                                    }}
+                                />
+
+                                <Row>
+                                    <Col xs="5" sm="5" lg="5"></Col>
+                                    <Col xs="4" sm="4" lg="4"> <a dangerouslySetInnerHTML={{ __html: loader }}></a> </Col >
+                                    
+                                </Row>
+
+                                <Button
+                                    type="submit"
+                                    fullWidth
+                                    variant="contained"
+                                    sx={{ mt: 3, mb: 2 }}
+                                    style={{background: "#FF7643"}}
+                                    onClick={(e) => handleSubmit(e, 5)}
+                                >
+                                    PAY NOW
+                                </Button>
+                                </Box>
+                            </Box>
+                            :
+                            <Box
+                                sx={{
+                                    paddingTop: 0,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    border: 'solid 1px #f2e5e5',
+                                    borderRadius: '15px'
+                                }}
+                            >
+                                {/* <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+                                    <LockOutlinedIcon />
+                                </Avatar> */}
+                                {/* {fullName}{" "}{fullNameError.toString()} */}
+
+                                {/* basic user form fields */}
+                                <Box noValidate sx={{ m: 2 }} id="form-1">
+
+                                    <TextField
+                                        error={fullNameError}
+                                        value={fullName}
+                                        onChange={(e) => { (setFullName(e.target.value)); (setFullNameError(false)) }}
+                                        id="fullName"
+                                        name="fullName"
+                                        label="Full name"
+                                        variant="standard"
+                                        margin="normal"
+                                        type="text"
+                                        fullWidth
+                                        required
+                                        autoComplete='on'
+                                        InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position="end" >
+                                                <CTooltip
+                                                    content="This field is required."
+                                                    placement="top"
+                                                >
+                                                <CIcon icon={cilInfo} className="me-2" />
+                                                </CTooltip>
+                                            </InputAdornment>
+                                        ),
+                                        }}
+                                    />
+
+                                    <TextField
+                                        error={phoneNumberError}
+                                        value={phoneNumber}
+                                        onChange={(e) => { (setPhoneNumber(e.target.value)); (setAccountNumber(e.target.value)); (setPhoneNumberError(false)) }}
+                                        id="phoneNumber"
+                                        name="phoneNumber"
+                                        label="Phone number"
+                                        variant="standard"
+                                        margin="normal"
+                                        type="text"
+                                        fullWidth
+                                        required
+                                        InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position="end" >
+                                                <CTooltip
+                                                    content="This field is required, provide a valid phone number in the form eg. 0xx xxxx xxx"
+                                                    placement="top"
+                                                >
+                                                <CIcon icon={cilInfo} className="me-2" />
+                                                </CTooltip>
+                                            </InputAdornment>
+                                        ),
+                                        }}
+                                    />
+
+                                    <TextField
+                                        error={amountError}
+                                        value={amount}
+                                        onChange={(e) => { (setAmount(e.target.value)); (setAmountError(false)) }}
+                                        id="amount"
+                                        name="amount"
+                                        label="Amount"
+                                        variant="standard"
+                                        margin="normal"
+                                        type="text"
+                                        fullWidth
+                                        required
+                                        InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position="end" >
+                                                <CTooltip
+                                                    content="This field is required."
+                                                    placement="top"
+                                                >
+                                                <CIcon icon={cilInfo} className="me-2" />
+                                                </CTooltip>
+                                            </InputAdornment>
+                                        ),
+                                        }}
+                                    />
+
+                                    <Row>
+                                        <Col xs="5" sm="5" lg="5"></Col>
+                                        <Col xs="4" sm="4" lg="4"> <a dangerouslySetInnerHTML={{ __html: loader }}></a> </Col >
+                                        
+                                    </Row>
+                                    <Button
+                                        type="submit"
+                                        fullWidth
+                                        variant="contained"
+                                        sx={{ mt: 3, mb: 2 }}
+                                        style={{background: "#FF7643"}}
+                                        onClick={(e) => {handleSubmit(e, 1)}}
+                                    >
+                                        {btnText}
+                                    </Button>
+
+                                </Box>
+
+                            </Box>
+                        )
+                    ) : ""
+                }
+
+                {
+                    pagePaymentMethod ?
                     <Box 
-                        sx={{
-                            paddingTop: 0,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            border: 'solid 1px #f2e5e5',
-                            borderRadius: '15px'
-                        }}
+                    sx={{
+                        paddingTop: 0,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        border: 'solid 1px #f2e5e5',
+                        borderRadius: '15px'
+                    }}
                     >
-                    {/* {merchantId} */}
-                
-                    <Box noValidate sx={{ m: 2 }} id="form-1">
+                        {/* {merchantId} */}
+                        <Box noValidate sx={{ m: 2 }} id="form-1">
                         <FormControl fullWidth className='m-0' variant="standard">
                             {/*  */}
                             <Row>
@@ -611,15 +1628,21 @@ export default function Checkout() {
                                 </Col>
                                 <Col sm="7" style={{textAlign: "right"}}>
                                     {/*  */}
+                                    {
+                                        // console.log("", )
+                                    }
                                     <p className='m-0 d-fixed checkout-ps-info'>
-                                        <b component="h1">Fee :</b> GHS {fee}
+                                        <b component="h1">{sessionData?.data?.full_name || payeeData?.fullName} </b> 
                                     </p>
                                     <p className='m-0 d-fixed checkout-ps-info'>
                                         <b component="h1">Amount :</b> GHS {amount}
                                     </p>
                                     <p className='m-0 d-fixed checkout-ps-info'>
-                                        <b component="h1">Phone :</b> {phoneNumber}
+                                        <b component="h1">Fee :</b> GHS {fee}
                                     </p>
+                                    {/* <p className='m-0 d-fixed checkout-ps-info'>
+                                        <b component="h1">Phone :</b> {phoneNumber}
+                                    </p> */}
                                     {/* {phoneNumber.replace(/\s+/g, '')} */}
 
                                 </Col>
@@ -660,7 +1683,7 @@ export default function Checkout() {
                             fullWidth
                             required
                             InputProps={{
-                              endAdornment: (
+                            endAdornment: (
                                 <InputAdornment position="end" >
                                     <CTooltip
                                         content=" This field is required, provide a valid phone number in the form eg. 0xx xxxx xxx"
@@ -669,10 +1692,15 @@ export default function Checkout() {
                                     <CIcon icon={cilInfo} className="me-2" />
                                     </CTooltip>
                                 </InputAdornment>
-                              ),
+                            ),
                             }}
                         />
 
+                        <Row>
+                            <Col xs="5" sm="5" lg="5"></Col>
+                            <Col xs="4" sm="4" lg="4"> <a dangerouslySetInnerHTML={{ __html: loader }}></a> </Col >
+                            
+                        </Row>
 
                         <Button
                             type="submit"
@@ -680,128 +1708,16 @@ export default function Checkout() {
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
                             style={{background: "#FF7643"}}
-                            onClick={(e) => handleSubmit(e, 2)}
+                            onClick={(e) => handleSubmit(e, 5)}
                         >
                             PAY NOW
                         </Button>
                         </Box>
                     </Box>
-                    :
-                    <Box
-                        sx={{
-                            paddingTop: 0,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            border: 'solid 1px #f2e5e5',
-                            borderRadius: '15px'
-                        }}
-                    >
-                        {/* <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                            <LockOutlinedIcon />
-                        </Avatar> */}
-                        {/* {fullName}{" "}{fullNameError.toString()} */}
-
-                        {/* basic user form fields */}
-                        <Box noValidate sx={{ m: 2 }} id="form-1">
-
-                            <TextField
-                                error={fullNameError}
-                                value={fullName}
-                                onChange={(e) => { (setFullName(e.target.value)); (setFullNameError(false)) }}
-                                id="fullName"
-                                name="fullName"
-                                label="Full name"
-                                variant="standard"
-                                margin="normal"
-                                type="text"
-                                fullWidth
-                                required
-                                autoComplete='on'
-                                InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end" >
-                                        <CTooltip
-                                            content="This field is required."
-                                            placement="top"
-                                        >
-                                        <CIcon icon={cilInfo} className="me-2" />
-                                        </CTooltip>
-                                    </InputAdornment>
-                                ),
-                                }}
-                            />
-
-                            <TextField
-                                error={phoneNumberError}
-                                value={phoneNumber}
-                                onChange={(e) => { (setPhoneNumber(e.target.value)); (setAccountNumber(e.target.value)); (setPhoneNumberError(false)) }}
-                                id="phoneNumber"
-                                name="phoneNumber"
-                                label="Phone number"
-                                variant="standard"
-                                margin="normal"
-                                type="text"
-                                fullWidth
-                                required
-                                InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end" >
-                                        <CTooltip
-                                            content="This field is required, provide a valid phone number in the form eg. 0xx xxxx xxx"
-                                            placement="top"
-                                        >
-                                        <CIcon icon={cilInfo} className="me-2" />
-                                        </CTooltip>
-                                    </InputAdornment>
-                                ),
-                                }}
-                            />
-
-                            <TextField
-                                error={amountError}
-                                value={amount}
-                                onChange={(e) => { (setAmount(e.target.value)); (setAmountError(false)) }}
-                                id="amount"
-                                name="amount"
-                                label="Amount"
-                                variant="standard"
-                                margin="normal"
-                                type="text"
-                                fullWidth
-                                required
-                                InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end" >
-                                        <CTooltip
-                                            content="This field is required."
-                                            placement="top"
-                                        >
-                                        <CIcon icon={cilInfo} className="me-2" />
-                                        </CTooltip>
-                                    </InputAdornment>
-                                ),
-                                }}
-                            />
-
-
-                            <Button
-                                type="submit"
-                                fullWidth
-                                variant="contained"
-                                sx={{ mt: 3, mb: 2 }}
-                                style={{background: "#FF7643"}}
-                                onClick={(e) => {handleSubmit(e, 1)}}
-                            >
-                                {btnText}
-                            </Button>
-
-                        </Box>
-
-                    </Box>
+                    : ""
                 }
                 <Typography component="h6" className='mt-10' style={{textAlign: "center", fontSize: "15px", margin: "40px auto"}}>
-                    Powered by WingiPay&copy;{(new Date()).getUTCFullYear()}
+                    Powered by <img src='https://wingipay.com/static/wingipay/logo/wingi-pay-favicorn.998e2836f609.png' style={{margin: "-2px -2px 0px 0px"}}/> WingiPay &copy; {(new Date()).getUTCFullYear()}
                 </Typography>
             </Container>
 
@@ -828,14 +1744,15 @@ export default function Checkout() {
                                 </Col>
                                 <Col sm="7" style={{textAlign: "right"}}>
                                     {/*  */}
+
                                     <p className='m-0 d-fixed'>
-                                        <b component="h1">Fee :</b> GHS {fee}
+                                        <b component="h1">{fullName} </b> {}
                                     </p>
                                     <p className='m-0 d-fixed'>
                                         <b component="h1">Amount :</b> GHS {amount}
                                     </p>
                                     <p className='m-0 d-fixed'>
-                                        <b component="h1">Phone :</b> {phoneNumber}
+                                        <b component="h1">Fee :</b> GHS {fee}
                                     </p>
                                     {/* {phoneNumber.replace(/\s+/g, '')} */}
 
@@ -897,7 +1814,7 @@ export default function Checkout() {
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
                             style={{background: "#FF7643"}}
-                            onClick={(e) => handleSubmit(e, 2)}
+                            onClick={(e) => handleSubmit(e, 5)}
                         >
                             Continue
                         </Button>
@@ -934,21 +1851,26 @@ export default function Checkout() {
                             </Col>
                             <Col sm="7" style={{textAlign: "right"}}>
                                     {/*  */}
+                                    {/* <p className='m-0 d-fixed'>
+                                        <b component="h1">Amount :</b> GHS {amount}
+                                    </p>
                                     <p className='m-0 d-fixed'>
                                         <b component="h1">Fee :</b> GHS {fee}
                                     </p>
                                     <p className='m-0 d-fixed'>
-                                        <b component="h1">Amount :</b> GHS {amount}
-                                    </p>
-                                    <p className='m-0 d-fixed'>
                                         <b component="h1">Phone :</b> {phoneNumber}
-                                    </p>
+                                    </p> */}
                                     {/* {phoneNumber.replace(/\s+/g, '')} */}
 
                                 </Col>
                         </Row>
                     </FormControl>
-                    <Box noValidate sx={{ m: 2 }} id="form-4">
+                    <Box noValidate sx={{ m: 0 }} id="form-4">
+                        <Row>
+                            <Col sm="1"></Col>
+                            <Col sm="10" style={{textAlign: "center"}}><h6><p>Please check your mobile phone and type the code here!</p></h6></Col>
+                            <Col sm="1"></Col>
+                        </Row>
 
                         <TextField
                             error={otpError}
@@ -989,7 +1911,7 @@ export default function Checkout() {
                             style={{background: "#FF7643"}}
                             onClick={(e) => handleSubmit(e, 4)}
                         >
-                            Continue
+                            CONTINUE
                         </Button>
 
                     </Box>

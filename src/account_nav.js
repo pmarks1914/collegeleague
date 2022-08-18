@@ -25,8 +25,18 @@ import {
   cilTablet, 
   cilLibrary,
   cilControl,
+  cilMoodBad,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
+
+
+
+if(["/dashboard", "/payment/transaction", "/payment/refunds", "/payment/payouts", "/compliance", "/api-keys", "/bulk-pay"].includes(window.location.pathname)){
+  // 
+}
+else{
+  window.location.href = '/404'
+}
 
 const account_nav = [
   {
@@ -122,6 +132,12 @@ const account_nav = [
     name: 'Api keys',
     to: '/api-keys',
     icon: <CIcon icon={cilLibrary} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Bulk Pay',
+    to: '/bulk-pay',
+    icon: <CIcon icon={cilMoodBad} customClassName="nav-icon" />,
   },
   
 ]

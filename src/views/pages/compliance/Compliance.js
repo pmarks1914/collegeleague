@@ -149,7 +149,7 @@ export default function Compliance() {
         const formData3 = new FormData();
         fileList.forEach((certOfIncoporation) => {
             formData3.append('business_registration_docs', certOfIncoporation);
-              console.log("rtghrghhrthrhrthrthrthrtrtrtgrt", certOfIncoporation)
+              // console.log("rtghrghhrthrhrthrthrthrtrtrtgrt", certOfIncoporation)
 
           let config = {
             method: 'patch',
@@ -200,7 +200,7 @@ export default function Compliance() {
         const formData1 = new FormData();
         directorOneList.forEach((directorOneID) => {
             formData1.append('id_director_1', directorOneID);
-              console.log("rtghrghhrthrhrthrthrthrtrtrtgrt", directorOneID)
+              // console.log("rtghrghhrthrhrthrthrthrtrtrtgrt", directorOneID)
 
           let config = {
             method: 'patch',
@@ -251,7 +251,7 @@ export default function Compliance() {
         const formData2 = new FormData();
         directorTwoList.forEach((directorTwoID) => {
             formData2.append('id_director_2', directorTwoID);
-              console.log("rtghrghhrthrhrthrthrthrtrtrtgrt", directorTwoID)
+              // console.log("rtghrghhrthrhrthrthrthrtrtrtgrt", directorTwoID)
 
           let config = {
             method: 'patch',
@@ -606,7 +606,7 @@ return(
 
 
                    
-                    <Upload {...props} onChange={(e) => { setBusinessTIN(e.target.value) }} value = {business_TIN} >
+                    <Upload {...props} onChange={(e) => { setBusinessTIN(e.target.value) }} value = {business_TIN} maxCount={1} >
                     <Button leftIcon={<ArrowUpIcon />}>Select File</Button>
                     </Upload>
                     <Button
@@ -625,7 +625,7 @@ return(
                     <Divider />
     
                     <br />
-                    <Upload {...props1}>
+                    <Upload {...props1} maxCount={1} >
                     <Button >Select File</Button>
                     </Upload>
                     <Button
@@ -643,7 +643,7 @@ return(
                     <br />
                     <Divider />
                     <br />
-                    <Upload {...props2}>
+                    <Upload {...props2} maxCount={1} >
                     <Button >Select File</Button>
                     </Upload>
                     <Button
