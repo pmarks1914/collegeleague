@@ -82,7 +82,7 @@ import { Button } from '@chakra-ui/react';
 import 'antd/dist/antd.css';
 import { message, Upload } from 'antd';
 import { ArrowUpIcon } from '@chakra-ui/icons';
-
+import { getbanksandtelcos } from "../Data/PageData";
 
 
 const userData = JSON.parse(localStorage.getItem('userDataStore'));
@@ -92,6 +92,10 @@ let apikeyInfoData = apikeyData();
 let apikeyInfo = []
 apikeyInfoData?.apikey?.then(value => { (apikeyInfo = value) });
 
+let banktelcosList = getbanksandtelcos();
+let banktelcosListInfo = []
+banktelcosList.list.then(value => banktelcosListInfo = value)
+console.log("getbanksandtelcos ", banktelcosListInfo )
 const BulkpayDataTables = (apikeyDetails) => {
   const [loader, setLoader] = useState('<div class="spinner-border dashboard-loader" style="color: #e0922f;"></div>')
   const [tableData, setTableData] = useState([]);
@@ -496,6 +500,7 @@ const BulkpayDataTables = (apikeyDetails) => {
         {
           "account_number": "",
           "network_name": "",
+          "network_code": "",
           "account_holder_name": "",
           "amount": "",
           "email": "",
@@ -508,9 +513,15 @@ const BulkpayDataTables = (apikeyDetails) => {
     XLSX.utils.book_append_sheet(wb, ws, "WPexport");
     /* generate XLSX file and send to client */
     if( type === "bank" ){
+      // do for sheet two
+      const ws2 = XLSX.utils.json_to_sheet(banktelcosListInfo?.bank_list);
+      XLSX.utils.book_append_sheet(wb, ws2, "codeListBank");
       XLSX.writeFile(wb, "WPexportBank.xlsx");
     }
     else{
+      // do for sheet two
+      const ws2 = XLSX.utils.json_to_sheet(banktelcosListInfo?.telcos_list);
+      XLSX.utils.book_append_sheet(wb, ws2, "codeListMobileMoney");
       XLSX.writeFile(wb, "WPexportMobileMoney.xlsx");
     }
   };
@@ -1166,37 +1177,37 @@ const BulkpayDataTables = (apikeyDetails) => {
           <Row>
 
 
-          <Col xs="12" sm="12" md={6} lg={6} className="mt-0" > 
-            <div className='bulk-pay-name'  >
-              <Box 
-                component="form"
-                noValidate
-                autoComplete="off"
-                >
-                <Label for="apikeyInfoStatus" className="label-dc"> Batch name </Label>
-                <TextField 
-                  // id='filters-d'
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)} 
-                  // label="Filter"
-                  placeholder="Eg. my batch name"
-                  style={{height: "30px !important" }}
-                  
-                  />
-              </Box>
-              </div>
-          </Col>
-          <Col xs="12" sm="12" md={5} lg={5} className="mt-0" >
-            <Label for="apikeyInfoStatus" className="label-dc mb-1"> Payment method </Label>
-            <Select
-              placeholder={"Select status"}
-              options={optionsAccTypeInModal}
-              id="apikeyInfoStatus"
-              className='other-input-select'
-              // components={{ Option: paymentOption }}
-              onChange={(e) => handleChangeInfoAccTypeInModal(e.value)}
-            />
-          </Col>
+            <Col xs="12" sm="12" md={6} lg={6} className="mt-0" > 
+              <div className='bulk-pay-name'  >
+                <Box 
+                  component="form"
+                  noValidate
+                  autoComplete="off"
+                  >
+                  <Label for="apikeyInfoStatus" className="label-dc"> Batch name </Label>
+                  <TextField 
+                    // id='filters-d'
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)} 
+                    // label="Filter"
+                    placeholder="Eg. my batch name"
+                    style={{height: "30px !important" }}
+                    
+                    />
+                </Box>
+                </div>
+            </Col>
+            <Col xs="12" sm="12" md={5} lg={5} className="mt-0" >
+              <Label for="apikeyInfoStatus" className="label-dc mb-1"> Payment method </Label>
+              <Select
+                placeholder={"Select status"}
+                options={optionsAccTypeInModal}
+                id="apikeyInfoStatus"
+                className='other-input-select'
+                // components={{ Option: paymentOption }}
+                onChange={(e) => handleChangeInfoAccTypeInModal(e.value)}
+              />
+            </Col>
           </Row>
 
 
