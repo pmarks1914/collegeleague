@@ -137,7 +137,7 @@ const BulkpayDataTables = (apikeyDetails) => {
   const [uploading1, setUploading1] = useState(false);
   const [list, setList] = useState(null);
 
-
+  // STATES FOR TRANSFER TO BANK
   const [email, setEmail] = useState(null);
   const [accountNumber, setAccountNumber] = useState(null);
   const [bankCode, setBankCode] = useState(null);
@@ -146,14 +146,19 @@ const BulkpayDataTables = (apikeyDetails) => {
   const [note, setNote] = useState(null);
   const [bankDropdownInModal, setBankDropdownInModal] = useState({});
   const [batchName, setBatchName] = useState("");
-  console.log(email);
-  console.log(accountNumber);
-  console.log(bankCode);
-  console.log(accountName);
-  console.log(amount);
-  console.log(note);
-  console.log(batchName);
-  console.log(bankDropdownInModal);
+
+  // STATES FOR TRANSFER TO TELCOS
+  const [telcoEmail, setTelcoEmail] = useState(null);
+  const [phoneNumber, setPhoneNumber] = useState(null);
+  const [networkCode, setNetworkCode] = useState(null);
+  const [momoAccountName, setMomoAccountName] = useState(null);
+  const [telcoAmount, setTelcoAmount] = useState(null);
+  const [telcoNote, setTelcoNote] = useState(null);
+  const [networkName, setNetworkName] = useState({});
+  const [singleBatchName, setSingleBatchName] = useState("");
+  
+  // SET ERROR STATES
+  const [accountNameError, setAccountNameError] = useState(false)
 
 
 
@@ -753,6 +758,13 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
     setBankDropdownInModal({"bankName": valSelected, "name": nameSelected});
   };
 
+
+function handleSubmit(event, formType) {
+    event.preventDefault();
+  if (accountName.length < 1) {
+    setAccountNameError(true)
+}
+};
   
   return (
 
@@ -1176,17 +1188,6 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
             <Upload {...props1} maxCount={1} accept=".xls,.xlsx">
               <Button >Click to select an excel file </Button>
             </Upload>
-            {/* <Button
-              type="primary"
-              onClick={handleFileOneUpload}
-              disabled={excelFileList.length === 0}
-              loading={uploading1}
-              style={{
-                marginTop: 16,
-              }}
-            >
-              {uploading1 ? 'Uploading' : 'Upload bulk file'}
-            </Button> */}
             
           </Row>
 
@@ -1235,8 +1236,8 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
                     />
                 </Box>
                 </div>
-            </Col>
-            <Col xs="12" sm="12" md={5} lg={5} className="mt-0" >
+              </Col>
+              <Col xs="12" sm="12" md={5} lg={5} className="mt-0" >
               <Label for="apikeyInfoStatus" className="label-dc mb-1"> Payment method </Label>
               <Select
                 placeholder={"Select status"}
@@ -1248,7 +1249,8 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
               />
             </Col>
           </Row>
-        {/* FORMS FOR BANK BEGIN HERE */}
+
+        {/* FORMS FOR TRANSFER TO BANK BEGINS HERE */}
         <div>
           <Row>
             <Col xs="12" sm="12" md={6} lg={11} className="mt-2" > 
@@ -1261,6 +1263,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
                   <Label for="apikeyInfoStatus" className="label-dc"> Name on Account </Label>
                   <TextField 
                   fullWidth
+                  error = {accountNameError}
                     // id='filters-d'
                     // xs="12" sm="12" md={12} lg={12}
                     value={accountName}
@@ -1268,7 +1271,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
                     // label="Filter"
                     placeholder="Michael Amoo"
                     style={{height: "30px !important" }}
-                    
+                    required
                     />
                 </Box>
               </div>
@@ -1366,7 +1369,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)} 
                   // label="Filter"
-                  placeholder="12032123"
+                  placeholder="100"
                   style={{height: "30px !important" }}
                   
                   />
@@ -1398,15 +1401,205 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
 
           </Row>
           </div>
-        {/* FORMS FOR BANK END HERE */}
+        {/* FORMS FOR BANK ENDS HERE */}
+
+        <Row>
+        <Col xs="12" sm="12" md={6} lg={6} className="mt-5" > 
+          <div className='bulk-pay-name'  >
+            <Box 
+              component="form"
+              noValidate
+              autoComplete="off"
+              >
+              <Label for="apikeyInfoStatus" className="label-dc"> Batch name </Label>
+              <TextField 
+                // id='filters-d'
+                value={batchName}
+                onChange={(e) => setBatchName(e.target.value)} 
+                // label="Filter"
+                placeholder="Eg. my batch name"
+                style={{height: "30px !important" }}
+                
+                />
+            </Box>
+            </div>
+          </Col>
+          <Col xs="12" sm="12" md={5} lg={5} className="mt-5" >
+          <Label for="apikeyInfoStatus" className="label-dc mb-1"> Payment method </Label>
+          <Select
+            placeholder={"Select status"}
+            options={optionsAccTypeInModal}
+            id="apikeyInfoStatus"
+            className='other-input-select'
+            // components={{ Option: paymentOption }}
+            onChange={(e) => handleChangeInfoAccTypeInModal(e.value)}
+          />
+        </Col>
+        </Row>
+
+        {/* FORMS FOR TRANSFER TO TELCOS BEGIN HERE */}
+        <div>
+          <Row>
+            <Col xs="12" sm="12" md={6} lg={11} className="mt-2" > 
+              <div className='bulk-pay-name'  >
+                <Box 
+                  component="form"
+                  noValidate
+                  autoComplete="off"
+                  >
+                  <Label for="apikeyInfoStatus" className="label-dc"> Name on Account </Label>
+                  <TextField 
+                  fullWidth
+                    // id='filters-d'
+                    // xs="12" sm="12" md={12} lg={12}
+                    value={momoAccountName}
+                    onChange={(e) => setMomoAccountName(e.target.value)} 
+                    // label="Filter"
+                    placeholder="Patrick Wunake"
+                    style={{height: "30px !important" }}
+                    
+                    />
+                </Box>
+              </div>
+            </Col>
+
+
+            <Col xs="12" sm="12" md={11} lg={11} className="mt-2" >
+            <Label for="apikeyInfoStatus" className="label-dc mb-1"> Network Name</Label>
+            <Select
+              maxWidth
+              placeholder={"Select network"}
+              options={optionMobileMoneyList}
+              id="apikeyInfoStatus"
+              className='other-input-select'
+              // components={{ Option: paymentOption }}
+              onChange={(e) => handleChangeBankListInModal(e.value, e.label)}
+            />
+            </Col>
+
+            <Col xs="12" sm="12" md={6} lg={11} className="mt-2" > 
+              <div className='bulk-pay-name'  >
+                <Box 
+                  component="form"
+                  noValidate
+                  autoComplete="off"
+                  >
+                  <Label for="apikeyInfoStatus" className="label-dc"> Email </Label>
+                  <TextField 
+                  fullWidth
+                    // id='filters-d'
+                    // xs="12" sm="12" md={12} lg={12}
+                    value={telcoEmail}
+                    onChange={(e) => setTelcoEmail(e.target.value)} 
+                    // label="Filter"
+                    placeholder="youremail@email.com"
+                    style={{height: "30px !important" }}
+                    
+                    />
+                </Box>
+              </div>
+            </Col>
+
+            <Row>
+            <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
+            <div className='bulk-pay-name'  >
+              <Box 
+                component="form"
+                noValidate
+                autoComplete="off"
+                >
+                <Label for="apikeyInfoStatus" className="label-dc"> Network Code </Label>
+                <TextField 
+                  // id='filters-d'
+                  value={networkCode}
+                  onChange={(e) => setNetworkCode(e.target.value)} 
+                  // label="Filter"
+                  placeholder="12032123"
+                  style={{height: "30px !important" }}
+                  
+                  />
+              </Box>
+            </div>
+            </Col>
+            <Col xs="12" sm="12" md={5} lg={5} className="mt-2 ml-2">
+            <div className='bulk-pay-name'  >
+              <Box 
+                component="form"
+                noValidate
+                autoComplete="off"
+                >
+                <Label for="apikeyInfoStatus" className="label-dc"> Phone Number </Label>
+                <TextField 
+                  // id='filters-d'
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)} 
+                  // label="Filter"
+                  placeholder="0200000000"
+                  style={{height: "30px !important" }}
+                  
+                  />
+              </Box>
+            </div>
+            </Col>
+
+            <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
+            <div className='bulk-pay-name'  >
+              <Box 
+                component="form"
+                noValidate
+                autoComplete="off"
+                >
+                <Label for="apikeyInfoStatus" className="label-dc"> Amount </Label>
+                <TextField 
+                  // id='filters-d'
+                  value={telcoAmount}
+                  onChange={(e) => setTelcoAmount(e.target.value)} 
+                  // label="Filter"
+                  placeholder="100"
+                  style={{height: "30px !important" }}
+                  
+                  />
+              </Box>
+            </div>
+            </Col>
+
+            <Col xs="12" sm="12" md={5} lg={5} className="mt-2 ml-2">
+            <div className='bulk-pay-name'  >
+              <Box 
+                component="form"
+                noValidate
+                autoComplete="off"
+                >
+                <Label for="apikeyInfoStatus" className="label-dc"> Note </Label>
+                <TextField 
+                  // id='filters-d'
+                  value={telcoNote}
+                  onChange={(e) => setTelcoNote(e.target.value)} 
+                  // label="Filter"
+                  placeholder="Salaries"
+                  style={{height: "30px !important" }}
+                  
+                />
+              </Box>
+            </div>
+            </Col>
+            </Row>
+
+          </Row>
+          </div>
+        {/* FORMS FOR TELCOS END HERE */}
 
         </CModalBody>
         <CModalFooter>
           <CButton color="secondary" className='text-white' onClick={() => setModal2(false)}>
             Close
           </CButton>
-          <CButton className='text-white bg-text-wp'>
-            {/* Print */}
+          <CButton 
+          type = 'submit'
+          className='text-white bg-text-wp'
+          onClick={handleSubmit}
+          >
+            Create Batch
           </CButton>
 
         </CModalFooter>
