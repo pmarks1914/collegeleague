@@ -409,7 +409,6 @@ const optionBankList = Object.keys(banktelcosListInfo?.bank_list || []).map((pos
       "value": banktelcosListInfo?.bank_list[id].BankSortCode,
       "label": banktelcosListInfo?.bank_list[id].BankName
     }});
-    console.log(optionBankList);
   
 const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || []).map((post, id) => {
   return {
@@ -1021,7 +1020,7 @@ function handleSubmit(event, formType) {
             <FormControl fullWidth style={{marginTop: "0px"}}>
               <Label for="apikeyInfoStatus" className="label-dc"> </Label>
               <Select
-                placeholder={"Select status"}
+                placeholder={"Select"}
                 options={optionsStatus}
                 id="apikeyInfoStatus"
                 className='other-input-select d-filters'
@@ -1175,8 +1174,8 @@ function handleSubmit(event, formType) {
           <Col xs="12" sm="12" md={5} lg={5} className="mt-0" >
             <Label for="apikeyInfoStatus" className="label-dc mb-1"> Payment method </Label>
             <Select
-              placeholder={"Select status"}
-              // options={optionBankList}
+              placeholder={"Select"}
+              options={optionsAccTypeInModal}
               id="apikeyInfoStatus"
               className='other-input-select'
               // components={{ Option: paymentOption }}
@@ -1242,7 +1241,7 @@ function handleSubmit(event, formType) {
               <Col xs="12" sm="12" md={5} lg={5} className="mt-0" >
               <Label for="apikeyInfoStatus" className="label-dc mb-1"> Payment method </Label>
               <Select
-                placeholder={"Select status"}
+                placeholder={"Select"}
                 options={optionsAccTypeInModal}
                 id="apikeyInfoStatus"
                 className='other-input-select'
@@ -1429,7 +1428,7 @@ function handleSubmit(event, formType) {
           <Col xs="12" sm="12" md={5} lg={5} className="mt-5" >
           <Label for="apikeyInfoStatus" className="label-dc mb-1"> Payment method </Label>
           <Select
-            placeholder={"Select status"}
+            placeholder={"Select "}
             options={optionsAccTypeInModal}
             id="apikeyInfoStatus"
             className='other-input-select'
