@@ -119,7 +119,7 @@ const BulkpayDataTables = (apikeyDetails) => {
   const [openDateRange, setOpenDateRange] = useState(true);
   const [dateRange, setDateRange] = useState({});
   const [description, setDescription] = useState("");
-  const [apikeyInfoStatusInModal, setapikeyInfoStatusInModal] = useState("");
+  const [paymentMethodInfoStatusInModal, setPaymentMethodInfoStatusInModal] = useState("");
   // startDate: Date.parse("2022-01-13"), endDate: Date.now()
   
 
@@ -379,7 +379,7 @@ const BulkpayDataTables = (apikeyDetails) => {
     performFilter("filterByStatus", valSelected)
   };
   const handleChangeInfoAccTypeInModal = (valSelected) => {
-    setapikeyInfoStatusInModal(valSelected);
+    setPaymentMethodInfoStatusInModal(valSelected);
   };
   const handleChangeExport = (valSelected) => {
     setapikeyInfoExport(valSelected);
@@ -604,7 +604,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
   function generateApikey(e) {
     e.preventDefault();
     let keyType = false;
-    if(apikeyInfoStatusInModal === "live"){
+    if(paymentMethodInfoStatusInModal === "live"){
       keyType = true;
     }
 
@@ -641,7 +641,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
         // })
         // // console.log("api key data 2", arryData)
         // datatablaScript(arryData)
-        let textStr = "The API Key below will be shown only once.<p id='api-key-copy'>Key Prefix: " + response?.data?.prefix + "</p>Key Type: " + apikeyInfoStatusInModal + "<p>Key Secret: <h6>" + response?.data?.key + "</h6></p>";
+        let textStr = "The API Key below will be shown only once.<p id='api-key-copy'>Key Prefix: " + response?.data?.prefix + "</p>Key Type: " + paymentMethodInfoStatusInModal + "<p>Key Secret: <h6>" + response?.data?.key + "</h6></p>";
 
         Swal.fire({
           title: 'API key Generated',
@@ -1244,7 +1244,7 @@ function handleSubmit(event, formType) {
                 placeholder={"Select"}
                 options={optionsAccTypeInModal}
                 id="apikeyInfoStatus"
-                className='other-input-select'
+                className='other-input-select' 
                 // components={{ Option: paymentOption }}
                 onChange={(e) => handleChangeInfoAccTypeInModal(e.value)}
               />
@@ -1252,342 +1252,315 @@ function handleSubmit(event, formType) {
           </Row>
 
         {/* FORMS FOR TRANSFER TO BANK BEGINS HERE */}
-        <div>
-          <Row>
-            <Col xs="12" sm="12" md={6} lg={11} className="mt-2" > 
+        {
+          paymentMethodInfoStatusInModal === "bank" ?
+          <div>
+            <Row>
+              <Col xs="12" sm="12" md={6} lg={11} className="mt-2" > 
+                <div className='bulk-pay-name'  >
+                  <Box 
+                    component="form"
+                    noValidate
+                    autoComplete="off"
+                    >
+                    <Label for="apikeyInfoStatus" className="label-dc"> Name on Account </Label>
+                    <TextField 
+                    fullWidth
+                    error = {accountNameError}
+                      // id='filters-d'
+                      // xs="12" sm="12" md={12} lg={12}
+                      value={accountName}
+                      onChange={(e) => setAccountName(e.target.value)} 
+                      // label="Filter"
+                      placeholder="Michael Amoo"
+                      style={{height: "30px !important" }}
+                      required
+                      />
+                  </Box>
+                </div>
+              </Col>
+
+
+              <Col xs="12" sm="12" md={11} lg={11} className="mt-2" >
+              <Label for="apikeyInfoStatus" className="label-dc mb-1"> Bank Name</Label>
+              <Select
+                maxWidth
+                placeholder={"Select bank"}
+                options={optionBankList}
+                id="apikeyInfoStatus"
+                className='other-input-select'
+                // components={{ Option: paymentOption }}
+                onChange={(e) => handleChangeBankListInModal(e.value, e.label)}
+              />
+              </Col>
+
+              <Col xs="12" sm="12" md={6} lg={11} className="mt-2" > 
+                <div className='bulk-pay-name'  >
+                  <Box 
+                    component="form"
+                    noValidate
+                    autoComplete="off"
+                    >
+                    <Label for="apikeyInfoStatus" className="label-dc"> Email </Label>
+                    <TextField 
+                    fullWidth
+                      // id='filters-d'
+                      // xs="12" sm="12" md={12} lg={12}
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)} 
+                      // label="Filter"
+                      placeholder="youremail@email.com"
+                      style={{height: "30px !important" }}
+                      
+                      />
+                  </Box>
+                </div>
+              </Col>
+
+              <Row>
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
               <div className='bulk-pay-name'  >
                 <Box 
                   component="form"
                   noValidate
                   autoComplete="off"
                   >
-                  <Label for="apikeyInfoStatus" className="label-dc"> Name on Account </Label>
+                  <Label for="apikeyInfoStatus" className="label-dc"> Bank Code </Label>
                   <TextField 
-                  fullWidth
-                  error = {accountNameError}
                     // id='filters-d'
-                    // xs="12" sm="12" md={12} lg={12}
-                    value={accountName}
-                    onChange={(e) => setAccountName(e.target.value)} 
+                    value={bankCode}
+                    onChange={(e) => setBankCode(e.target.value)} 
                     // label="Filter"
-                    placeholder="Michael Amoo"
-                    style={{height: "30px !important" }}
-                    required
-                    />
-                </Box>
-              </div>
-            </Col>
-
-
-            <Col xs="12" sm="12" md={11} lg={11} className="mt-2" >
-            <Label for="apikeyInfoStatus" className="label-dc mb-1"> Bank Name</Label>
-            <Select
-              maxWidth
-              placeholder={"Select bank"}
-              options={optionBankList}
-              id="apikeyInfoStatus"
-              className='other-input-select'
-              // components={{ Option: paymentOption }}
-              onChange={(e) => handleChangeBankListInModal(e.value, e.label)}
-            />
-            </Col>
-
-            <Col xs="12" sm="12" md={6} lg={11} className="mt-2" > 
-              <div className='bulk-pay-name'  >
-                <Box 
-                  component="form"
-                  noValidate
-                  autoComplete="off"
-                  >
-                  <Label for="apikeyInfoStatus" className="label-dc"> Email </Label>
-                  <TextField 
-                  fullWidth
-                    // id='filters-d'
-                    // xs="12" sm="12" md={12} lg={12}
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)} 
-                    // label="Filter"
-                    placeholder="youremail@email.com"
+                    placeholder="12032123"
                     style={{height: "30px !important" }}
                     
                     />
                 </Box>
               </div>
-            </Col>
+              </Col>
+              <Col xs="12" sm="12" md={5} lg={5} className="mt-2 ml-2">
+              <div className='bulk-pay-name'  >
+                <Box 
+                  component="form"
+                  noValidate
+                  autoComplete="off"
+                  >
+                  <Label for="apikeyInfoStatus" className="label-dc"> Bank Account Number </Label>
+                  <TextField 
+                    // id='filters-d'
+                    value={accountNumber}
+                    onChange={(e) => setAccountNumber(e.target.value)} 
+                    // label="Filter"
+                    placeholder="110324000000"
+                    style={{height: "30px !important" }}
+                    
+                    />
+                </Box>
+              </div>
+              </Col>
 
-            <Row>
-            <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
-            <div className='bulk-pay-name'  >
-              <Box 
-                component="form"
-                noValidate
-                autoComplete="off"
-                >
-                <Label for="apikeyInfoStatus" className="label-dc"> Bank Code </Label>
-                <TextField 
-                  // id='filters-d'
-                  value={bankCode}
-                  onChange={(e) => setBankCode(e.target.value)} 
-                  // label="Filter"
-                  placeholder="12032123"
-                  style={{height: "30px !important" }}
-                  
-                  />
-              </Box>
-            </div>
-            </Col>
-            <Col xs="12" sm="12" md={5} lg={5} className="mt-2 ml-2">
-            <div className='bulk-pay-name'  >
-              <Box 
-                component="form"
-                noValidate
-                autoComplete="off"
-                >
-                <Label for="apikeyInfoStatus" className="label-dc"> Bank Account Number </Label>
-                <TextField 
-                  // id='filters-d'
-                  value={accountNumber}
-                  onChange={(e) => setAccountNumber(e.target.value)} 
-                  // label="Filter"
-                  placeholder="110324000000"
-                  style={{height: "30px !important" }}
-                  
-                  />
-              </Box>
-            </div>
-            </Col>
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
+              <div className='bulk-pay-name'  >
+                <Box 
+                  component="form"
+                  noValidate
+                  autoComplete="off"
+                  >
+                  <Label for="apikeyInfoStatus" className="label-dc"> Amount </Label>
+                  <TextField 
+                    // id='filters-d'
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)} 
+                    // label="Filter"
+                    placeholder="100"
+                    style={{height: "30px !important" }}
+                    
+                    />
+                </Box>
+              </div>
+              </Col>
 
-            <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
-            <div className='bulk-pay-name'  >
-              <Box 
-                component="form"
-                noValidate
-                autoComplete="off"
-                >
-                <Label for="apikeyInfoStatus" className="label-dc"> Amount </Label>
-                <TextField 
-                  // id='filters-d'
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)} 
-                  // label="Filter"
-                  placeholder="100"
-                  style={{height: "30px !important" }}
-                  
-                  />
-              </Box>
-            </div>
-            </Col>
+              <Col xs="12" sm="12" md={5} lg={5} className="mt-2 ml-2">
+              <div className='bulk-pay-name'  >
+                <Box 
+                  component="form"
+                  noValidate
+                  autoComplete="off"
+                  >
+                  <Label for="apikeyInfoStatus" className="label-dc"> Note </Label>
+                  <TextField 
+                    // id='filters-d'
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)} 
+                    // label="Filter"
+                    placeholder="Salaries"
+                    style={{height: "30px !important" }}
+                    
+                    />
+                </Box>
+              </div>
+              </Col>
+              </Row>
 
-            <Col xs="12" sm="12" md={5} lg={5} className="mt-2 ml-2">
-            <div className='bulk-pay-name'  >
-              <Box 
-                component="form"
-                noValidate
-                autoComplete="off"
-                >
-                <Label for="apikeyInfoStatus" className="label-dc"> Note </Label>
-                <TextField 
-                  // id='filters-d'
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)} 
-                  // label="Filter"
-                  placeholder="Salaries"
-                  style={{height: "30px !important" }}
-                  
-                  />
-              </Box>
-            </div>
-            </Col>
             </Row>
-
-          </Row>
           </div>
+          : ""
+        }
         {/* FORMS FOR BANK ENDS HERE */}
 
-        <Row>
-        <Col xs="12" sm="12" md={6} lg={6} className="mt-5" > 
-          <div className='bulk-pay-name'  >
-            <Box 
-              component="form"
-              noValidate
-              autoComplete="off"
-              >
-              <Label for="apikeyInfoStatus" className="label-dc"> Batch name </Label>
-              <TextField 
-                // id='filters-d'
-                value={batchName}
-                onChange={(e) => setBatchName(e.target.value)} 
-                // label="Filter"
-                placeholder="Eg. my batch name"
-                style={{height: "30px !important" }}
-                
-                />
-            </Box>
-            </div>
-          </Col>
-          <Col xs="12" sm="12" md={5} lg={5} className="mt-5" >
-          <Label for="apikeyInfoStatus" className="label-dc mb-1"> Payment method </Label>
-          <Select
-            placeholder={"Select "}
-            options={optionsAccTypeInModal}
-            id="apikeyInfoStatus"
-            className='other-input-select'
-            // components={{ Option: paymentOption }}
-            onChange={(e) => handleChangeInfoAccTypeInModal(e.value)}
-          />
-        </Col>
-        </Row>
-
         {/* FORMS FOR TRANSFER TO TELCOS BEGIN HERE */}
-        <div>
-          <Row>
-            <Col xs="12" sm="12" md={6} lg={11} className="mt-2" > 
-              <div className='bulk-pay-name'  >
-                <Box 
-                  component="form"
-                  noValidate
-                  autoComplete="off"
-                  >
-                  <Label for="apikeyInfoStatus" className="label-dc"> Name on Account </Label>
-                  <TextField 
-                  fullWidth
-                    // id='filters-d'
-                    // xs="12" sm="12" md={12} lg={12}
-                    value={momoAccountName}
-                    onChange={(e) => setMomoAccountName(e.target.value)} 
-                    // label="Filter"
-                    placeholder="Patrick Wunake"
-                    style={{height: "30px !important" }}
-                    
-                    />
-                </Box>
-              </div>
-            </Col>
-
-
-            <Col xs="12" sm="12" md={11} lg={11} className="mt-2" >
-            <Label for="apikeyInfoStatus" className="label-dc mb-1"> Network Name</Label>
-            <Select
-              maxWidth
-              placeholder={"Select network"}
-              options={optionMobileMoneyList}
-              id="apikeyInfoStatus"
-              className='other-input-select'
-              // components={{ Option: paymentOption }}
-              onChange={(e) => handleChangeBankListInModal(e.value, e.label)}
-            />
-            </Col>
-
-            <Col xs="12" sm="12" md={6} lg={11} className="mt-2" > 
-              <div className='bulk-pay-name'  >
-                <Box 
-                  component="form"
-                  noValidate
-                  autoComplete="off"
-                  >
-                  <Label for="apikeyInfoStatus" className="label-dc"> Email </Label>
-                  <TextField 
-                  fullWidth
-                    // id='filters-d'
-                    // xs="12" sm="12" md={12} lg={12}
-                    value={telcoEmail}
-                    onChange={(e) => setTelcoEmail(e.target.value)} 
-                    // label="Filter"
-                    placeholder="youremail@email.com"
-                    style={{height: "30px !important" }}
-                    
-                    />
-                </Box>
-              </div>
-            </Col>
-
+        {
+          paymentMethodInfoStatusInModal === "mobile" ?
+          <div>
             <Row>
-            <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
-            <div className='bulk-pay-name'  >
-              <Box 
-                component="form"
-                noValidate
-                autoComplete="off"
-                >
-                <Label for="apikeyInfoStatus" className="label-dc"> Network Code </Label>
-                <TextField 
-                  // id='filters-d'
-                  value={networkCode}
-                  onChange={(e) => setNetworkCode(e.target.value)} 
-                  // label="Filter"
-                  placeholder="12032123"
-                  style={{height: "30px !important" }}
-                  
-                  />
-              </Box>
-            </div>
-            </Col>
-            <Col xs="12" sm="12" md={5} lg={5} className="mt-2 ml-2">
-            <div className='bulk-pay-name'  >
-              <Box 
-                component="form"
-                noValidate
-                autoComplete="off"
-                >
-                <Label for="apikeyInfoStatus" className="label-dc"> Phone Number </Label>
-                <TextField 
-                  // id='filters-d'
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)} 
-                  // label="Filter"
-                  placeholder="0200000000"
-                  style={{height: "30px !important" }}
-                  
-                  />
-              </Box>
-            </div>
-            </Col>
+              <Col xs="12" sm="12" md={6} lg={11} className="mt-2" > 
+                <div className='bulk-pay-name'  >
+                  <Box 
+                    component="form"
+                    noValidate
+                    autoComplete="off"
+                    >
+                    <Label for="apikeyInfoStatus" className="label-dc"> Name on Account </Label>
+                    <TextField 
+                    fullWidth
+                      // id='filters-d'
+                      // xs="12" sm="12" md={12} lg={12}
+                      value={momoAccountName}
+                      onChange={(e) => setMomoAccountName(e.target.value)} 
+                      // label="Filter"
+                      placeholder="Patrick Wunake"
+                      style={{height: "30px !important" }}
+                      
+                      />
+                  </Box>
+                </div>
+              </Col>
 
-            <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
-            <div className='bulk-pay-name'  >
-              <Box 
-                component="form"
-                noValidate
-                autoComplete="off"
-                >
-                <Label for="apikeyInfoStatus" className="label-dc"> Amount </Label>
-                <TextField 
-                  // id='filters-d'
-                  value={telcoAmount}
-                  onChange={(e) => setTelcoAmount(e.target.value)} 
-                  // label="Filter"
-                  placeholder="100"
-                  style={{height: "30px !important" }}
-                  
-                  />
-              </Box>
-            </div>
-            </Col>
 
-            <Col xs="12" sm="12" md={5} lg={5} className="mt-2 ml-2">
-            <div className='bulk-pay-name'  >
-              <Box 
-                component="form"
-                noValidate
-                autoComplete="off"
-                >
-                <Label for="apikeyInfoStatus" className="label-dc"> Note </Label>
-                <TextField 
-                  // id='filters-d'
-                  value={telcoNote}
-                  onChange={(e) => setTelcoNote(e.target.value)} 
-                  // label="Filter"
-                  placeholder="Salaries"
-                  style={{height: "30px !important" }}
-                  
-                />
-              </Box>
-            </div>
-            </Col>
+              <Col xs="12" sm="12" md={11} lg={11} className="mt-2" >
+              <Label for="apikeyInfoStatus" className="label-dc mb-1"> Network Name</Label>
+              <Select
+                maxWidth
+                placeholder={"Select network"}
+                options={optionMobileMoneyList}
+                id="apikeyInfoStatus"
+                className='other-input-select'
+                // components={{ Option: paymentOption }}
+                onChange={(e) => handleChangeBankListInModal(e.value, e.label)}
+              />
+              </Col>
+
+              <Col xs="12" sm="12" md={6} lg={11} className="mt-2" > 
+                <div className='bulk-pay-name'  >
+                  <Box 
+                    component="form"
+                    noValidate
+                    autoComplete="off"
+                    >
+                    <Label for="apikeyInfoStatus" className="label-dc"> Email </Label>
+                    <TextField 
+                    fullWidth
+                      // id='filters-d'
+                      // xs="12" sm="12" md={12} lg={12}
+                      value={telcoEmail}
+                      onChange={(e) => setTelcoEmail(e.target.value)} 
+                      // label="Filter"
+                      placeholder="youremail@email.com"
+                      style={{height: "30px !important" }}
+                      
+                      />
+                  </Box>
+                </div>
+              </Col>
+
+              <Row>
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
+              <div className='bulk-pay-name'  >
+                <Box 
+                  component="form"
+                  noValidate
+                  autoComplete="off"
+                  >
+                  <Label for="apikeyInfoStatus" className="label-dc"> Network Code </Label>
+                  <TextField 
+                    // id='filters-d'
+                    value={networkCode}
+                    onChange={(e) => setNetworkCode(e.target.value)} 
+                    // label="Filter"
+                    placeholder="12032123"
+                    style={{height: "30px !important" }}
+                    
+                    />
+                </Box>
+              </div>
+              </Col>
+              <Col xs="12" sm="12" md={5} lg={5} className="mt-2 ml-2">
+              <div className='bulk-pay-name'  >
+                <Box 
+                  component="form"
+                  noValidate
+                  autoComplete="off"
+                  >
+                  <Label for="apikeyInfoStatus" className="label-dc"> Phone Number </Label>
+                  <TextField 
+                    // id='filters-d'
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)} 
+                    // label="Filter"
+                    placeholder="0200000000"
+                    style={{height: "30px !important" }}
+                    
+                    />
+                </Box>
+              </div>
+              </Col>
+
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
+              <div className='bulk-pay-name'  >
+                <Box 
+                  component="form"
+                  noValidate
+                  autoComplete="off"
+                  >
+                  <Label for="apikeyInfoStatus" className="label-dc"> Amount </Label>
+                  <TextField 
+                    // id='filters-d'
+                    value={telcoAmount}
+                    onChange={(e) => setTelcoAmount(e.target.value)} 
+                    // label="Filter"
+                    placeholder="100"
+                    style={{height: "30px !important" }}
+                    
+                    />
+                </Box>
+              </div>
+              </Col>
+
+              <Col xs="12" sm="12" md={5} lg={5} className="mt-2 ml-2">
+              <div className='bulk-pay-name'  >
+                <Box 
+                  component="form"
+                  noValidate
+                  autoComplete="off"
+                  >
+                  <Label for="apikeyInfoStatus" className="label-dc"> Note </Label>
+                  <TextField 
+                    // id='filters-d'
+                    value={telcoNote}
+                    onChange={(e) => setTelcoNote(e.target.value)} 
+                    // label="Filter"
+                    placeholder="Salaries"
+                    style={{height: "30px !important" }}
+                    
+                  />
+                </Box>
+              </div>
+              </Col>
+              </Row>
+
             </Row>
-
-          </Row>
           </div>
+          : "" }
         {/* FORMS FOR TELCOS END HERE */}
 
         </CModalBody>
