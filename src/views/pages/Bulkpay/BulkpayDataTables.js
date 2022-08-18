@@ -378,6 +378,12 @@ const BulkpayDataTables = (apikeyDetails) => {
     {value: "mobile", label: "Mobile Money" },
     {value: "bank", label: "Bank Account" },
   ];
+  // const iii = Object.keys(tableData).map((post, id) => {
+  //   return {
+  //     ""
+
+  //   }})
+
   const optionsExport = [
     // {value: "", label: "Se", icon: "", isDisabled: true },
     {value: "Export to excel", label: "Export to excel" },
@@ -1095,7 +1101,9 @@ const BulkpayDataTables = (apikeyDetails) => {
       {/* modals */}
       {/* modal for bulk upload */}
       <CModal visible={modal1} alignment="center" onClose={() => setModal1(false)}>
-        <CModalHeader> Bulk Upload  </CModalHeader>
+        <CModalHeader>   
+        <CModalTitle> Bulk Upload </CModalTitle>
+        </CModalHeader>
         <CModalBody> 
           {/*  */}
           <Row className='m-3'>
@@ -1168,7 +1176,7 @@ const BulkpayDataTables = (apikeyDetails) => {
       {/* modal for create batch list in app */}
       <CModal visible={modal2} fullscreen="xl" alignment='center' onClose={() => setModal2(false)}>
         <CModalHeader>
-          <CModalTitle>  </CModalTitle>
+          <CModalTitle>  Create </CModalTitle>
         </CModalHeader>
         <CModalBody className='contentForapikeyInfoPrint'>
           <p className="success rounded" style={{ textAlign: "center" }} >
@@ -1209,7 +1217,157 @@ const BulkpayDataTables = (apikeyDetails) => {
               />
             </Col>
           </Row>
+        {/* FORMS FOR BANK BEGIN HERE */}
+        <div>
+          <Row>
+            <Col xs="12" sm="12" md={6} lg={11} className="mt-2" > 
+              <div className='bulk-pay-name'  >
+                <Box 
+                  component="form"
+                  noValidate
+                  autoComplete="off"
+                  >
+                  <Label for="apikeyInfoStatus" className="label-dc"> Name on Account </Label>
+                  <TextField 
+                  fullWidth
+                    // id='filters-d'
+                    // xs="12" sm="12" md={12} lg={12}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)} 
+                    // label="Filter"
+                    placeholder="Michael Amoo"
+                    style={{height: "30px !important" }}
+                    
+                    />
+                </Box>
+              </div>
+            </Col>
 
+
+            <Col xs="12" sm="12" md={11} lg={11} className="mt-2" >
+            <Label for="apikeyInfoStatus" className="label-dc mb-1"> Bank Name</Label>
+            <Select
+              maxWidth
+              placeholder={"Select bank"}
+              options={optionsAccTypeInModal}
+              id="apikeyInfoStatus"
+              className='other-input-select'
+              // components={{ Option: paymentOption }}
+              onChange={(e) => handleChangeInfoAccTypeInModal(e.value)}
+            />
+            </Col>
+
+            <Col xs="12" sm="12" md={6} lg={11} className="mt-2" > 
+              <div className='bulk-pay-name'  >
+                <Box 
+                  component="form"
+                  noValidate
+                  autoComplete="off"
+                  >
+                  <Label for="apikeyInfoStatus" className="label-dc"> Email </Label>
+                  <TextField 
+                  fullWidth
+                    // id='filters-d'
+                    // xs="12" sm="12" md={12} lg={12}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)} 
+                    // label="Filter"
+                    placeholder="youremail@email.com"
+                    style={{height: "30px !important" }}
+                    
+                    />
+                </Box>
+              </div>
+            </Col>
+
+            <Row>
+            <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
+            <div className='bulk-pay-name'  >
+              <Box 
+                component="form"
+                noValidate
+                autoComplete="off"
+                >
+                <Label for="apikeyInfoStatus" className="label-dc"> Bank Code </Label>
+                <TextField 
+                  // id='filters-d'
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)} 
+                  // label="Filter"
+                  placeholder="12032123"
+                  style={{height: "30px !important" }}
+                  
+                  />
+              </Box>
+            </div>
+            </Col>
+            <Col xs="12" sm="12" md={5} lg={5} className="mt-2 ml-2">
+            <div className='bulk-pay-name'  >
+              <Box 
+                component="form"
+                noValidate
+                autoComplete="off"
+                >
+                <Label for="apikeyInfoStatus" className="label-dc"> Bank Account Number </Label>
+                <TextField 
+                  // id='filters-d'
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)} 
+                  // label="Filter"
+                  placeholder="110324000000"
+                  style={{height: "30px !important" }}
+                  
+                  />
+              </Box>
+            </div>
+            </Col>
+
+            <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
+            <div className='bulk-pay-name'  >
+              <Box 
+                component="form"
+                noValidate
+                autoComplete="off"
+                >
+                <Label for="apikeyInfoStatus" className="label-dc"> Amount </Label>
+                <TextField 
+                  // id='filters-d'
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)} 
+                  // label="Filter"
+                  placeholder="12032123"
+                  style={{height: "30px !important" }}
+                  
+                  />
+              </Box>
+            </div>
+            </Col>
+
+            <Col xs="12" sm="12" md={5} lg={5} className="mt-2 ml-2">
+            <div className='bulk-pay-name'  >
+              <Box 
+                component="form"
+                noValidate
+                autoComplete="off"
+                >
+                <Label for="apikeyInfoStatus" className="label-dc"> Note </Label>
+                <TextField 
+                  // id='filters-d'
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)} 
+                  // label="Filter"
+                  placeholder="Salaries"
+                  style={{height: "30px !important" }}
+                  
+                  />
+              </Box>
+            </div>
+            </Col>
+            </Row>
+
+          </Row>
+          </div>
+        {/* FORMS FOR BANK END HERE */}
 
         </CModalBody>
         <CModalFooter>
