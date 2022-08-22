@@ -554,7 +554,7 @@ export default function Checkout() {
                     <td style="float: right; margin-right: -40px">${ accountName } </td>
                 </tr>
                 <tr width="100%" class="ml-3">
-                    <td style="float: left">Service type :</td>
+                    <td style="float: left">Fee type :</td>
                     <td style="float: right; margin-right: -40px">${ feeType } </td>
                 </tr>
                 <tr width="100%" class="ml-3">
