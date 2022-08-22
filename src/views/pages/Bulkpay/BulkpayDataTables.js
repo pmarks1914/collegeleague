@@ -136,30 +136,48 @@ const BulkpayDataTables = (apikeyDetails) => {
   // upload excel file
   const [excelFileList, setExcelFileList] = useState([]);
   const [uploading1, setUploading1] = useState(false);
-  const [list, setList] = useState(null);
 
   // STATES FOR TRANSFER TO BANK
-  const [email, setEmail] = useState(null);
-  const [accountNumber, setAccountNumber] = useState(null);
-  const [bankCode, setBankCode] = useState(null);
-  const [accountName, setAccountName] = useState(null);
-  const [amount, setAmount] = useState(null);
-  const [note, setNote] = useState(null);
+  const [email, setEmail] = useState("");
+  const [accountNumber, setAccountNumber] = useState("");
+  const [bankCode, setBankCode] = useState("");
+  const [accountName, setAccountName] = useState("");
+  const [amount, setAmount] = useState("");
+  const [note, setNote] = useState("");
   const [bankDropdownInModal, setBankDropdownInModal] = useState({});
   const [batchName, setBatchName] = useState("");
 
   // STATES FOR TRANSFER TO TELCOS
-  const [telcoEmail, setTelcoEmail] = useState(null);
-  const [phoneNumber, setPhoneNumber] = useState(null);
-  const [networkCode, setNetworkCode] = useState(null);
-  const [momoAccountName, setMomoAccountName] = useState(null);
-  const [telcoAmount, setTelcoAmount] = useState(null);
-  const [telcoNote, setTelcoNote] = useState(null);
+  const [telcoEmail, setTelcoEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [networkCode, setNetworkCode] = useState("");
+  const [momoAccountName, setMomoAccountName] = useState("");
+  const [telcoAmount, setTelcoAmount] = useState("");
+  const [telcoNote, setTelcoNote] = useState("");
   const [networkName, setNetworkName] = useState({});
   const [singleBatchName, setSingleBatchName] = useState("");
   
-  // SET ERROR STATES
-  const [accountNameError, setAccountNameError] = useState(false)
+  // SET ERROR STATES// STATES FOR TRANSFER TO BANK
+  const [emailError, setEmailError] = useState(false);
+  const [accountNumberError, setAccountNumberError] = useState(false);
+  const [bankCodeError, setBankCodeError] = useState(false);
+  const [accountNameError, setAccountNameError] = useState(false);
+  const [amountError, setAmountError] = useState(false);
+  const [noteError, setNoteError] = useState(false);
+  const [bankDropdownInModalError, setBankDropdownInModalError] = useState(false);
+  const [batchNameError, setBatchNameError] = useState(false);
+  const [paymentMethodInfoStatusInModalError, setPaymentMethodInfoStatusInModalError] = useState(false);
+
+
+  // STATES FOR TRANSFER TO TELCOS
+  const [telcoEmailError, setTelcoEmailError] = useState(false);
+  const [phoneNumberError, setPhoneNumberError] = useState(false);
+  const [networkCodeError, setNetworkCodeError] = useState(false);
+  const [momoAccountNameError, setMomoAccountNameError] = useState(false);
+  const [telcoAmountError, setTelcoAmountError] = useState(false);
+  const [telcoNoteError, setTelcoNoteError] = useState(false);
+  const [networkNameError, setNetworkNameError] = useState(false);
+  const [singleBatchNameError, setSingleBatchNameError] = useState(false);
 
 
 
@@ -380,6 +398,7 @@ const BulkpayDataTables = (apikeyDetails) => {
   };
   const handleChangeInfoAccTypeInModal = (valSelected) => {
     setPaymentMethodInfoStatusInModal(valSelected);
+    setPaymentMethodInfoStatusInModalError(false)
   };
   const handleChangeExport = (valSelected) => {
     setapikeyInfoExport(valSelected);
@@ -760,13 +779,57 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
   };
 
 
-function handleSubmit(event, formType) {
-    event.preventDefault();
-  if (accountName.length < 1) {
-    setAccountNameError(true)
+function handleSubmit(event) {
+    event.preventDefault();    
+    if (accountName.length < 1 || !accountName ) {
+      setAccountNameError(true)
+    }
+    if (email.length < 1 || !email ) {
+      setEmailError(true)
+    }
+    if (accountNumber.length < 1 || !accountNumber ) {
+      setAccountNumberError(true)
+    }
+    if (bankCode.length < 1 || !bankCode ) {
+      setBankCodeError(true)
+    }
+    if (amount.length < 1 || !amount ) {
+      setAmountError(true)
+    }
+    if (note.length < 1 || !note ) {
+      setNoteError(true)
+    }
+    if (bankDropdownInModal.length < 1 || !bankDropdownInModal ) {
+      setBankDropdownInModalError(true)
+    }
+    if (batchName.length < 1 || !batchName ) {
+      setBatchNameError(true)
+    }
+    if (telcoEmail.length < 1 || !telcoEmail ) {
+      setTelcoEmailError(true)
+    }
+    if (phoneNumber.length < 1 || !phoneNumber ) {
+      setPhoneNumberError(true)
+    }
+    if (networkCode.length < 1 || !networkCode ) {
+      setNetworkCodeError(true)
+    }
+    if (momoAccountName.length < 1 || !momoAccountName ) {
+      setMomoAccountNameError(true)
+    }
+    if (telcoAmount.length < 1 || !telcoAmount ) {
+      setTelcoAmountError(true)
+    }
+    if (telcoNote.length < 1 || !telcoNote ) {
+      setTelcoNoteError(true)
+    }
+    if (networkName.length < 1 || !networkName ) {
+      setNetworkNameError(true)
+    } 
+    if (singleBatchName.length < 1 || !singleBatchName ) {
+      setSingleBatchNameError(true)
+    }
 }
-};
-  
   return (
 
     <div className='mt-0'>
@@ -1160,9 +1223,11 @@ function handleSubmit(event, formType) {
                 >
                 <Label for="apikeyInfoStatus" className="label-dc"> Batch name </Label>
                 <TextField 
+                  error = {batchNameError}
+
                   // id='filters-d'
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)} 
+                  onChange={(e) => { (setBatchName(e.target.value)); (setBatchNameError(false)) }} 
                   // label="Filter"
                   placeholder="Eg. my batch name"
                   style={{height: "30px !important" }}
@@ -1174,6 +1239,7 @@ function handleSubmit(event, formType) {
           <Col xs="12" sm="12" md={5} lg={5} className="mt-0" >
             <Label for="apikeyInfoStatus" className="label-dc mb-1"> Payment method </Label>
             <Select
+              error = {paymentMethodInfoStatusInModalError}
               placeholder={"Select"}
               options={optionsAccTypeInModal}
               id="apikeyInfoStatus"
@@ -1227,9 +1293,9 @@ function handleSubmit(event, formType) {
                   >
                   <Label for="apikeyInfoStatus" className="label-dc"> Batch name </Label>
                   <TextField 
-                    // id='filters-d'
-                    value={batchName}
-                    onChange={(e) => setBatchName(e.target.value)} 
+                    value={batchName}                         
+                    error = {batchNameError}
+                    onChange={(e) => { (setBatchName(e.target.value)); (setBatchNameError(false)) }}
                     // label="Filter"
                     placeholder="Eg. my batch name"
                     style={{height: "30px !important" }}
@@ -1241,6 +1307,7 @@ function handleSubmit(event, formType) {
               <Col xs="12" sm="12" md={5} lg={5} className="mt-0" >
               <Label for="apikeyInfoStatus" className="label-dc mb-1"> Payment method </Label>
               <Select
+                error = {paymentMethodInfoStatusInModalError}
                 placeholder={"Select"}
                 options={optionsAccTypeInModal}
                 id="apikeyInfoStatus"
@@ -1265,12 +1332,12 @@ function handleSubmit(event, formType) {
                     >
                     <Label for="apikeyInfoStatus" className="label-dc"> Name on Account </Label>
                     <TextField 
-                    fullWidth
-                    error = {accountNameError}
+                      fullWidth
+                      error = {accountNameError}
                       // id='filters-d'
                       // xs="12" sm="12" md={12} lg={12}
                       value={accountName}
-                      onChange={(e) => setAccountName(e.target.value)} 
+                      onChange={(e) => {(setAccountName(e.target.value)); (setAccountNameError(false))}} 
                       // label="Filter"
                       placeholder="Michael Amoo"
                       style={{height: "30px !important" }}
@@ -1284,6 +1351,7 @@ function handleSubmit(event, formType) {
               <Col xs="12" sm="12" md={11} lg={11} className="mt-2" >
               <Label for="apikeyInfoStatus" className="label-dc mb-1"> Bank Name</Label>
               <Select
+                error = {bankDropdownInModalError}
                 maxWidth
                 placeholder={"Select bank"}
                 options={optionBankList}
@@ -1304,10 +1372,11 @@ function handleSubmit(event, formType) {
                     <Label for="apikeyInfoStatus" className="label-dc"> Email </Label>
                     <TextField 
                     fullWidth
+                    error = {emailError}
                       // id='filters-d'
                       // xs="12" sm="12" md={12} lg={12}
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)} 
+                      onChange={(e) => {(setEmail(e.target.value)); (setEmailError(false))}}
                       // label="Filter"
                       placeholder="youremail@email.com"
                       style={{height: "30px !important" }}
@@ -1326,10 +1395,13 @@ function handleSubmit(event, formType) {
                   autoComplete="off"
                   >
                   <Label for="apikeyInfoStatus" className="label-dc"> Bank Code </Label>
-                  <TextField 
+                  <TextField
+                    error = {bankCodeError} 
                     // id='filters-d'
                     value={bankCode}
-                    onChange={(e) => setBankCode(e.target.value)} 
+                    onChange={(e) => {(setBankCode(e.target.value)); (setBankCodeError(false))}}
+
+                    
                     // label="Filter"
                     placeholder="12032123"
                     style={{height: "30px !important" }}
@@ -1347,9 +1419,11 @@ function handleSubmit(event, formType) {
                   >
                   <Label for="apikeyInfoStatus" className="label-dc"> Bank Account Number </Label>
                   <TextField 
+                  error = {accountNumberError}
                     // id='filters-d'
                     value={accountNumber}
-                    onChange={(e) => setAccountNumber(e.target.value)} 
+                    onChange={(e) => {(setAccountNumber(e.target.value)); (setAccountNumberError(false))}}
+
                     // label="Filter"
                     placeholder="110324000000"
                     style={{height: "30px !important" }}
@@ -1367,10 +1441,12 @@ function handleSubmit(event, formType) {
                   autoComplete="off"
                   >
                   <Label for="apikeyInfoStatus" className="label-dc"> Amount </Label>
-                  <TextField 
+                  <TextField
+                    error = {amountError} 
                     // id='filters-d'
                     value={amount}
-                    onChange={(e) => setAmount(e.target.value)} 
+                    onChange={(e) => {(setAmount(e.target.value)); (setAmountError(false))}}
+
                     // label="Filter"
                     placeholder="100"
                     style={{height: "30px !important" }}
@@ -1389,9 +1465,11 @@ function handleSubmit(event, formType) {
                   >
                   <Label for="apikeyInfoStatus" className="label-dc"> Note </Label>
                   <TextField 
+                    error = {noteError}
                     // id='filters-d'
                     value={note}
-                    onChange={(e) => setNote(e.target.value)} 
+                    onChange={(e) => {(setNote(e.target.value)); (setNoteError(false))}}
+
                     // label="Filter"
                     placeholder="Salaries"
                     style={{height: "30px !important" }}
@@ -1423,10 +1501,12 @@ function handleSubmit(event, formType) {
                     <Label for="apikeyInfoStatus" className="label-dc"> Name on Account </Label>
                     <TextField 
                     fullWidth
+                    error = {momoAccountNameError}
                       // id='filters-d'
                       // xs="12" sm="12" md={12} lg={12}
                       value={momoAccountName}
-                      onChange={(e) => setMomoAccountName(e.target.value)} 
+                      onChange={(e) => {(setMomoAccountName(e.target.value)); (setMomoAccountNameError(false))}}
+
                       // label="Filter"
                       placeholder="Patrick Wunake"
                       style={{height: "30px !important" }}
@@ -1440,13 +1520,16 @@ function handleSubmit(event, formType) {
               <Col xs="12" sm="12" md={11} lg={11} className="mt-2" >
               <Label for="apikeyInfoStatus" className="label-dc mb-1"> Network Name</Label>
               <Select
+                value={networkName}
+                error = {networkNameError}
                 maxWidth
                 placeholder={"Select network"}
                 options={optionMobileMoneyList}
                 id="apikeyInfoStatus"
                 className='other-input-select'
                 // components={{ Option: paymentOption }}
-                onChange={(e) => handleChangeBankListInModal(e.value, e.label)}
+                onChange={(e) => {(setNetworkName(e.target.value)); (setNetworkNameError(false))}}
+
               />
               </Col>
 
@@ -1459,11 +1542,12 @@ function handleSubmit(event, formType) {
                     >
                     <Label for="apikeyInfoStatus" className="label-dc"> Email </Label>
                     <TextField 
-                    fullWidth
+                      fullWidth
+                      error = {telcoEmailError}
                       // id='filters-d'
                       // xs="12" sm="12" md={12} lg={12}
                       value={telcoEmail}
-                      onChange={(e) => setTelcoEmail(e.target.value)} 
+                      onChange={(e) => {(setTelcoEmail(e.target.value)); (setTelcoEmailError(false))}}
                       // label="Filter"
                       placeholder="youremail@email.com"
                       style={{height: "30px !important" }}
@@ -1477,15 +1561,18 @@ function handleSubmit(event, formType) {
               <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
               <div className='bulk-pay-name'  >
                 <Box 
+
                   component="form"
                   noValidate
                   autoComplete="off"
                   >
                   <Label for="apikeyInfoStatus" className="label-dc"> Network Code </Label>
                   <TextField 
+                    error = {networkCodeError}
                     // id='filters-d'
                     value={networkCode}
-                    onChange={(e) => setNetworkCode(e.target.value)} 
+                    onChange={(e) => {(setNetworkCode(e.target.value)); (setNetworkCodeError(false))}}
+
                     // label="Filter"
                     placeholder="12032123"
                     style={{height: "30px !important" }}
@@ -1503,9 +1590,11 @@ function handleSubmit(event, formType) {
                   >
                   <Label for="apikeyInfoStatus" className="label-dc"> Phone Number </Label>
                   <TextField 
+                    error = {phoneNumberError}
                     // id='filters-d'
                     value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)} 
+                    onChange={(e) => {(setPhoneNumber(e.target.value)); (setPhoneNumberError(false))}}
+
                     // label="Filter"
                     placeholder="0200000000"
                     style={{height: "30px !important" }}
@@ -1526,7 +1615,8 @@ function handleSubmit(event, formType) {
                   <TextField 
                     // id='filters-d'
                     value={telcoAmount}
-                    onChange={(e) => setTelcoAmount(e.target.value)} 
+                    onChange={(e) => {(setTelcoAmount(e.target.value)); (setTelcoAmountError(false))}}
+
                     // label="Filter"
                     placeholder="100"
                     style={{height: "30px !important" }}
@@ -1545,9 +1635,11 @@ function handleSubmit(event, formType) {
                   >
                   <Label for="apikeyInfoStatus" className="label-dc"> Note </Label>
                   <TextField 
+                    error = {noteError}
                     // id='filters-d'
                     value={telcoNote}
-                    onChange={(e) => setTelcoNote(e.target.value)} 
+                    onChange={(e) => {(setTelcoNote(e.target.value)); (setTelcoNoteError(false))}}
+
                     // label="Filter"
                     placeholder="Salaries"
                     style={{height: "30px !important" }}
@@ -1573,7 +1665,7 @@ function handleSubmit(event, formType) {
           className='text-white bg-text-wp'
           onClick={handleSubmit}
           >
-            Create Batch
+            Create
           </CButton>
 
         </CModalFooter>
