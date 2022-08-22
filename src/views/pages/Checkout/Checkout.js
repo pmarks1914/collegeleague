@@ -613,7 +613,7 @@ export default function Checkout() {
     };
 
     const methodOfPayment = [
-        { "name": "WINGIPAY", "id": 1 },
+        // { "name": "WINGIPAY", "id": 1 },
         { "name": "MTN", "id": 5 },
         { "name": "VODAFONE", "id": 6 },
         { "name": "AIRTELTIGO", "id": 7 },

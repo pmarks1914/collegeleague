@@ -82,20 +82,22 @@ import { Button } from '@chakra-ui/react';
 import 'antd/dist/antd.css';
 import { message, Upload } from 'antd';
 import { ArrowUpIcon } from '@chakra-ui/icons';
-import { getbanksandtelcos } from "../Data/PageData";
+import { getbanksandtelcos, bulkPayData, bulkPayItemData } from "../Data/PageData";
 
 
 const userData = JSON.parse(localStorage.getItem('userDataStore'));
 
 let currentUser = JSON.parse(localStorage.getItem("userDataStore")); 
-let apikeyInfoData = apikeyData();
-let apikeyInfo = []
-apikeyInfoData?.apikey?.then(value => { (apikeyInfo = value) });
+let bulkPayInfoData = bulkPayData();
+let bulkPayInfo = []
+bulkPayInfoData?.bulkPay?.then(value => { (bulkPayInfo = value) });
 
 let banktelcosList = getbanksandtelcos();
 let banktelcosListInfo = []
 banktelcosList.list.then(value => banktelcosListInfo = value)
-console.log("getbanksandtelcos ", banktelcosListInfo )
+// console.log("getbanksandtelcos ", banktelcosListInfo )
+console.log("bulkPayData ", bulkPayData() )
+console.log("bulkPayItemData ", bulkPayItemData("97273dc9-388f-4c8f-a054-8ac92e594656") )
 
 const BulkpayDataTables = (apikeyDetails) => {
   const [loader, setLoader] = useState('<div class="spinner-border dashboard-loader" style="color: #e0922f;"></div>')
@@ -110,9 +112,9 @@ const BulkpayDataTables = (apikeyDetails) => {
   const [value, setValue] = useState([null, null]);
 
   // modals
-  // filer apikeyInfo
+  // filer bulkPayInfo
   const [modal1, setModal1] = useState(false)
-  // view single apikeyInfo 
+  // view single bulkPayInfo 
   const [modal2, setModal2] = useState(false)
 
   const [viewData, setViewData] = useState({})
@@ -123,10 +125,10 @@ const BulkpayDataTables = (apikeyDetails) => {
   // startDate: Date.parse("2022-01-13"), endDate: Date.now()
   
 
-  const [apikeyInfoStatus, setapikeyInfoStatus] = useState("");
-  const [apikeyInfoId, setapikeyInfoId] = useState("");
+  const [bulkPayInfoStatus, setbulkPayInfoStatus] = useState("");
+  const [bulkPayInfoId, setbulkPayInfoId] = useState("");
   const [referanceId, setReferanceId] = useState("");
-  const [apikeyInfoExport, setapikeyInfoExport] = useState({});
+  const [bulkPayInfoExport, setbulkPayInfoExport] = useState({});
   const [dateFilterData, setDateFilterData] = useState({});
   const [amountLess, setAmountLess] = useState(0.00);
   const [amountGreat, setAmountGreat] = useState(0.00);
@@ -170,19 +172,19 @@ const BulkpayDataTables = (apikeyDetails) => {
     if(dateRange.length > 0 && monitorState === 1){
       setMonitorState(2)
       performFilter("filterByDate", "none")
-      setapikeyInfoStatus("")
+      setbulkPayInfoStatus("")
 
       setLoader('<a></a>')
     }
-    else if (apikeyInfo?.length > 0 && monitorState === 1) {
+    else if (bulkPayInfo?.length > 0 && monitorState === 1) {
       // setMonitorState(2)
-      datatablaScript(apikeyInfo);
+      datatablaScript(bulkPayInfo);
 
       setLoader('<a></a>')
     }
     else if(dateRange && monitorState === 2){
       performFilter("filterByDate", "none")
-      setapikeyInfoStatus("")
+      setbulkPayInfoStatus("")
       // setMonitorState(3)
     }
     else{
@@ -193,14 +195,14 @@ const BulkpayDataTables = (apikeyDetails) => {
         // }, 200)
     }
 
-    // if(apikeyInfoStatus && monitorState === 2){
+    // if(bulkPayInfoStatus && monitorState === 2){
     //   performFilter("filterByStatus")
     // }
 
     
-    // // console.log("props ", dateRange, apikeyInfo, apikeyInfoStatus, monitorState)
+    console.log("props ", dateRange, bulkPayInfo, bulkPayInfoStatus, monitorState)
 
-  }, [dateRange, apikeyInfo])
+  }, [dateRange, bulkPayInfo])
 
   // perform filter 
   function datatablaScript(tdata) {
@@ -212,7 +214,7 @@ const BulkpayDataTables = (apikeyDetails) => {
        
       $('#myTable').DataTable(
         {
-          // data: apikeyInfo,
+          // data: bulkPayInfo,
           columnDefs: [
             { "width": "10%", "targets": 2 }
           ],
@@ -254,7 +256,7 @@ const BulkpayDataTables = (apikeyDetails) => {
                 }
               },
               customize: function (anytype) {
-                let sheet = anytype.xl.worksheets['wingipayapikeyInfo.xml'];
+                let sheet = anytype.xl.worksheets['wingipaybulkPayInfo.xml'];
                 $('row:first c', sheet).attr('s', '7');
               }
             },
@@ -276,7 +278,7 @@ const BulkpayDataTables = (apikeyDetails) => {
                 }
               },
               customize: function (anytype) {
-                let sheet = anytype.xl.worksheets['wingipayapikeyInfo.pdf'];
+                let sheet = anytype.xl.worksheets['wingipaybulkPayInfo.pdf'];
                 $('row:first c', sheet).attr('s', '7');
               }
             },
@@ -302,11 +304,11 @@ const BulkpayDataTables = (apikeyDetails) => {
     // 
     e.preventDefault();
     // console.log("post tableData ", tableData);
-    // apikeyInfo = posts;
+    // bulkPayInfo = posts;
     try {
       // setTableData(posts);
-      let newFilterData = apikeyInfo.filter((post) => { return moment(post?.created).format('LLLL') <= moment(dateFrom).format('LLLL') })
-      // // console.log("post tableData ", apikeyInfo);
+      let newFilterData = bulkPayInfo.filter((post) => { return moment(post?.created).format('LLLL') <= moment(dateFrom).format('LLLL') })
+      // // console.log("post tableData ", bulkPayInfo);
       // console.log("post tableData ", newFilterData);
       datatablaScript(newFilterData);
       setModal1(false)
@@ -332,7 +334,7 @@ const BulkpayDataTables = (apikeyDetails) => {
     // $(".viewDescription").css("max-width", "50%");
     $(".viewDescription").css("flex-basis", "50%");
 
-    w.document.write($('.contentForapikeyInfoPrint').html());
+    w.document.write($('.contentForbulkPayInfoPrint').html());
     w.print();
     w.close();
   }
@@ -374,15 +376,15 @@ const BulkpayDataTables = (apikeyDetails) => {
       }
     }
   }
-  const handleChangeapikeyInfoStatus = (valSelected) => {
-    setapikeyInfoStatus(valSelected);
+  const handleChangebulkPayInfoStatus = (valSelected) => {
+    setbulkPayInfoStatus(valSelected);
     performFilter("filterByStatus", valSelected)
   };
   const handleChangeInfoAccTypeInModal = (valSelected) => {
     setPaymentMethodInfoStatusInModal(valSelected);
   };
   const handleChangeExport = (valSelected) => {
-    setapikeyInfoExport(valSelected);
+    setbulkPayInfoExport(valSelected);
     if(valSelected === "Export to excel"){
       // 
       downloadExcel(tableData);
@@ -396,7 +398,7 @@ const BulkpayDataTables = (apikeyDetails) => {
     // {value: "", label: "Se", icon: "", isDisabled: true },
     {value: "live", label: "Live Key" },
     {value: "test", label: "Test Key" },
-    {value: "All apikeyInfo", label: "All Keys" }
+    {value: "All bulkPayInfo", label: "All Keys" }
   ];
   const optionsAccTypeInModal = [
     // {value: "", label: "Se", icon: "", isDisabled: true },
@@ -423,11 +425,11 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
   ];
   function performFilter(type, status){
 
-    // // console.log("by status ", apikeyInfoStatus, "type", type )
+    // // console.log("by status ", bulkPayInfoStatus, "type", type )
     // perform filter by date range
     if(type === "filterByDate"){
       // 
-      let dataFilter = apikeyInfo.filter((post, id) => {return ( moment(post?.created).format('DD/MM/yyyy') >= moment(dateRange[0]).format('DD/MM/yyyy') && moment(post?.created).format('DD/MM/yyyy') <= moment(dateRange[1]).format('DD/MM/yyyy') )});
+      let dataFilter = bulkPayInfo.filter((post, id) => {return ( moment(post?.created).format('DD/MM/yyyy') >= moment(dateRange[0]).format('DD/MM/yyyy') && moment(post?.created).format('DD/MM/yyyy') <= moment(dateRange[1]).format('DD/MM/yyyy') )});
 
       datatablaScript( dataFilter );
 
@@ -436,17 +438,17 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
     else if(type === "filterByStatus"){
       // 
       // // console.log("by status",status, monitorState, apikeyDetails )
-      if(status === "All apikeyInfo" && monitorState === 1){
-        datatablaScript(apikeyInfo);
+      if(status === "All bulkPayInfo" && monitorState === 1){
+        datatablaScript(bulkPayInfo);
       }
-      else if(status === "All apikeyInfo" && monitorState === 2){
+      else if(status === "All bulkPayInfo" && monitorState === 2){
         datatablaScript(dateFilterData);
       }
       else if(status === "test" && monitorState === 1){
-        datatablaScript( apikeyInfo?.filter((post, id) => {return ( post?.is_live === false )}) );
+        datatablaScript( bulkPayInfo?.filter((post, id) => {return ( post?.is_live === false )}) );
       }
       else if(status === "live" && monitorState === 1){
-        datatablaScript( apikeyInfo?.filter((post, id) => {return ( post?.is_live === true )}) );
+        datatablaScript( bulkPayInfo?.filter((post, id) => {return ( post?.is_live === true )}) );
       }
       else if(status === "test" && monitorState === 2){
         datatablaScript( dateFilterData?.filter((post, id) => {return ( post?.is_live === false )}) );
@@ -463,8 +465,8 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
     setAmountGreat(0)
     setAmountLess(0)
     setReferanceId("")
-    setapikeyInfoId("")
-    datatablaScript(apikeyInfo)
+    setbulkPayInfoId("")
+    datatablaScript(bulkPayInfo)
   }
   function convertArrayOfObjectsToCSV(array) {
     let result;
@@ -636,7 +638,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
         //   "created":  response?.data?.created
         // }
         // arryData.push(new_data)
-        // apikeyInfo?.map((post, id)=> {
+        // bulkPayInfo?.map((post, id)=> {
         //   arryData.push(post);
         // })
         // // console.log("api key data 2", arryData)
@@ -672,7 +674,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
         //     infoArray = value;
         //     datatablaScript(value);
         //     apikeyDetails = value;
-        //     apikeyInfo = value
+        //     bulkPayInfo = value
 
         //   }); 
         //   }, 1000);
@@ -797,7 +799,7 @@ function handleSubmit(event, formType) {
           <CCardBody>
             <p>Search by:</p>
             <div> 
-              <p className='des-filter-inputs'>apikeyInfo Reference</p>
+              <p className='des-filter-inputs'>bulkPayInfo Reference</p>
               <Box
                 // component="form"
                 // sx={{
@@ -840,8 +842,8 @@ function handleSubmit(event, formType) {
                 >
                 <TextField 
                   id='filters-d'
-                  value={apikeyInfoId}
-                  onChange={(e) => setapikeyInfoId(e.target.value)} 
+                  value={bulkPayInfoId}
+                  onChange={(e) => setbulkPayInfoId(e.target.value)} 
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="start" >
@@ -1015,17 +1017,17 @@ function handleSubmit(event, formType) {
           </div>
         </Col>
         <Col xs="12" sm="12" md={2} lg={2} >
-          {/* apikeyInfo types */}
+          {/* bulkPayInfo types */}
           <Box sx={{ minWidth: 160 }}>
             <FormControl fullWidth style={{marginTop: "0px"}}>
-              <Label for="apikeyInfoStatus" className="label-dc"> </Label>
+              <Label for="bulkPayInfoStatus" className="label-dc"> </Label>
               <Select
                 placeholder={"Select"}
                 options={optionsStatus}
-                id="apikeyInfoStatus"
+                id="bulkPayInfoStatus"
                 className='other-input-select d-filters'
                 // components={{ Option: paymentOption }}
-                onChange={(e) => handleChangeapikeyInfoStatus(e.value)}
+                onChange={(e) => handleChangebulkPayInfoStatus(e.value)}
               />
           
             </FormControl>
@@ -1084,11 +1086,11 @@ function handleSubmit(event, formType) {
           {/* export */}
           <Box sx={{ minWidth: 120}}>
             <FormControl fullWidth>
-              <Label for="apikeyInfoExport" className="label-dc"> </Label>
+              <Label for="bulkPayInfoExport" className="label-dc"> </Label>
               <Select
                 placeholder={"Select export"}
                 options={optionsExport}
-                id="apikeyInfoExport"
+                id="bulkPayInfoExport"
                 className='other-input-select d-filters'
                 // components={{ Option: paymentOption }}
                 onChange={(e) => handleChangeExport(e.value)}
@@ -1109,7 +1111,6 @@ function handleSubmit(event, formType) {
           <tr>
             <th>No.</th>
             <th>Batch</th>
-            <th>Description</th>
             <th>Type</th>
             <th>Date</th>
             <th>Action</th>
@@ -1121,7 +1122,6 @@ function handleSubmit(event, formType) {
             tableData?.map((post, id) =>
               <tr key={id}>
                 <td>{id + 1}</td>
-                <td>{post?.prefix}</td>
                 <td>{post?.name}</td>
                 <td><CBadge color={post?.is_live === true ? "success" : "secondary" }> {post?.is_live === true ? "LIVE" : "TEST"} </CBadge> </td>
                 <td>{moment(post?.created).format('LLLL')}</td>
@@ -1158,7 +1158,7 @@ function handleSubmit(event, formType) {
                 noValidate
                 autoComplete="off"
                 >
-                <Label for="apikeyInfoStatus" className="label-dc"> Batch name </Label>
+                <Label for="bulkPayInfoStatus" className="label-dc"> Batch name </Label>
                 <TextField 
                   // id='filters-d'
                   value={description}
@@ -1172,11 +1172,11 @@ function handleSubmit(event, formType) {
               </div>
           </Col>
           <Col xs="12" sm="12" md={5} lg={5} className="mt-0" >
-            <Label for="apikeyInfoStatus" className="label-dc mb-1"> Payment method </Label>
+            <Label for="bulkPayInfoStatus" className="label-dc mb-1"> Payment method </Label>
             <Select
               placeholder={"Select"}
               options={optionsAccTypeInModal}
-              id="apikeyInfoStatus"
+              id="bulkPayInfoStatus"
               className='other-input-select'
               // components={{ Option: paymentOption }}
               onChange={(e) => handleChangeInfoAccTypeInModal(e.value)}
@@ -1211,9 +1211,9 @@ function handleSubmit(event, formType) {
         <CModalHeader>
           <CModalTitle>  Create </CModalTitle>
         </CModalHeader>
-        <CModalBody className='contentForapikeyInfoPrint'>
+        <CModalBody className='contentForbulkPayInfoPrint'>
           <p className="success rounded" style={{ textAlign: "center" }} >
-            {/* <h6> apikeyInfo Details </h6> */}
+            {/* <h6> bulkPayInfo Details </h6> */}
           </p>
           <Row>
 
@@ -1225,7 +1225,7 @@ function handleSubmit(event, formType) {
                   noValidate
                   autoComplete="off"
                   >
-                  <Label for="apikeyInfoStatus" className="label-dc"> Batch name </Label>
+                  <Label for="bulkPayInfoStatus" className="label-dc"> Batch name </Label>
                   <TextField 
                     // id='filters-d'
                     value={batchName}
@@ -1239,11 +1239,11 @@ function handleSubmit(event, formType) {
                 </div>
               </Col>
               <Col xs="12" sm="12" md={5} lg={5} className="mt-0" >
-              <Label for="apikeyInfoStatus" className="label-dc mb-1"> Payment method </Label>
+              <Label for="bulkPayInfoStatus" className="label-dc mb-1"> Payment method </Label>
               <Select
                 placeholder={"Select"}
                 options={optionsAccTypeInModal}
-                id="apikeyInfoStatus"
+                id="bulkPayInfoStatus"
                 className='other-input-select' 
                 // components={{ Option: paymentOption }}
                 onChange={(e) => handleChangeInfoAccTypeInModal(e.value)}
@@ -1263,7 +1263,7 @@ function handleSubmit(event, formType) {
                     noValidate
                     autoComplete="off"
                     >
-                    <Label for="apikeyInfoStatus" className="label-dc"> Name on Account </Label>
+                    <Label for="bulkPayInfoStatus" className="label-dc"> Name on Account </Label>
                     <TextField 
                     fullWidth
                     error = {accountNameError}
@@ -1282,12 +1282,12 @@ function handleSubmit(event, formType) {
 
 
               <Col xs="12" sm="12" md={11} lg={11} className="mt-2" >
-              <Label for="apikeyInfoStatus" className="label-dc mb-1"> Bank Name</Label>
+              <Label for="bulkPayInfoStatus" className="label-dc mb-1"> Bank Name</Label>
               <Select
                 maxWidth
                 placeholder={"Select bank"}
                 options={optionBankList}
-                id="apikeyInfoStatus"
+                id="bulkPayInfoStatus"
                 className='other-input-select'
                 // components={{ Option: paymentOption }}
                 onChange={(e) => handleChangeBankListInModal(e.value, e.label)}
@@ -1301,7 +1301,7 @@ function handleSubmit(event, formType) {
                     noValidate
                     autoComplete="off"
                     >
-                    <Label for="apikeyInfoStatus" className="label-dc"> Email </Label>
+                    <Label for="bulkPayInfoStatus" className="label-dc"> Email </Label>
                     <TextField 
                     fullWidth
                       // id='filters-d'
@@ -1325,7 +1325,7 @@ function handleSubmit(event, formType) {
                   noValidate
                   autoComplete="off"
                   >
-                  <Label for="apikeyInfoStatus" className="label-dc"> Bank Code </Label>
+                  <Label for="bulkPayInfoStatus" className="label-dc"> Bank Code </Label>
                   <TextField 
                     // id='filters-d'
                     value={bankCode}
@@ -1345,7 +1345,7 @@ function handleSubmit(event, formType) {
                   noValidate
                   autoComplete="off"
                   >
-                  <Label for="apikeyInfoStatus" className="label-dc"> Bank Account Number </Label>
+                  <Label for="bulkPayInfoStatus" className="label-dc"> Bank Account Number </Label>
                   <TextField 
                     // id='filters-d'
                     value={accountNumber}
@@ -1366,7 +1366,7 @@ function handleSubmit(event, formType) {
                   noValidate
                   autoComplete="off"
                   >
-                  <Label for="apikeyInfoStatus" className="label-dc"> Amount </Label>
+                  <Label for="bulkPayInfoStatus" className="label-dc"> Amount </Label>
                   <TextField 
                     // id='filters-d'
                     value={amount}
@@ -1387,7 +1387,7 @@ function handleSubmit(event, formType) {
                   noValidate
                   autoComplete="off"
                   >
-                  <Label for="apikeyInfoStatus" className="label-dc"> Note </Label>
+                  <Label for="bulkPayInfoStatus" className="label-dc"> Note </Label>
                   <TextField 
                     // id='filters-d'
                     value={note}
@@ -1420,7 +1420,7 @@ function handleSubmit(event, formType) {
                     noValidate
                     autoComplete="off"
                     >
-                    <Label for="apikeyInfoStatus" className="label-dc"> Name on Account </Label>
+                    <Label for="bulkPayInfoStatus" className="label-dc"> Name on Account </Label>
                     <TextField 
                     fullWidth
                       // id='filters-d'
@@ -1438,12 +1438,12 @@ function handleSubmit(event, formType) {
 
 
               <Col xs="12" sm="12" md={11} lg={11} className="mt-2" >
-              <Label for="apikeyInfoStatus" className="label-dc mb-1"> Network Name</Label>
+              <Label for="bulkPayInfoStatus" className="label-dc mb-1"> Network Name</Label>
               <Select
                 maxWidth
                 placeholder={"Select network"}
                 options={optionMobileMoneyList}
-                id="apikeyInfoStatus"
+                id="bulkPayInfoStatus"
                 className='other-input-select'
                 // components={{ Option: paymentOption }}
                 onChange={(e) => handleChangeBankListInModal(e.value, e.label)}
@@ -1457,7 +1457,7 @@ function handleSubmit(event, formType) {
                     noValidate
                     autoComplete="off"
                     >
-                    <Label for="apikeyInfoStatus" className="label-dc"> Email </Label>
+                    <Label for="bulkPayInfoStatus" className="label-dc"> Email </Label>
                     <TextField 
                     fullWidth
                       // id='filters-d'
@@ -1481,7 +1481,7 @@ function handleSubmit(event, formType) {
                   noValidate
                   autoComplete="off"
                   >
-                  <Label for="apikeyInfoStatus" className="label-dc"> Network Code </Label>
+                  <Label for="bulkPayInfoStatus" className="label-dc"> Network Code </Label>
                   <TextField 
                     // id='filters-d'
                     value={networkCode}
@@ -1501,7 +1501,7 @@ function handleSubmit(event, formType) {
                   noValidate
                   autoComplete="off"
                   >
-                  <Label for="apikeyInfoStatus" className="label-dc"> Phone Number </Label>
+                  <Label for="bulkPayInfoStatus" className="label-dc"> Phone Number </Label>
                   <TextField 
                     // id='filters-d'
                     value={phoneNumber}
@@ -1522,7 +1522,7 @@ function handleSubmit(event, formType) {
                   noValidate
                   autoComplete="off"
                   >
-                  <Label for="apikeyInfoStatus" className="label-dc"> Amount </Label>
+                  <Label for="bulkPayInfoStatus" className="label-dc"> Amount </Label>
                   <TextField 
                     // id='filters-d'
                     value={telcoAmount}
@@ -1543,7 +1543,7 @@ function handleSubmit(event, formType) {
                   noValidate
                   autoComplete="off"
                   >
-                  <Label for="apikeyInfoStatus" className="label-dc"> Note </Label>
+                  <Label for="bulkPayInfoStatus" className="label-dc"> Note </Label>
                   <TextField 
                     // id='filters-d'
                     value={telcoNote}
