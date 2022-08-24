@@ -734,6 +734,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
     let val_amount = '';
     let c_note = '';
     let e_mail = '';
+    let batch_id = window.location.pathname.split("/")[3];
 
     if(paymentBatchData?.payment_method === "BANK"){
       // 
@@ -741,7 +742,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
       account_number = accountNumber || "" ;
       bank_code = bankDropdownInModal.code || "";
       destination_bank_name = bankDropdownInModal.name || "";
-      account_holder_name = momoAccountName || "";
+      account_holder_name = accountName || "";
       currency = 'GHS';
       val_amount = amount || "";
       c_note = note || "";
@@ -773,8 +774,10 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
     else if(type === 'addToBatch'){
       // 
       data = JSON.stringify({
+        "batch_id": batch_id,
         "account_holder_name": account_holder_name,
         "bank_code": bank_code,
+        "external_account_id": account_number,
         "account_number": account_number,
         "destination_bank_name": destination_bank_name,
         "currency": "GHS",
@@ -816,7 +819,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
 
     let config = {
       method: 'post',
-      url: process.env.REACT_APP_BASE_API + "/batch/bulk/add/",
+      url: process.env.REACT_APP_BASE_API + "/batch/item/add/" + batch_id + '/',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + currentUser?.access
@@ -966,6 +969,8 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
             // console.log( "old ", bulkPayInfo,  " new ", bulkPayInfoNew)
             bulkPayInfo = bulkPayInfoNew;
             setBatchName(batchName + " ")
+            setModal1(false);
+            setModal2(false)
         });
       }
       else {
@@ -1111,6 +1116,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
       // 
       data = JSON.stringify({
         "account_number": accountNumber,
+        "external_account_id": accountNumber,
         "bank_code": bankDropdownInModal.code,
         "destination_bank_name": bankDropdownInModal.name,
         "account_holder_name": accountName,
@@ -1128,6 +1134,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
     else{
       data = JSON.stringify({
         "account_number": phoneNumber,
+        "external_account_id": phoneNumber,
         "bank_code": networkName.code,
         "destination_bank_name": networkName.name,
         "account_holder_name": momoAccountName,
@@ -1144,7 +1151,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
     }
     let config = {
       method: 'patch',
-      url: process.env.REACT_APP_BASE_API + "/batch/item/edit/" + currentPostItemSelected?.id + "/",
+      url: process.env.REACT_APP_BASE_API + "/batch/item/update/" + currentPostItemSelected?.id + "/",
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + currentUser?.access
