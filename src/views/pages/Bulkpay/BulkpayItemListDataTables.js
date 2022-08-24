@@ -1036,7 +1036,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
     Swal.fire({
       icon: 'info',
       title: 'Proceed to make payment for!',
-      text: postData?.name,
+      text: postData?.account_holder_name,
       allowOutsideClick: false,
       // allowEscapeKey: false,
       showCancelButton: true,
@@ -1061,7 +1061,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
     }); 
   }
   // openModalEdit
-  function openModalEdit(e){
+  function openModalEdit(e, itemData){
     e.preventDefault()
     // setEmail()
     // setAccountNumber()
@@ -1079,32 +1079,33 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
     // setTelcoNote() 
     // setNetworkName()
     // setSingleBatchName()
-    setAmount(currentPostItemSelected?.amount)
-    setTelcoAmount(currentPostItemSelected?.amount)
-    
-    setNote(currentPostItemSelected?.note)
-    setTelcoNote(currentPostItemSelected?.note)
-
-    setAccountName(currentPostItemSelected?.account_holder_name)
-    setMomoAccountName(currentPostItemSelected?.account_holder_name)
-
-    setEmail(currentPostItemSelected?.email)
-    setTelcoEmail(currentPostItemSelected?.email)
-
-    setAccountNumber(currentPostItemSelected?.account_number)
-    setPhoneNumber(currentPostItemSelected?.account_number)
-    
-    setBankDropdownInModal({"code": currentPostItemSelected?.bank_code, "name": currentPostItemSelected?.destination_bank_name});
-    setNetworkName({"code": currentPostItemSelected?.bank_code, "name": currentPostItemSelected?.destination_bank_name});
-
     setModal1(true)
+
+    setAmount(itemData?.amount)
+    setTelcoAmount(itemData?.amount)
+    
+    setNote(itemData?.note)
+    setTelcoNote(itemData?.note)
+
+    setAccountName(itemData?.account_holder_name)
+    setMomoAccountName(itemData?.account_holder_name)
+
+    setEmail(itemData?.email)
+    setTelcoEmail(itemData?.email)
+
+    setAccountNumber(itemData?.account_number)
+    setPhoneNumber(itemData?.account_number)
+    
+    setBankDropdownInModal({"code": itemData?.bank_code, "name": itemData?.destination_bank_name});
+    setNetworkName({"code": itemData?.bank_code, "name": itemData?.destination_bank_name});
+
     // setTimeout(()=>{
     // }, 2000)
   }
   function handleEditSubmit(e){
     // 
     e.preventDefault()
-    let data;
+    let data = {};
 
     if(paymentBatchData?.payment_method === "BANK"){
       // 
@@ -1311,7 +1312,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
                   {/*  */}
                   <CBadge className='bg-text-wp mr-5' style={{marginRight: "5px"}} onClick={ (e) => payExecute("batch", post) }  >Pay</CBadge> 
                   <CBadge color='black' style={{marginRight: "5px"}}  onClick={ (e) => deleteBatchOrItem("item", post) }  >Delete</CBadge> 
-                  <CBadge color='warning' onClick={ (e)=>{(openModalEdit(e)); (setModal1(true)); (setCurrentPostItemSelected(post))} } > {" "}Edit</CBadge>
+                  <CBadge color='warning' onClick={ (e)=>{(openModalEdit(e, post)); (setCurrentPostItemSelected(post))} } > {" "}Edit</CBadge>
             
                 </td>
                 {/* <td>{post?.amount}</td> */}
