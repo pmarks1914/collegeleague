@@ -239,8 +239,8 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
           // data: bulkPayInfo,
           columnDefs: [
             { "width": "1px", "targets": 0 },
-            { "width": "2%", "targets": 2 },
-            { "width": "1%", "targets": 3 }
+            // { "width": "2%", "targets": 2 },
+            // { "width": "1%", "targets": 3 }
           ],
           processing: true,
           deferLoading: true,
