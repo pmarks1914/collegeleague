@@ -223,7 +223,7 @@ const BulkpayDataTables = (apikeyDetails) => {
     // }
 
     
-    console.log("props ", dateRange, bulkPayInfo, bulkPayInfoStatus, monitorState)
+    // console.log("props ", dateRange, bulkPayInfo, bulkPayInfoStatus, monitorState)
 
   }, [dateRange, bulkPayInfo])
 
@@ -668,7 +668,7 @@ const BulkpayDataTables = (apikeyDetails) => {
   function handleSubmit(event) {
       event.preventDefault();    
       let expPhone = /(020|023|024|025|026|027|028|050|054|055|059)[\s.-]?\d{7}$/;
-      console.log("phoneNumber ", paymentMethodInfoStatusInModal, expPhone.test(phoneNumber))
+      // console.log("phoneNumber ", paymentMethodInfoStatusInModal, expPhone.test(phoneNumber))
 
       if (accountName.length < 1 || !accountName ) {
         setAccountNameError(true)
@@ -809,7 +809,7 @@ const BulkpayDataTables = (apikeyDetails) => {
       data: data
     };
     axios(config).then(response => {
-      console.log(response.data);
+      // console.log(response.data);
       if (response?.data?.status === true) { 
         let bulkPayInfoDataNew = bulkPayData();
         let bulkPayInfoNew = []
@@ -934,7 +934,7 @@ const BulkpayDataTables = (apikeyDetails) => {
     // 
 
     axios(config).then(response => {
-      console.log(response.data);
+      // console.log(response.data);
       if (response?.data?.status === true) { 
         let bulkPayInfoDataNew = bulkPayData();
         let bulkPayInfoNew = []

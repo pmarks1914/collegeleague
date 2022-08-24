@@ -222,7 +222,7 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
 
     
     // console.log("props ", dateRange, bulkPayInfo, bulkPayInfoStatus, monitorState)
-    console.log("props ", bulkPayInfo, paymentBatchData )
+    // console.log("props ", bulkPayInfo, paymentBatchData )
 
   }, [dateRange, bulkPayInfo])
 
@@ -669,7 +669,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
   function handleSubmit(event) {
       event.preventDefault();    
       let expPhone = /(020|023|024|025|026|027|028|050|054|055|059)[\s.-]?\d{7}$/;
-      console.log("phoneNumber ", paymentMethodInfoStatusInModal, expPhone.test(phoneNumber))
+      // console.log("phoneNumber ", paymentMethodInfoStatusInModal, expPhone.test(phoneNumber))
 
       if (accountName.length < 1 || !accountName ) {
         setAccountNameError(true)
@@ -827,7 +827,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
       data: data
     };
     axios(config).then(response => {
-      console.log(response.data);
+      // console.log(response.data);
       if (response?.data?.status === true) { 
         let bulkPayInfoDataNew = bulkPayItemData(window.location.pathname.split("/")[3]);
         let bulkPayInfoNew = []
@@ -950,7 +950,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
     // 
 
     axios(config).then(response => {
-      console.log(response.data);
+      // console.log(response.data);
       if (response?.data?.status === true) { 
         let bulkPayInfoDataNew = bulkPayItemData(window.location.pathname.split("/")[3]);
         let bulkPayInfoNew = []
