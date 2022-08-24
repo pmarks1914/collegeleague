@@ -106,6 +106,9 @@ const BulkpayDataTables = (apikeyDetails) => {
   const [monitorState, setMonitorState] = useState(1);
   const [dropValue, setDropValue] = useState(0);
 
+  // set Edit Batch Data
+  const [editBatchData, setEditBatchData] = useState({});
+
   // date time
   const [dateTo, setDateTo] = useState(new Date('2014-08-18T21:11:54'));
   const [dateFrom, setDateFrom] = useState(new Date('2014-08-18T21:11:54')); 
@@ -116,6 +119,8 @@ const BulkpayDataTables = (apikeyDetails) => {
   const [modal1, setModal1] = useState(false)
   // view single bulkPayInfo 
   const [modal2, setModal2] = useState(false)
+  // modal for edit batch name
+  const [modal3, setModal3] = useState(false)
 
   const [viewData, setViewData] = useState({})
   const [openDateRange, setOpenDateRange] = useState(true);
@@ -427,17 +432,17 @@ const BulkpayDataTables = (apikeyDetails) => {
     {value: "bank", label: "BANK" },
   ];
   
-const optionBankList = Object.keys(banktelcosListInfo?.bank_list || []).map((post, id) => {
+  const optionBankList = Object.keys(banktelcosListInfo?.bank_list || []).map((post, id) => {
+      return {
+        "value": banktelcosListInfo?.bank_list[id].BankSortCode,
+        "label": banktelcosListInfo?.bank_list[id].BankName
+      }});
+    
+  const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || []).map((post, id) => {
     return {
-      "value": banktelcosListInfo?.bank_list[id].BankSortCode,
-      "label": banktelcosListInfo?.bank_list[id].BankName
+      "value": banktelcosListInfo?.telcos_list[id].BankSortCode,
+      "label": banktelcosListInfo?.telcos_list[id].BankName
     }});
-  
-const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || []).map((post, id) => {
-  return {
-    "value": banktelcosListInfo?.telcos_list[id].BankSortCode,
-    "label": banktelcosListInfo?.telcos_list[id].BankName
-  }});
 
   const optionsExport = [
     // {value: "", label: "Se", icon: "", isDisabled: true },
@@ -948,6 +953,9 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
             // console.log( "old ", bulkPayInfo,  " new ", bulkPayInfoNew)
             bulkPayInfo = bulkPayInfoNew;
             setBatchName(batchName + " ")
+            setModal1(false)
+            setModal2(false)
+            setModal3(false)
         });
       }
       else {
@@ -1050,7 +1058,57 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
   function itemPage(url){
     // 
     window.location.href = url
+  } 
+  // delete 
+  function editBatchOrItem(type){
+    // 
+    let config = {};
+    let data = {
+      "name": batchName,
+      "payment_method": editBatchData?.payment_method
+    };
+    if(type === "batch"){
+      // 
+      config = {
+        method: 'patch',
+        url: process.env.REACT_APP_BASE_API + "/batch/update/" + editBatchData?.id + "/",
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + currentUser?.access
+        },
+        data: data
+      };
+    }
+    
+    Swal.fire({
+      icon: 'info',
+      title: 'Do you want to update the item?',
+      html: `<p> ${editBatchData?.name} to ${ batchName } </p>`,
+      allowOutsideClick: false,
+      // allowEscapeKey: false,
+      showCancelButton: true,
+      confirmButtonColor: '#FF7643',
+      cancelButtonColor: '#d33',
+      cancelButtonText: "Cancel",
+      confirmButtonText: 'Confirm',
+      customClass: {
+        actions: 'my-actions',
+        cancelButton: 'order-1 right-gap',
+        confirmButton: 'order-2'
+      }
+    }).then((result) => {
+        // console.log( "old ", bulkPayInfo,  " new ", bulkPayInfoNew)
+        if (result.isConfirmed) {
+          // 
+          genericApiCall(config)
+        }
+        else{
+          // 
+        }
+        
+    });
   }
+  
   return (
 
     <div className='mt-0'>
@@ -1411,6 +1469,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
                   {/*  */}
                   <CBadge className='bg-text-wp mr-5' style={{marginRight: "5px"}} onClick={ (e) => payExecute("batch", post) }  >Pay</CBadge> 
                   <CBadge color='black' style={{marginRight: "5px"}}  onClick={ (e) => deleteBatchOrItem("batch", post) }  >Delete</CBadge>
+                  <CBadge color='warning' style={{marginRight: "5px"}} onClick={ (e) => {(setModal3(true)); (setBatchName(post.name)); (setEditBatchData(post)) } }  > Edit </CBadge>
                   <CBadge color='secondary' onClick={()=>itemPage(`/bulk-pay/item/${post?.id}/`)}>View</CBadge>
                   
                 </td>
@@ -1492,7 +1551,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
       </CModal>
 
       {/* modal for create batch list in app */}
-      <CModal visible={modal2} fullscreen="xl" alignment='center' onClose={() => setModal2(false)}>
+      <CModal visible={modal2} alignment='center' onClose={() => setModal2(false)}>
         <CModalHeader>
           <CModalTitle>  Create </CModalTitle>
         </CModalHeader>
@@ -1880,6 +1939,59 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
         </CModalFooter>
       </CModal>
 
+
+      {/* modal for create batch list in app */}
+      <CModal visible={modal3} alignment='center' onClose={() => setModal3(false)}>
+        <CModalHeader>
+          <CModalTitle>  Edit Batch Name </CModalTitle>
+        </CModalHeader>
+        <CModalBody className='contentForbulkPayInfoPrint'>
+          <p className="success rounded"  >
+            {/* <h6> bulkPayInfo Details </h6> */}
+          </p>
+          {/* <Row style={{ marginRight: '30%' }}> */}
+
+
+            <Col xs="12" sm="12" md={12} lg={12} className="mt-0" > 
+              <div className='bulk-pay-name'  >
+                <Box 
+                  component="form"
+                  noValidate
+                  autoComplete="off"
+                  >
+                  <Label for="bulkPayInfoBatchName" className="label-dc"> Batch name </Label>
+                  <TextField 
+                    value={batchName}    
+                    fullWidth                     
+                    error = {batchNameError}
+                    onChange={(e) => { (setBatchName(e.target.value)); (setBatchNameError(false)) }}
+                    // label="Filter"
+                    placeholder="Eg. my batch name"
+                    style={{height: "30px !important"}}
+                    
+                    />
+                </Box>
+                </div>
+            </Col>
+            
+          {/* </Row> */}
+
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" className='text-white' onClick={() => setModal3(false)}>
+            Close
+          </CButton>
+          <CButton 
+          // type = 'submit'
+          color=''
+          className='text-white bg-text-wp'
+          onClick={(e)=>editBatchOrItem("batch")}
+          >
+            Save
+          </CButton>
+
+        </CModalFooter>
+      </CModal>
 
     </div>
   )
