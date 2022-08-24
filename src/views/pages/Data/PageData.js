@@ -350,8 +350,8 @@ export function bulkPayItemData(id){
     function bulkPayItemDetails(){
         <a dangerouslySetInnerHTML={{ __html: loader }}></a>
         return axios(config_transaction).then(response => {
-            // // console.log("data ==", response?.data);
-            if (response.status === 200) {
+            // console.log("data ==", response?.data);
+            if (response.data.status) {
                 // 
                 if(response?.data){loader = "<a></>";}
                 

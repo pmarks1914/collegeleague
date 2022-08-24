@@ -31,10 +31,11 @@ import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
 
 
-if(["/dashboard", "/payment/transaction", "/payment/refunds", "/payment/payouts", "/compliance", "/api-keys", "/bulk-pay"].includes(window.location.pathname)){
+if(["/dashboard", "/payment/transaction", "/payment/refunds", "/payment/payouts", "/compliance", "/api-keys", "/bulk-pay", `/bulk-pay/item/${window.location.pathname.split("/")[3]}`, `/bulk-pay/item/${window.location.pathname.split("/")[3]}/`].includes(window.location.pathname)){
   // 
 }
 else{
+  // console.log(window.location.pathname.split("/")[3])
   window.location.href = '/404'
 }
 

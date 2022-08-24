@@ -11,6 +11,10 @@
     background-color: #FF7643;
     color: #fff;
 }
+.bg-text-wp:hover{
+  background-color: #020202;
+  color: #fff;
+}
 .bg-excel-wp{
     background-color: green;
     color: #fff;

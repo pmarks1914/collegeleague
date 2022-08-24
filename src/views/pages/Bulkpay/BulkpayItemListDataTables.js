@@ -82,24 +82,27 @@ import { Button } from '@chakra-ui/react';
 import 'antd/dist/antd.css';
 import { message, Upload } from 'antd';
 import { ArrowUpIcon } from '@chakra-ui/icons';
-import { getbanksandtelcos, bulkPayData, bulkPayItemData } from "../Data/PageData";
+import { getbanksandtelcos, bulkPayItemData } from "../Data/PageData";
 
 
 const userData = JSON.parse(localStorage.getItem('userDataStore'));
 
 let currentUser = JSON.parse(localStorage.getItem("userDataStore")); 
-let bulkPayInfoData = bulkPayData();
+let bulkPayInfoData = bulkPayItemData(window.location.pathname.split("/")[3]);
 let bulkPayInfo = []
-bulkPayInfoData?.bulkPay?.then(value => { (bulkPayInfo = value) });
+bulkPayInfoData?.bulkPayItems?.then(value => { (bulkPayInfo = value?.batch_items) });
+let paymentBatchData = {}
+bulkPayInfoData?.bulkPayItems?.then(value => { (paymentBatchData = value?.batch) });
+
 
 let banktelcosList = getbanksandtelcos();
 let banktelcosListInfo = []
 banktelcosList.list.then(value => banktelcosListInfo = value)
 // console.log("getbanksandtelcos ", banktelcosListInfo )
-// console.log("bulkPayData ", bulkPayData() )
+// console.log("bulkPayItemData ", bulkPayItemData(window.location.pathname.split("/")[3]) )
 // console.log("bulkPayItemData ", bulkPayItemData("97273dc9-388f-4c8f-a054-8ac92e594656") )
 
-const BulkpayDataTables = (apikeyDetails) => {
+const BulkpayItemListDataTables = (apikeyDetails) => {
   const [loader, setLoader] = useState('<div class="spinner-border dashboard-loader" style="color: #e0922f;"></div>')
   const [tableData, setTableData] = useState([]);
   const [noData, setNoData] = useState("")
@@ -120,7 +123,7 @@ const BulkpayDataTables = (apikeyDetails) => {
   const [viewData, setViewData] = useState({})
   const [openDateRange, setOpenDateRange] = useState(true);
   const [dateRange, setDateRange] = useState({});
-  const [description, setDescription] = useState("");
+  const [currentPostItemSelected, setCurrentPostItemSelected] = useState({});
   const [paymentMethodInfoStatusInModal, setPaymentMethodInfoStatusInModal] = useState("");
   // startDate: Date.parse("2022-01-13"), endDate: Date.now()
   
@@ -218,7 +221,8 @@ const BulkpayDataTables = (apikeyDetails) => {
     // }
 
     
-    console.log("props ", dateRange, bulkPayInfo, bulkPayInfoStatus, monitorState)
+    // console.log("props ", dateRange, bulkPayInfo, bulkPayInfoStatus, monitorState)
+    console.log("props ", bulkPayInfo, paymentBatchData )
 
   }, [dateRange, bulkPayInfo])
 
@@ -234,9 +238,9 @@ const BulkpayDataTables = (apikeyDetails) => {
         {
           // data: bulkPayInfo,
           columnDefs: [
-            { "width": "15%", "targets": 0 },
-            { "width": "20%", "targets": 2 },
-            { "width": "10%", "targets": 3 }
+            { "width": "1px", "targets": 0 },
+            { "width": "2%", "targets": 2 },
+            { "width": "1%", "targets": 3 }
           ],
           processing: true,
           deferLoading: true,
@@ -395,6 +399,8 @@ const BulkpayDataTables = (apikeyDetails) => {
         }
       }
     }
+
+    
   }
   const handleChangebulkPayInfoStatus = (valSelected) => {
     setbulkPayInfoStatus(valSelected);
@@ -427,11 +433,11 @@ const BulkpayDataTables = (apikeyDetails) => {
     {value: "bank", label: "BANK" },
   ];
   
-const optionBankList = Object.keys(banktelcosListInfo?.bank_list || []).map((post, id) => {
+  const optionBankList = Object.keys(banktelcosListInfo?.bank_list || []).map((post, id) => {
     return {
       "value": banktelcosListInfo?.bank_list[id].BankSortCode,
       "label": banktelcosListInfo?.bank_list[id].BankName
-    }});
+  }});
   
 const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || []).map((post, id) => {
   return {
@@ -686,18 +692,13 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
       if ( !bankDropdownInModal.code ) {
         setBankDropdownInModalError(true)
       }
-      if (batchName.length < 1 || !batchName ) {
-        setBatchNameError(true)
-      }
       if (telcoEmail.length < 1 || !telcoEmail ) {
         setTelcoEmailError(true)
       }
       if ( !expPhone.test(phoneNumber) ) {
         setPhoneNumberError(true)
       }
-      if (networkCode.length < 1 || !networkCode ) {
-        setNetworkCodeError(true)
-      } 
+      
       if (momoAccountName.length < 1 || !momoAccountName ) {
         setMomoAccountNameError(true)
       }
@@ -713,13 +714,13 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
       if (singleBatchName.length < 1 || !singleBatchName ) {
         setSingleBatchNameError(true)
       } 
-      if( (accountName && email && accountNumber && amount && note && bankDropdownInModal.code && batchName) || (telcoEmail && expPhone.test(phoneNumber) && momoAccountName && telcoAmount && telcoNote && networkName.code ) ){
+      if( (accountName && email && accountNumber && amount && note && bankDropdownInModal.code ) || (telcoEmail && expPhone.test(phoneNumber) && momoAccountName && telcoAmount && telcoNote && networkName.code ) ){
         // 
-        createBulkListApiCall('singleForm', [])
+        createBulkListApiCall('addToBatch', [])
       }
 
   }
-  // create batch with list
+  // add item to batch
   function createBulkListApiCall(type, arrayData) {
     // e.preventDefault();
     let data;
@@ -734,19 +735,19 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
     let c_note = '';
     let e_mail = '';
 
-    if(paymentMethodInfoStatusInModal === "bank"){
+    if(paymentBatchData?.payment_method === "BANK"){
       // 
       payMethod = "BANK";
-      account_number = accountNumber;
-      bank_code = bankDropdownInModal.code;
-      destination_bank_name = bankDropdownInModal.name;
-      account_holder_name = accountName;
+      account_number = accountNumber || "" ;
+      bank_code = bankDropdownInModal.code || "";
+      destination_bank_name = bankDropdownInModal.name || "";
+      account_holder_name = momoAccountName || "";
       currency = 'GHS';
-      val_amount = amount;
-      c_note = note;
-      e_mail = email;
+      val_amount = amount || "";
+      c_note = note || "";
+      e_mail = email || "";
     }
-    else{
+    else if(paymentBatchData?.payment_method === "MOBILEMONEY"){
       // 
       payMethod = 'MOBILEMONEY';
       account_number = phoneNumber;
@@ -768,6 +769,25 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
         "batch_items": arrayData
       });
 
+    }
+    else if(type === 'addToBatch'){
+      // 
+      data = JSON.stringify({
+        "account_holder_name": account_holder_name,
+        "bank_code": bank_code,
+        "account_number": account_number,
+        "destination_bank_name": destination_bank_name,
+        "currency": "GHS",
+        "amount": val_amount,
+        "note": c_note,
+        "email": e_mail,
+        "source_metadata": {
+                            "full_name": account_holder_name,
+                            "email": e_mail,
+                            "mobile_number": account_number,
+                            "recipient_address": "234 none"
+                    }
+      });
     }
     else{
       // single list submit payload
@@ -796,7 +816,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
 
     let config = {
       method: 'post',
-      url: process.env.REACT_APP_BASE_API + "/batch/bulk/create/",
+      url: process.env.REACT_APP_BASE_API + "/batch/bulk/add/",
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + currentUser?.access
@@ -806,9 +826,9 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
     axios(config).then(response => {
       console.log(response.data);
       if (response?.data?.status === true) { 
-        let bulkPayInfoDataNew = bulkPayData();
+        let bulkPayInfoDataNew = bulkPayItemData(window.location.pathname.split("/")[3]);
         let bulkPayInfoNew = []
-        bulkPayInfoDataNew?.bulkPay?.then(value => { (bulkPayInfoNew = value) });
+        bulkPayInfoDataNew?.bulkPayItems?.then(value => { (bulkPayInfoNew = value?.batch_items) });
 
         Swal.fire({
           title: 'Successfully created!',
@@ -864,7 +884,6 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
     }
     );
   }
-
   // delete 
   function deleteBatchOrItem(type, postData){
     // 
@@ -886,7 +905,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
       // 
       config = {
         method: 'delete',
-        url: process.env.REACT_APP_BASE_API + "/batch/delete/" + postData?.id + "/",
+        url: process.env.REACT_APP_BASE_API + "/batch/item/Delete/" + postData?.id + "/",
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + currentUser?.access
@@ -923,7 +942,6 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
         
     });
   }
-
   // generic method
   function genericApiCall(config){
     // 
@@ -931,9 +949,9 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
     axios(config).then(response => {
       console.log(response.data);
       if (response?.data?.status === true) { 
-        let bulkPayInfoDataNew = bulkPayData();
+        let bulkPayInfoDataNew = bulkPayItemData(window.location.pathname.split("/")[3]);
         let bulkPayInfoNew = []
-        bulkPayInfoDataNew?.bulkPay?.then(value => { (bulkPayInfoNew = value) });
+        bulkPayInfoDataNew?.bulkPayItems?.then(value => { (bulkPayInfoNew = value?.batch_items) });
 
         Swal.fire({
           title: 'Successful!',
@@ -987,10 +1005,8 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
     }
     );
   }
-
   // execute pay queue for batch list
   function payExecute(type, postData){
-
     let config = {};
     let data = {};
     if(type === "batch"){
@@ -1017,7 +1033,6 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
         data: data
       };
     }
-
     Swal.fire({
       icon: 'info',
       title: 'Proceed to make payment for!',
@@ -1043,194 +1058,108 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
         else{
           // 
         }   
-    });
-    
+    }); 
   }
-  // redirect to list for batch selected
-  function itemPage(url){
+  // openModalEdit
+  function openModalEdit(e){
+    e.preventDefault()
+    // setEmail()
+    // setAccountNumber()
+    // setBankCode()
+    // setAccountName()
+    // setAmount()
+    // setNote()
+    // setBankDropdownInModal()
+    // setBatchName()
+    // setTelcoEmail()
+    // setPhoneNumber()
+    // setNetworkCode()
+    // setMomoAccountName()
+    // setTelcoAmount()
+    // setTelcoNote() 
+    // setNetworkName()
+    // setSingleBatchName()
+    setAmount(currentPostItemSelected?.amount)
+    setTelcoAmount(currentPostItemSelected?.amount)
+    
+    setNote(currentPostItemSelected?.note)
+    setTelcoNote(currentPostItemSelected?.note)
+
+    setAccountName(currentPostItemSelected?.account_holder_name)
+    setMomoAccountName(currentPostItemSelected?.account_holder_name)
+
+    setEmail(currentPostItemSelected?.email)
+    setTelcoEmail(currentPostItemSelected?.email)
+
+    setAccountNumber(currentPostItemSelected?.account_number)
+    setPhoneNumber(currentPostItemSelected?.account_number)
+    
+    setBankDropdownInModal({"code": currentPostItemSelected?.bank_code, "name": currentPostItemSelected?.destination_bank_name});
+    setNetworkName({"code": currentPostItemSelected?.bank_code, "name": currentPostItemSelected?.destination_bank_name});
+
+    setModal1(true)
+    // setTimeout(()=>{
+    // }, 2000)
+  }
+  function handleEditSubmit(e){
     // 
-    window.location.href = url
+    e.preventDefault()
+    let data;
+
+    if(paymentBatchData?.payment_method === "BANK"){
+      // 
+      data = JSON.stringify({
+        "account_number": accountNumber,
+        "bank_code": bankDropdownInModal.code,
+        "destination_bank_name": bankDropdownInModal.name,
+        "account_holder_name": accountName,
+        "currency": 'GHS',
+        "amount": amount,
+        "note": note,
+        "email": email,
+        "source_metadata": {
+            "full_name": accountName,
+            "email": email,
+            "mobile_number": accountNumber
+        } 
+      });
+    }
+    else{
+      data = JSON.stringify({
+        "account_number": phoneNumber,
+        "bank_code": networkName.code,
+        "destination_bank_name": networkName.name,
+        "account_holder_name": momoAccountName,
+        "currency": 'GHS',
+        "amount": telcoAmount,
+        "note": telcoNote,
+        "email": telcoEmail,
+        "source_metadata": {
+            "full_name": momoAccountName,
+            "email": telcoEmail,
+            "mobile_number": phoneNumber
+        }
+      })
+    }
+    let config = {
+      method: 'patch',
+      url: process.env.REACT_APP_BASE_API + "/batch/item/edit/" + currentPostItemSelected?.id + "/",
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + currentUser?.access
+      },
+      data: data
+    };
+    genericApiCall(config)
+
   }
   return (
 
     <div className='mt-0'>
-      {/* {// console.log("dateRange ", dateRange)} */}
-
-      {/* open modal for filter date range */}
-      {/* <CButton onClick={() => setModal1(!modal1)} icon={cilArrowRight} className="float-end" >Filter</CButton> */}
-      <Row className='mt-0' onClick={ (e)=> getExcelTemplate("bank") } >
-        <a href='' className='d-flex'>
-          <Col xs="6" sm="6" md={6} lg={6}> Download template for bank account bulk payments. </Col>
-          <Col xs="6" sm="6" md={6} lg={6} >  <CIcon icon={cilFile}  style={{float: "right"}} />  </Col>
-        </a>
-      </Row>
-      <Row className='mt-3' onClick={ (e)=> getExcelTemplate("mobile") } >
-        <a href='' className='d-flex'>
-          <Col xs="6" sm="6" md={6} lg={6}> Download template for mobile money bulk payments. </Col>
-          <Col xs="6" sm="6" md={6} lg={6} >  <CIcon icon={cilFile}  style={{float: "right"}} />  </Col>
-        </a>
-      </Row> <br />
-
-      <div id="filterDropdown" className="dropdown-content mb-4" onClick={(e) => setDropValue(1)}>
-        <CCard sm={12} md={12} lg={12}>
-          <CCardHeader>
-            <CRow>
-              <CCol sm={12} md={12} lg={12} > <CBadge color='secondary' onClick={(e)=>resetFilter(e)}>Reset</CBadge> <CBadge color='primary' style={{ float: "right" }} onClick={(e)=>performFilter("filterByOptions", "none")}>Apply</CBadge> </CCol>
-            </CRow>
-          </CCardHeader>
-          <CCardBody>
-            <p>Search by:</p>
-            <div> 
-              <p className='des-filter-inputs'>bulkPayInfo Reference</p>
-              <Box
-                // component="form"
-                // sx={{
-                //   '& > :not(style)': { m: 1, width: '25ch' },
-                // }}
-                noValidate
-                autoComplete="off"
-                sx={{ minWidth: 30 }} 
-                className='filters-d'
-                >
-                <TextField 
-                  id='filters-d'
-                  value={referanceId}
-                  onChange={(e) => setReferanceId(e.target.value)} 
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end" >
-                        <CIcon icon={cilSearch} className="me-2" />
-                      </InputAdornment>
-                    ),
-                  }}
-                  // label="Filter"
-                  placeholder="eg. WP55467987765"
-                  // multiline
-                  />
-              </Box>
-            </div>
-            <div>
-              
-              <p className='des-filter-inputs'>Product ID </p>
-              <Box
-                // component="form"
-                // sx={{
-                //   '& > :not(style)': { m: 1, width: '25ch' },
-                // }}
-                noValidate
-                autoComplete="off"
-                sx={{ minWidth: 30 }} 
-                className='filters-d'
-                >
-                <TextField 
-                  id='filters-d'
-                  value={bulkPayInfoId}
-                  onChange={(e) => setbulkPayInfoId(e.target.value)} 
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="start" >
-                        <CIcon icon={cilSearch} className="me-2" />
-                      </InputAdornment>
-                    ),
-                  }}
-                  // label="Filter"
-                  placeholder="Product ID"
-                  // multiline
-                  />
-              </Box>
-            </div>
-            <div style={{width: "220px"}}>
-              
-              <p className='des-filter-inputs'>Filter by amount: </p>
-              
-              <Box
-                // component="form"
-                // sx={{
-                //   '& > :not(style)': { m: 1, width: '25ch' },
-                // }}
-                noValidate
-                autoComplete="off"
-                sx={{ minWidth: 30 }} 
-                className='filters-d'
-                >
-                {/* <TextField 
-                  id='filters-d'
-                  sx={{ minWidth: 5 }} 
-                  // onClick={(e) => toggleFilter(e, "filter")} 
-                  // onChange={(e) => setReferanceId(e.target.value)} 
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="start" >
-                        <CIcon icon={cilSearch} className="me-2" />
-                      </InputAdornment>
-                    ),
-                  }}
-                  // label="Filter"
-                  placeholder="eg. "
-                  /> */}
-  
-              </Box>
-              <Box
-                noValidate
-                autoComplete="off"
-                // sx={{ minWidth: 30 }} 
-                // className='filters-d'
-                >
-
-              <Row sm={12} md={12} lg={12}>
-                <Col sm={6} md={6} lg={6} > 
-                  <Label for="amount-less"> Less = </Label>
-                  <TextField
-                    id='amount-less'
-                    type="number"
-                    value={amountLess}
-                    variant="outlined"
-                    inputProps={{
-                      step: "0.01"
-                    }}
-                    onChange={(e) => setAmountLess(parseFloat(e.target.value).toFixed(2))} 
-                  />
-                </Col>
-                <Col sm={6} md={6} lg={6} > 
-                  <Label for="amount-great"> Greter = </Label>
-                  <TextField
-                    id='amount-great'
-                    type="number"
-                    value={amountGreat}
-                    variant="outlined"
-                    inputProps={{
-                      step: "0.01"
-                    }}
-                    onChange={(e) => setAmountGreat(parseFloat(e.target.value).toFixed(2))} 
-                  />
-                </Col>
-              </Row>
-              <Row sm={12} md={12} lg={12}>
-                  <Col sm={6} md={6} lg={6} >
-                    <Label for="amount-great"> Equal </Label>
-                    <TextField
-                      id='amount-equal'
-                      type="number"
-                      value={amountEqual}
-                      variant="outlined"
-                      inputProps={{
-                        step: "0.01"
-                      }}
-                      onChange={(e) => setAmountEqual(parseFloat(e.target.value).toFixed(2))}
-                    />
-                  </Col>
-              </Row>
-              </Box>
-            </div>
-
-          </CCardBody>
-
-        </CCard>
-      </div>
 
       <Container>
       <Row>
-        <Col xs="12" sm="12" md={4} lg={4} >
+        <Col xs="12" sm="12" md={6} lg={6} >
           {/* filter */}
           <div className="dropdown filterDrop add-item">
 
@@ -1251,7 +1180,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start" >
-                        <CIcon icon={cilPlus} className="me-2" /> Create
+                        <CIcon icon={cilPlus} className="me-2" /> Add
                       </InputAdornment>
                     ),
                   }}
@@ -1264,42 +1193,9 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
               </Box>
             {/* </FormControl> */}
           </div>
-          {/* filter */}
-          <div className="dropdown filterDrop ">
-
-            {/* <FormControl fullWidth > */}
-              <Box
-                component="form"
-                // sx={{
-                //   '& > :not(style)': { m: 1, width: '25ch' },
-                // }}
-                noValidate
-                autoComplete="off"
-                // sx={{ minWidth: 40 }} 
-                >
-                  <TextField 
-                    id="dropbtn" 
-                    className='d-filters'
-                    onClick={(e) => setModal1(true)} 
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start" >
-                          <CIcon icon={cilPlus} className="me-2" /> Upload
-                        </InputAdornment>
-                      ),
-                    }}
-                    // label="Filter"
-                    // placeholder="Placeholder"
-                    multiline
-                    // variant="standard"
-                    // style={{height: "10px"}}
-                    />
-              </Box>
-            {/* </FormControl> */}
-          </div>
+          
         </Col>
-        <Col xs="12" sm="12" md={2} lg={2} >
-          {/* bulkPayInfo types */}
+        {/* <Col xs="12" sm="12" md={3} lg={3} >
           <Box sx={{ minWidth: 160 }}>
             <FormControl style={{marginTop: "0px"}}>
               <Label for="bulkPayInfoStatus" className="label-dc"> </Label>
@@ -1308,13 +1204,11 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
                 options={optionsStatus}
                 id="bulkPayInfoStatus"
                 className='other-input-select d-filters'
-                // components={{ Option: paymentOption }}
                 onChange={(e) => handleChangebulkPayInfoStatus(e.value)}
               />
-          
             </FormControl>
           </Box>
-        </Col>
+        </Col> */}
         {/* Date range */}
         <Col xs="12" sm="12" md={3} lg={3} >
           {/* date range */}
@@ -1383,8 +1277,6 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
       </Row>
       </Container>
 
-
-
       {/* {dateTo.toString()}{" rrr "}{dateFrom.toString()} */}
       <br /><br />
 
@@ -1392,8 +1284,12 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
         <thead>
           <tr>
             <th>No.</th>
-            <th>Batch</th>
-            <th>Payment method</th>
+            <th>Name</th>
+            <th>A/C No</th>
+            <th>Destination A/C</th>
+            <th>Amount</th>
+            <th>Note</th>
+            <th>Email</th>
             <th>Date</th>
             <th>Action</th>
           </tr>
@@ -1404,15 +1300,19 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
             tableData?.map((post, id) =>
               <tr key={id}>
                 <td>{id + 1}</td>
-                <td>{post?.name}</td>
-                <td> {post?.payment_method?.toUpperCase()} </td>
+                <td>{post?.account_holder_name}</td>
+                <td>{post?.account_number}</td>
+                <td> {post?.destination_bank_name} </td>
+                <td> { post?.currency.toString() + post?.amount.toString()} </td>
+                <td>{ post?.note }</td>
+                <td>{ post?.email }</td>
                 <td>{moment(post?.created).format('LLLL')}</td>
                 <td>
                   {/*  */}
                   <CBadge className='bg-text-wp mr-5' style={{marginRight: "5px"}} onClick={ (e) => payExecute("batch", post) }  >Pay</CBadge> 
-                  <CBadge color='black' style={{marginRight: "5px"}}  onClick={ (e) => deleteBatchOrItem("batch", post) }  >Delete</CBadge>
-                  <CBadge color='secondary' onClick={()=>itemPage(`/bulk-pay/item/${post?.id}/`)}>View</CBadge>
-                  
+                  <CBadge color='black' style={{marginRight: "5px"}}  onClick={ (e) => deleteBatchOrItem("item", post) }  >Delete</CBadge> 
+                  <CBadge color='warning' onClick={ (e)=>{(openModalEdit(e)); (setModal1(true)); (setCurrentPostItemSelected(post))} } > {" "}Edit</CBadge>
+            
                 </td>
                 {/* <td>{post?.amount}</td> */}
                 {/* <td onClick={() => { setModal2(true); setViewData(post) }}><CBadge className='bg-text-wp'>View</CBadge></td> */}
@@ -1427,119 +1327,16 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
       <a dangerouslySetInnerHTML={{ __html: loader }}></a>
 
       {/* modals */}
-      {/* modal for bulk upload */}
-      <CModal visible={modal1} alignment="center" onClose={() => setModal1(false)}>
-        <CModalHeader>   
-        <CModalTitle> Bulk Upload </CModalTitle>
-        </CModalHeader>
-        <CModalBody> 
-          {/*  */}
-          <Row className='m-3'>
-          <Col xs="12" sm="12" md={6} lg={6} className="mt-0" > 
-            <div className='bulk-pay-name'  >
-              <Box 
-                component="form"
-                noValidate
-                autoComplete="off"
-                >
-                <Label for="bulkPayInfoStatus" className="label-dc"> Batch name </Label>
-                <TextField 
-                  value={batchName}                         
-                  error = {batchNameError}
-                  onChange={(e) => { (setBatchName(e.target.value)); (setBatchNameError(false)) }}
-                  // label="Filter"
-                  placeholder="Eg. my batch name"
-                  style={{height: "30px !important" }}
-                  
-                  />
-              </Box>
-              </div>
-          </Col>
-          <Col xs="12" sm="12" md={5} lg={5} className="mt-0" >
-            <Label for="bulkPayInfoStatus" className="label-dc mb-1"> Payment method </Label>
-            <Select
-              error = {paymentMethodInfoStatusInModalError}
-              placeholder={"Select"}
-              options={optionsAccTypeInModal}
-              id="bulkPayInfoStatus"
-              className='other-input-select'
-              // components={{ Option: paymentOption }}
-              onChange={(e) => handleChangeInfoAccTypeInModal(e.value)}
-            />
-          </Col>
 
-          </Row>
-          <Row className='m-3' style={{"border-style": "dotted", height: "90px", textAlign: "center", padding: "30px" }}>
-
-            <Upload {...props1} maxCount={1} accept=".xls,.xlsx">
-              <Button >Click to select an excel file </Button>
-            </Upload>
-            
-          </Row>
-
-              
-        
-          
-        </CModalBody>
-        <CModalFooter>
-          <CButton color="secondary" className='text-white' onClick={(e) => setModal1(false)}> 
-          Cancel
-          </CButton>
-          <CButton color="" className='text-white bg-text-wp' onClick={(e) => readExcelFile()}> 
-          Create
-          </CButton>
-        </CModalFooter>
-      </CModal>
-
-      {/* modal for create batch list in app */}
+      {/* modal for add batch item to list in app */}
       <CModal visible={modal2} fullscreen="xl" alignment='center' onClose={() => setModal2(false)}>
         <CModalHeader>
-          <CModalTitle>  Create </CModalTitle>
+          <CModalTitle>  Add To List  </CModalTitle>
         </CModalHeader>
         <CModalBody className='contentForbulkPayInfoPrint'>
-          <p className="success rounded" style={{ textAlign: "center" }} >
-            {/* <h6> bulkPayInfo Details </h6> */}
-          </p>
-          <Row style={{ marginLeft: '1%' }}>
-
-
-            <Col xs="12" sm="12" md={6} lg={6} className="mt-0" > 
-              <div className='bulk-pay-name'  >
-                <Box 
-                  component="form"
-                  noValidate
-                  autoComplete="off"
-                  >
-                  <Label for="bulkPayInfoStatus" className="label-dc"> Batch name </Label>
-                  <TextField 
-                    value={batchName}                         
-                    error = {batchNameError}
-                    onChange={(e) => { (setBatchName(e.target.value)); (setBatchNameError(false)) }}
-                    // label="Filter"
-                    placeholder="Eg. my batch name"
-                    style={{height: "30px !important" }}
-                    
-                    />
-                </Box>
-                </div>
-              </Col>
-              <Col xs="12" sm="12" md={6} lg={6} className="mt-0" >
-              <Label for="bulkPayInfoStatus" className="label-dc mb-1"> Payment method </Label>
-              <Select
-                error = {paymentMethodInfoStatusInModalError}
-                placeholder={"Select"}
-                options={optionsAccTypeInModal}
-                id="bulkPayInfoStatus"
-                className='other-input-select' 
-                // components={{ Option: paymentOption }}
-                onChange={(e) => handleChangeInfoAccTypeInModal(e.value)}
-              />
-            </Col>
-          </Row>
-
         {/* FORMS FOR TRANSFER TO BANK BEGINS HERE */}
         {
-          paymentMethodInfoStatusInModal === "bank" ?
+          paymentBatchData?.payment_method === "BANK" ?
           <div>
               <Row style={{ marginLeft: '1%' }}>
               <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
@@ -1555,7 +1352,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
                       error = {accountNameError}
                       // id='filters-d'
                       // xs="12" sm="12" md={12} lg={12}
-                      value={accountName}
+                      // value={accountName}
                       onChange={(e) => {(setAccountName(e.target.value)); (setAccountNameError(false))}} 
                       // label="Filter"
                       placeholder="Michael Amoo"
@@ -1592,7 +1389,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
                     error = {emailError}
                       // id='filters-d'
                       // xs="12" sm="12" md={12} lg={12}
-                      value={email}
+                      // value={email}
                       onChange={(e) => {(setEmail(e.target.value)); (setEmailError(false))}}
                       // label="Filter"
                       placeholder="youremail@email.com"
@@ -1602,93 +1399,73 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
                   </Box>
                 </div>
               </Col>
-
-              {/* <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" >
               <div className='bulk-pay-name'  >
                 <Box 
                   component="form"
                   noValidate
                   autoComplete="off"
                   >
-                  <Label for="bulkPayInfoStatus" className="label-dc"> Bank Code </Label>
-                  <TextField
-                    error = {bankCodeError} 
-                    value={bankCode}
-                    onChange={(e) => {(setBankCode(e.target.value)); (setBankCodeError(false))}}
-                    placeholder="12032123"
+                  <Label for="bulkPayInfoStatus" className="label-dc"> Bank Account Number </Label>
+                  <TextField 
+                  error = {accountNumberError}
+                    // id='filters-d'
+                    // value={accountNumber}
+                    onChange={(e) => {(setAccountNumber(e.target.value)); (setAccountNumberError(false))}}
+
+                    // label="Filter"
+                    placeholder="110324000000"
                     style={{height: "30px !important" }}
                     
                     />
                 </Box>
               </div>
-              </Col> */}
-                <Col xs="12" sm="12" md={6} lg={6} className="mt-2" >
-                <div className='bulk-pay-name'  >
-                  <Box 
-                    component="form"
-                    noValidate
-                    autoComplete="off"
-                    >
-                    <Label for="bulkPayInfoStatus" className="label-dc"> Bank Account Number </Label>
-                    <TextField 
-                    error = {accountNumberError}
-                      // id='filters-d'
-                      value={accountNumber}
-                      onChange={(e) => {(setAccountNumber(e.target.value)); (setAccountNumberError(false))}}
+              </Col>
+              
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
+              <div className='bulk-pay-name'  >
+                <Box 
+                  component="form"
+                  noValidate
+                  autoComplete="off"
+                  >
+                  <Label for="bulkPayInfoStatus" className="label-dc"> Amount </Label>
+                  <TextField
+                    error = {amountError} 
+                    // id='filters-d'
+                    // value={amount}
+                    onChange={(e) => {(setAmount(e.target.value)); (setAmountError(false))}}
 
-                      // label="Filter"
-                      placeholder="110324000000"
-                      style={{height: "30px !important" }}
-                      
-                      />
-                  </Box>
-                </div>
-                </Col>
-                
-                <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
-                <div className='bulk-pay-name'  >
-                  <Box 
-                    component="form"
-                    noValidate
-                    autoComplete="off"
-                    >
-                    <Label for="bulkPayInfoStatus" className="label-dc"> Amount </Label>
-                    <TextField
-                      error = {amountError} 
-                      // id='filters-d'
-                      value={amount}
-                      onChange={(e) => {(setAmount(e.target.value)); (setAmountError(false))}}
+                    // label="Filter"
+                    placeholder="100"
+                    style={{height: "30px !important" }}
+                    
+                    />
+                </Box>
+              </div>
+              </Col>
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" >
+              <div className='bulk-pay-name'  >
+                <Box 
+                  component="form"
+                  noValidate
+                  autoComplete="off"
+                  >
+                  <Label for="bulkPayInfoStatus" className="label-dc"> Note </Label>
+                  <TextField 
+                    error = {noteError}
+                    // id='filters-d'
+                    // value={note}
+                    onChange={(e) => {(setNote(e.target.value)); (setNoteError(false))}}
 
-                      // label="Filter"
-                      placeholder="100"
-                      style={{height: "30px !important" }}
-                      
-                      />
-                  </Box>
-                </div>
-                </Col>
-                <Col xs="12" sm="12" md={6} lg={6} className="mt-2" >
-                <div className='bulk-pay-name'  >
-                  <Box 
-                    component="form"
-                    noValidate
-                    autoComplete="off"
-                    >
-                    <Label for="bulkPayInfoStatus" className="label-dc"> Note </Label>
-                    <TextField 
-                      error = {noteError}
-                      // id='filters-d'
-                      value={note}
-                      onChange={(e) => {(setNote(e.target.value)); (setNoteError(false))}}
-
-                      // label="Filter"
-                      placeholder="Salaries"
-                      style={{height: "30px !important" }}
-                      
-                      />
-                  </Box>
-                </div>
-                </Col>
+                    // label="Filter"
+                    placeholder="Salaries"
+                    style={{height: "30px !important" }}
+                    
+                    />
+                </Box>
+              </div>
+              </Col>
               </Row>
 
             
@@ -1699,7 +1476,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
 
         {/* FORMS FOR TRANSFER TO TELCOS BEGIN HERE */}
         {
-          paymentMethodInfoStatusInModal === "mobile" ?
+          paymentBatchData?.payment_method === "MOBILEMONEY" ?
           <div>
             <Row style={{ marginLeft: '1%' }}>
               <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
@@ -1715,7 +1492,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
                     error = {momoAccountNameError}
                       // id='filters-d'
                       // xs="12" sm="12" md={12} lg={12}
-                      value={momoAccountName}
+                      // value={momoAccountName}
                       onChange={(e) => {(setMomoAccountName(e.target.value)); (setMomoAccountNameError(false))}}
 
                       // label="Filter"
@@ -1756,7 +1533,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
                       error = {telcoEmailError}
                       // id='filters-d'
                       // xs="12" sm="12" md={12} lg={12}
-                      value={telcoEmail}
+                      // value={telcoEmail}
                       onChange={(e) => {(setTelcoEmail(e.target.value)); (setTelcoEmailError(false))}}
                       // label="Filter"
                       placeholder="youremail@email.com"
@@ -1766,30 +1543,6 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
                   </Box>
                 </div>
               </Col>
-
-              
-              {/* <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
-              <div className='bulk-pay-name'  >
-                <Box 
-                  component="form"
-                  noValidate
-                  autoComplete="off"
-                  >
-                  <Label for="bulkPayInfoStatus" className="label-dc"> Network Code </Label>
-                  <TextField 
-                    error = {networkCodeError}
-                    // id='filters-d'
-                    value={networkCode}
-                    onChange={(e) => {(setNetworkCode(e.target.value)); (setNetworkCodeError(false))}}
-
-                    // label="Filter"
-                    placeholder="12032123"
-                    style={{height: "30px !important" }}
-                    
-                    />
-                </Box>
-              </div>
-              </Col> */}
               <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
               <div className='bulk-pay-name'  >
                 <Box 
@@ -1801,7 +1554,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
                   <TextField 
                     error = {phoneNumberError}
                     // id='filters-d'
-                    value={phoneNumber}
+                    // value={phoneNumber}
                     onChange={(e) => {(setPhoneNumber(e.target.value)); (setPhoneNumberError(false))}}
 
                     // label="Filter"
@@ -1823,7 +1576,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
                   <Label for="bulkPayInfoStatus" className="label-dc"> Amount </Label>
                   <TextField 
                     // id='filters-d'
-                    value={telcoAmount}
+                    // value={telcoAmount}
                     onChange={(e) => {(setTelcoAmount(e.target.value)); (setTelcoAmountError(false))}}
 
                     // label="Filter"
@@ -1846,7 +1599,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
                   <TextField 
                     error = {noteError}
                     // id='filters-d'
-                    value={telcoNote}
+                    // value={telcoNote}
                     onChange={(e) => {(setTelcoNote(e.target.value)); (setTelcoNoteError(false))}}
 
                     // label="Filter"
@@ -1860,7 +1613,8 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
 
             </Row>
           </div>
-          : "" }
+          : "" 
+        }
         {/* FORMS FOR TELCOS END HERE */}
 
         </CModalBody>
@@ -1880,9 +1634,316 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
         </CModalFooter>
       </CModal>
 
+      {/* modal for edit batch item to list in app */}
+      <CModal visible={modal1} fullscreen="xl" alignment='center' onClose={() => setModal1(false)}>
+        <CModalHeader>
+          <CModalTitle>  Edit Item  </CModalTitle>
+        </CModalHeader>
+        <CModalBody className='contentForbulkPayInfoPrint'>
+        {/* FORMS FOR TRANSFER TO BANK BEGINS HERE */} 
+        {
+          paymentBatchData?.payment_method === "BANK" ?
+          <div>
+              <Row style={{ marginLeft: '1%' }}>
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
+                <div className='bulk-pay-name'  >
+                  <Box 
+                    component="form"
+                    noValidate
+                    // autoComplete="off"
+                    >
+                    <Label for="bulkPayInfoStatus" className="label-dc"> Name on Account </Label>
+                    <TextField 
+                      // fullWidth
+                      error = {accountNameError}
+                      // id='filters-d'
+                      // xs="12" sm="12" md={12} lg={12}
+                      defaultValue={currentPostItemSelected?.account_holder_name}
+                      onChange={(e) => {(setAccountName(e.target.value)); (setAccountNameError(false))}} 
+                      // label="Filter"
+                      // placeholder="Michael Amoo"
+                      style={{height: "30px !important" }}
+                      required
+                      />
+                  </Box> 
+
+                </div>
+              </Col>
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" >
+              <Label for="bulkPayInfoStatus" className="label-dc mb-1"> Bank Name</Label>
+              <Select
+                error = {bankDropdownInModalError}
+                maxWidth
+                // placeholder={"Select bank"}
+                defaultInputValue={currentPostItemSelected?.destination_bank_name }
+                options={optionBankList}
+                id="bulkPayInfoStatus"
+                className='other-input-select'
+                // components={{ Option: paymentOption }}
+                onChange={(e) => handleChangeBankListInModal(e.value, e.label)}
+              />
+              </Col>
+              
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
+                <div className='bulk-pay-name'  >
+                  <Box 
+                    component="form"
+                    noValidate
+                    autoComplete="off"
+                    >
+                    <Label for="bulkPayInfoStatus" className="label-dc"> Email </Label>
+                    <TextField 
+                    // fullWidth
+                    error = {emailError}
+                      // id='filters-d'
+                      // xs="12" sm="12" md={12} lg={12}
+                      defaultValue={currentPostItemSelected?.email}
+                      onChange={(e) => {(setEmail(e.target.value)); (setEmailError(false))}}
+                      // label="Filter"
+                      // placeholder="youremail@email.com"
+                      // style={{height: "30px !important" }}
+                      
+                      />
+                  </Box>
+                </div>
+              </Col>
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" >
+              <div className='bulk-pay-name'  >
+                <Box 
+                  component="form"
+                  noValidate
+                  autoComplete="off"
+                  >
+                  <Label for="bulkPayInfoStatus" className="label-dc"> Bank Account Number </Label>
+                  <TextField 
+                  error = {accountNumberError}
+                    // id='filters-d'
+                    defaultValue={currentPostItemSelected?.account_number}
+                    onChange={(e) => {(setAccountNumber(e.target.value)); (setAccountNumberError(false))}}
+
+                    // label="Filter"
+                    // placeholder="110324000000"
+                    style={{height: "30px !important" }}
+                    
+                    />
+                </Box>
+              </div>
+              </Col>
+              
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
+              <div className='bulk-pay-name'  >
+                <Box 
+                  component="form"
+                  noValidate
+                  autoComplete="off"
+                  >
+                  <Label for="bulkPayInfoStatus" className="label-dc"> Amount </Label>
+                  <TextField
+                    error = {amountError} 
+                    // id='filters-d'
+                    defaultValue={currentPostItemSelected?.amount}
+                    onChange={(e) => {(setAmount(e.target.value)); (setAmountError(false))}}
+
+                    // label="Filter"
+                    // placeholder="100"
+                    style={{height: "30px !important" }}
+                    
+                    />
+                </Box>
+              </div>
+              </Col>
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" >
+              <div className='bulk-pay-name'  >
+                <Box 
+                  component="form"
+                  noValidate
+                  autoComplete="off"
+                  >
+                  <Label for="bulkPayInfoStatus" className="label-dc"> Note </Label>
+                  <TextField 
+                    error = {noteError}
+                    // id='filters-d'
+                    defaultValue={currentPostItemSelected?.note}
+                    onChange={(e) => {(setNote(e.target.value)); (setNoteError(false))}}
+
+                    // label="Filter"
+                    // placeholder="Salaries"
+                    style={{height: "30px !important" }}
+                    
+                    />
+                </Box>
+              </div>
+              </Col>
+              </Row>
+
+            
+          </div>
+          : ""
+        }
+        {/* FORMS FOR BANK ENDS HERE */}
+
+        {/* FORMS FOR TRANSFER TO TELCOS BEGIN HERE */}
+        {
+          paymentBatchData?.payment_method === "MOBILEMONEY" ?
+          <div>
+            <Row style={{ marginLeft: '1%' }}>
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" >
+                <div className='bulk-pay-name'  >
+                  <Box 
+                    component="form"
+                    noValidate
+                    autoComplete="off"
+                    >
+                    <Label for="bulkPayInfoStatus" className="label-dc"> Name on Account </Label>
+                    <TextField 
+                    // fullWidth
+                    error = {momoAccountNameError}
+                      // id='filters-d'
+                      // xs="12" sm="12" md={12} lg={12}
+                      defaultValue={currentPostItemSelected?.account_holder_name}
+                      onChange={(e) => {(setMomoAccountName(e.target.value)); (setMomoAccountNameError(false))}}
+                      // label="Filter"
+                      // placeholder="Patrick Wunake"
+                      style={{height: "30px !important" }}
+                      
+                      />
+                  </Box>
+                </div>
+              </Col>
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
+              <Label for="bulkPayInfoStatus" className="label-dc mb-1"> Network Name</Label>
+              <Select
+                // value={networkName}
+                error = {networkNameError}
+                maxWidth
+                defaultInputValue={currentPostItemSelected?.destination_bank_name }
+                // placeholder={"Select network"}
+                options={optionMobileMoneyList}
+                id="bulkPayInfoStatus"
+                className='other-input-select'
+                // components={{ Option: paymentOption }}
+                onChange={(e) => {(setNetworkName({"code": e.value, "name": e.label})); (setNetworkNameError(false))}}
+
+              />
+              </Col>
+
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" >  
+                <div className='bulk-pay-name'  >
+                  <Box 
+                    component="form"
+                    noValidate
+                    autoComplete="off"
+                    >
+                    <Label for="bulkPayInfoStatus" className="label-dc"> Email </Label>
+                    <TextField 
+                      // fullWidth
+                      error = {telcoAmountError}
+                      // id='filters-d'
+                      // xs="12" sm="12" md={12} lg={12}
+                      defaultValue={currentPostItemSelected?.email}
+                      onChange={(e) => {(setTelcoEmail(e.target.value)); (setTelcoEmailError(false))}}
+                      // label="Filter"
+                      // placeholder="youremail@email.com"
+                      style={{height: "30px !important" }}
+                      
+                      />
+                  </Box>
+                </div>
+              </Col>
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
+              <div className='bulk-pay-name'  >
+                <Box 
+                  component="form"
+                  noValidate
+                  autoComplete="off"
+                  >
+                  <Label for="bulkPayInfoStatus" className="label-dc"> Phone Number </Label>
+                  <TextField 
+                    error = {phoneNumberError}
+                    // id='filters-d'
+                    defaultValue={currentPostItemSelected?.account_number}
+                    onChange={(e) => {(setPhoneNumber(e.target.value)); (setPhoneNumberError(false))}}
+
+                    // label="Filter"
+                    // placeholder="0200000000"
+                    style={{height: "30px !important" }}
+                    
+                    />
+                </Box>
+              </div>
+              </Col>
+
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
+              <div className='bulk-pay-name'  >
+                <Box 
+                  component="form"
+                  noValidate
+                  autoComplete="off"
+                  >
+                  <Label for="bulkPayInfoStatus" className="label-dc"> Amount </Label>
+                  <TextField 
+                    // id='filters-d'
+                    defaultValue={currentPostItemSelected?.amount}
+                    onChange={(e) => {(setTelcoAmount(e.target.value)); (setTelcoAmountError(false))}}
+
+                    // label="Filter"
+                    // placeholder="100"
+                    style={{height: "30px !important" }}
+                    
+                    />
+                </Box>
+              </div>
+              </Col>
+
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
+              <div className='bulk-pay-name'  >
+                <Box 
+                  component="form"
+                  noValidate
+                  autoComplete="off"
+                  >
+                  <Label for="bulkPayInfoStatus" className="label-dc"> Note </Label>
+                  <TextField 
+                    error = {noteError}
+                    // id='filters-d'
+                    defaultValue={currentPostItemSelected?.note}
+                    onChange={(e) => {(setTelcoNote(e.target.value)); (setTelcoNoteError(false))}}
+
+                    // label="Filter"
+                    // placeholder="Salaries"
+                    style={{height: "30px !important" }}
+                    
+                  />
+                </Box>
+              </div>
+              </Col>
+
+            </Row>
+          </div>
+          : "" 
+        }
+        {/* FORMS FOR TELCOS END HERE */}
+
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" className='text-white' onClick={() => setModal1(false)}>
+            Close
+          </CButton>
+          <CButton 
+          // type = 'submit'
+          color=''
+          className='text-white bg-text-wp'
+          onClick={(e)=>handleEditSubmit(e)}
+          >
+            Save
+          </CButton>
+
+        </CModalFooter>
+      </CModal>
+
 
     </div>
   )
 }
 
-export default BulkpayDataTables;
+export default BulkpayItemListDataTables;

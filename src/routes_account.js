@@ -58,6 +58,7 @@ const Refund = React.lazy(() => import('./views/pages/Refund/Refund'))
 const Payout = React.lazy(() => import('./views/pages/Payout/Payout'))
 const Compliance = React.lazy(() => import('./views/pages/Compliance/Compliance'))
 const Bulkpay = React.lazy(() => import('./views/pages/Bulkpay/Bulkpay'))
+const BulkpayList = React.lazy(() => import('./views/pages/Bulkpay/BulkpayList'))
 // const Checkout = React.lazy(() => import('./views/pages/Checkout/Checkout'))
 
 const routes = [
@@ -113,6 +114,7 @@ const routes = [
   { path: '/api-keys', name: 'Api Key', element: Apikey },
   { path: '/compliance', name: 'Compliance', element: Compliance },
   { path: '/bulk-pay', name: 'Bulkpay', element: Bulkpay },
+  { path: '/bulk-pay/item/:id', name: 'Item-List', element: BulkpayList },
 
   // { path: '/checkout/:id', name: '', element: Checkout }, 
 

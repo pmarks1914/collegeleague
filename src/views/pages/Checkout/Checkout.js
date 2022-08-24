@@ -1878,7 +1878,7 @@ export default function Checkout() {
                             onChange={(e) => { (setOtp(e.target.value)); (setOtpError(false)) }}
                             id="otp"
                             name="otp"
-                            label="Otp"
+                            label="Code"
                             variant="standard"
                             margin="normal"
                             type="text"
