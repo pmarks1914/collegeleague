@@ -766,11 +766,27 @@ const BulkpayDataTables = (apikeyDetails) => {
 
 
     if(type === "bulkFromExcel"){
+      // console.log(" arrayData ", arrayData)
+      let destructureData = Object.keys(arrayData).map((post, id) => {
+        console.log(" post current ", arrayData[id])
+        return { 
+            "account_number": arrayData[id].account_number || "",
+            "bank_code": arrayData[id]?.network_code || arrayData[id]?.bank_code || "",
+            "destination_bank_name": arrayData[id].network_name || arrayData[id].destination_bank_name || "",
+            "account_holder_name": arrayData[id].account_holder_name || "",
+            "currency": "GHS",
+            "amount": arrayData[id].amount || "",
+            "note": arrayData[id].note || "",
+            "email": arrayData[id].email || "",
+            "source_metadata": ""
+        }
+      })
+
       // bulk payload setting
       data = JSON.stringify({
         "name": batchName, 
         "payment_method": payMethod,
-        "batch_items": arrayData
+        "batch_items": destructureData
       });
 
     }

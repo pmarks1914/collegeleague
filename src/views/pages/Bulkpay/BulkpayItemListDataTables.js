@@ -1030,7 +1030,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
       // 
       config = {
         method: 'post',
-        url: process.env.REACT_APP_BASE_API + "/batch/pay/" + postData?.id + "/",
+        url: process.env.REACT_APP_BASE_API + "/batch/item/pay/" + postData?.id + "/",
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + currentUser?.access
