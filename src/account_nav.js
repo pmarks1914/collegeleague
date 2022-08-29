@@ -31,7 +31,7 @@ import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
 
 
-if(["/dashboard", "/payment/transaction", "/payment/refunds", "/payment/payouts", "/compliance", "/api-keys", "/bulk-pay", `/bulk-pay/item/${window.location.pathname.split("/")[3]}`, `/bulk-pay/item/${window.location.pathname.split("/")[3]}/`].includes(window.location.pathname)){
+if(["/", "/theme", "/dashboard", "/payment/transaction", "/payment/refunds", "/payment/payouts", "/compliance", "/api-keys", "/bulk-pay", `/bulk-pay/item/${window.location.pathname.split("/")[3]}`, `/bulk-pay/item/${window.location.pathname.split("/")[3]}/`].includes(window.location.pathname)){
   // 
 }
 else{

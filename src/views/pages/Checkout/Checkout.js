@@ -412,7 +412,7 @@ export default function Checkout() {
     function handleSubmit(event, formType) {
         event.preventDefault();
         // // console.log("window.location pathname ", window.location.pathname.split("/")[1])
-        let expPhone = /(020|023|024|025|026|027|028|050|054|055|059)[\s.-]?\d{7}$/;
+        let expPhone = /(020|023|024|025|026|027|028|050|054|055|059|233)[\s.-]?(\d{7}|\d{8})$/;
         // expPhone.test(phoneNumber.replace(/\s+/g, ''))  
         // // console.log("amountError ", formType, expPhone.test(phoneNumber.replace(/\s+/g, '')), (Number(amount) ? true : false), admissionId.length)
         if (formType === 1) {

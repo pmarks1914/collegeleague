@@ -113,6 +113,7 @@ const routes = [
   { path: '/payment/payouts', name: 'Payout', element: Payout },
   { path: '/api-keys', name: 'Api Key', element: Apikey },
   { path: '/compliance', name: 'Compliance', element: Compliance },
+  // { path: '/bulk-pay', name: 'Bulkpay', element: Bulkpay },
   { path: '/bulk-pay', name: 'Bulkpay', element: Bulkpay },
   { path: '/bulk-pay/item/:id', name: 'Item-List', element: BulkpayList },
 

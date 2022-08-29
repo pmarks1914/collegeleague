@@ -209,7 +209,7 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
       // setMonitorState(3)
     }
     else{
-        // datatablaScript([])
+        datatablaScript([])
         setLoader('<a></a>')
         // setTimeout(()=>{
         //     setNoData("dd")
@@ -668,7 +668,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
 
   function handleSubmit(event) {
       event.preventDefault();    
-      let expPhone = /(020|023|024|025|026|027|028|050|054|055|059)[\s.-]?\d{7}$/;
+      let expPhone = /(020|023|024|025|026|027|028|050|054|055|059|233)[\s.-]?(\d{7}|\d{8})$/;
       // console.log("phoneNumber ", paymentMethodInfoStatusInModal, expPhone.test(phoneNumber))
 
       if (accountName.length < 1 || !accountName ) {

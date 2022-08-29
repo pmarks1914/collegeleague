@@ -71,6 +71,12 @@ const DatatableMain = (transactionDetails) => {
 
       setLoader('<a></a>')
     }
+    else{
+      setTimeout(()=> {
+        // 
+        setLoader('<a></a>')
+      }, 4000);
+    }
     // console.log("props ", transaction)
   }, [transaction])
 
