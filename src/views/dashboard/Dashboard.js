@@ -210,7 +210,7 @@ const Dashboard = () => {
   }
 
   window.onclick = function (event) {
-    event.preventDefault()
+    // event.preventDefault()
     trackActivity()
   }
 

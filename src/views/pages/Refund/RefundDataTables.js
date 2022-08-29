@@ -306,7 +306,7 @@ const RefundDataTables = (transactionDetails) => {
 
   // Close the dropdown if the user clicks outside of it
   window.onclick = function (event) {
-    event.preventDefault()
+    // event.preventDefault()
     trackActivity();
     // console.log("dropdown ==", dropValue, "e", event.target.matches('.dateRange'), "openDateRange > ", openDateRange)
     setDropValue(0);
