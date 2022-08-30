@@ -412,7 +412,7 @@ export default function Checkout() {
     function handleSubmit(event, formType) {
         event.preventDefault();
         // // console.log("window.location pathname ", window.location.pathname.split("/")[1])
-        let expPhone = /(020|023|024|025|026|027|028|050|054|055|059)[\s.-]?\d{7}$/;
+        let expPhone = /(020|023|024|025|026|027|028|050|054|055|059|233)[\s.-]?(\d{7}|\d{8})$/;
         // expPhone.test(phoneNumber.replace(/\s+/g, ''))  
         // // console.log("amountError ", formType, expPhone.test(phoneNumber.replace(/\s+/g, '')), (Number(amount) ? true : false), admissionId.length)
         if (formType === 1) {
@@ -554,7 +554,7 @@ export default function Checkout() {
                     <td style="float: right; margin-right: -40px">${ accountName } </td>
                 </tr>
                 <tr width="100%" class="ml-3">
-                    <td style="float: left">Service type :</td>
+                    <td style="float: left">Fee type :</td>
                     <td style="float: right; margin-right: -40px">${ feeType } </td>
                 </tr>
                 <tr width="100%" class="ml-3">
@@ -613,7 +613,7 @@ export default function Checkout() {
     };
 
     const methodOfPayment = [
-        { "name": "WINGIPAY", "id": 1 },
+        // { "name": "WINGIPAY", "id": 1 },
         { "name": "MTN", "id": 5 },
         { "name": "VODAFONE", "id": 6 },
         { "name": "AIRTELTIGO", "id": 7 },
@@ -1878,7 +1878,7 @@ export default function Checkout() {
                             onChange={(e) => { (setOtp(e.target.value)); (setOtpError(false)) }}
                             id="otp"
                             name="otp"
-                            label="Otp"
+                            label="Code"
                             variant="standard"
                             margin="normal"
                             type="text"

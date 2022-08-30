@@ -82,20 +82,22 @@ import { Button } from '@chakra-ui/react';
 import 'antd/dist/antd.css';
 import { message, Upload } from 'antd';
 import { ArrowUpIcon } from '@chakra-ui/icons';
-import { getbanksandtelcos } from "../Data/PageData";
+import { getbanksandtelcos, bulkPayData, bulkPayItemData } from "../Data/PageData";
 
 
 const userData = JSON.parse(localStorage.getItem('userDataStore'));
 
 let currentUser = JSON.parse(localStorage.getItem("userDataStore")); 
-let apikeyInfoData = apikeyData();
-let apikeyInfo = []
-apikeyInfoData?.apikey?.then(value => { (apikeyInfo = value) });
+let bulkPayInfoData = bulkPayData();
+let bulkPayInfo = []
+bulkPayInfoData?.bulkPay?.then(value => { (bulkPayInfo = value) });
 
 let banktelcosList = getbanksandtelcos();
 let banktelcosListInfo = []
 banktelcosList.list.then(value => banktelcosListInfo = value)
-console.log("getbanksandtelcos ", banktelcosListInfo )
+// console.log("getbanksandtelcos ", banktelcosListInfo )
+// console.log("bulkPayData ", bulkPayData() )
+// console.log("bulkPayItemData ", bulkPayItemData("97273dc9-388f-4c8f-a054-8ac92e594656") )
 
 const BulkpayDataTables = (apikeyDetails) => {
   const [loader, setLoader] = useState('<div class="spinner-border dashboard-loader" style="color: #e0922f;"></div>')
@@ -104,16 +106,21 @@ const BulkpayDataTables = (apikeyDetails) => {
   const [monitorState, setMonitorState] = useState(1);
   const [dropValue, setDropValue] = useState(0);
 
+  // set Edit Batch Data
+  const [editBatchData, setEditBatchData] = useState({});
+
   // date time
   const [dateTo, setDateTo] = useState(new Date('2014-08-18T21:11:54'));
   const [dateFrom, setDateFrom] = useState(new Date('2014-08-18T21:11:54')); 
   const [value, setValue] = useState([null, null]);
 
   // modals
-  // filer apikeyInfo
+  // filer bulkPayInfo
   const [modal1, setModal1] = useState(false)
-  // view single apikeyInfo 
+  // view single bulkPayInfo 
   const [modal2, setModal2] = useState(false)
+  // modal for edit batch name
+  const [modal3, setModal3] = useState(false)
 
   const [viewData, setViewData] = useState({})
   const [openDateRange, setOpenDateRange] = useState(true);
@@ -123,10 +130,10 @@ const BulkpayDataTables = (apikeyDetails) => {
   // startDate: Date.parse("2022-01-13"), endDate: Date.now()
   
 
-  const [apikeyInfoStatus, setapikeyInfoStatus] = useState("");
-  const [apikeyInfoId, setapikeyInfoId] = useState("");
+  const [bulkPayInfoStatus, setbulkPayInfoStatus] = useState("");
+  const [bulkPayInfoId, setbulkPayInfoId] = useState("");
   const [referanceId, setReferanceId] = useState("");
-  const [apikeyInfoExport, setapikeyInfoExport] = useState({});
+  const [bulkPayInfoExport, setbulkPayInfoExport] = useState({});
   const [dateFilterData, setDateFilterData] = useState({});
   const [amountLess, setAmountLess] = useState(0.00);
   const [amountGreat, setAmountGreat] = useState(0.00);
@@ -188,37 +195,37 @@ const BulkpayDataTables = (apikeyDetails) => {
     if(dateRange.length > 0 && monitorState === 1){
       setMonitorState(2)
       performFilter("filterByDate", "none")
-      setapikeyInfoStatus("")
+      setbulkPayInfoStatus("")
 
       setLoader('<a></a>')
     }
-    else if (apikeyInfo?.length > 0 && monitorState === 1) {
+    else if (bulkPayInfo?.length > 0 && monitorState === 1) {
       // setMonitorState(2)
-      datatablaScript(apikeyInfo);
+      datatablaScript(bulkPayInfo);
 
       setLoader('<a></a>')
     }
     else if(dateRange && monitorState === 2){
       performFilter("filterByDate", "none")
-      setapikeyInfoStatus("")
+      setbulkPayInfoStatus("")
       // setMonitorState(3)
     }
     else{
-        // datatablaScript([])
+        datatablaScript([])
         setLoader('<a></a>')
         // setTimeout(()=>{
         //     setNoData("dd")
         // }, 200)
     }
 
-    // if(apikeyInfoStatus && monitorState === 2){
+    // if(bulkPayInfoStatus && monitorState === 2){
     //   performFilter("filterByStatus")
     // }
 
     
-    // // console.log("props ", dateRange, apikeyInfo, apikeyInfoStatus, monitorState)
+    // console.log("props ", dateRange, bulkPayInfo, bulkPayInfoStatus, monitorState)
 
-  }, [dateRange, apikeyInfo])
+  }, [dateRange, bulkPayInfo])
 
   // perform filter 
   function datatablaScript(tdata) {
@@ -230,9 +237,11 @@ const BulkpayDataTables = (apikeyDetails) => {
        
       $('#myTable').DataTable(
         {
-          // data: apikeyInfo,
+          // data: bulkPayInfo,
           columnDefs: [
-            { "width": "10%", "targets": 2 }
+            { "width": "15%", "targets": 0 },
+            { "width": "20%", "targets": 2 },
+            { "width": "10%", "targets": 3 }
           ],
           processing: true,
           deferLoading: true,
@@ -272,7 +281,7 @@ const BulkpayDataTables = (apikeyDetails) => {
                 }
               },
               customize: function (anytype) {
-                let sheet = anytype.xl.worksheets['wingipayapikeyInfo.xml'];
+                let sheet = anytype.xl.worksheets['wingipaybulkPayInfo.xml'];
                 $('row:first c', sheet).attr('s', '7');
               }
             },
@@ -294,7 +303,7 @@ const BulkpayDataTables = (apikeyDetails) => {
                 }
               },
               customize: function (anytype) {
-                let sheet = anytype.xl.worksheets['wingipayapikeyInfo.pdf'];
+                let sheet = anytype.xl.worksheets['wingipaybulkPayInfo.pdf'];
                 $('row:first c', sheet).attr('s', '7');
               }
             },
@@ -320,11 +329,11 @@ const BulkpayDataTables = (apikeyDetails) => {
     // 
     e.preventDefault();
     // console.log("post tableData ", tableData);
-    // apikeyInfo = posts;
+    // bulkPayInfo = posts;
     try {
       // setTableData(posts);
-      let newFilterData = apikeyInfo.filter((post) => { return moment(post?.created).format('LLLL') <= moment(dateFrom).format('LLLL') })
-      // // console.log("post tableData ", apikeyInfo);
+      let newFilterData = bulkPayInfo.filter((post) => { return moment(post?.created).format('LLLL') <= moment(dateFrom).format('LLLL') })
+      // // console.log("post tableData ", bulkPayInfo);
       // console.log("post tableData ", newFilterData);
       datatablaScript(newFilterData);
       setModal1(false)
@@ -350,7 +359,7 @@ const BulkpayDataTables = (apikeyDetails) => {
     // $(".viewDescription").css("max-width", "50%");
     $(".viewDescription").css("flex-basis", "50%");
 
-    w.document.write($('.contentForapikeyInfoPrint').html());
+    w.document.write($('.contentForbulkPayInfoPrint').html());
     w.print();
     w.close();
   }
@@ -373,7 +382,7 @@ const BulkpayDataTables = (apikeyDetails) => {
 
   // Close the dropdown if the user clicks outside of it
   window.onclick = function (event) {
-    event.preventDefault()
+    // event.preventDefault()
     trackActivity();
     // console.log("dropdown ==", dropValue, "e", event.target.matches('.dateRange'), "openDateRange > ", openDateRange)
     setDropValue(0);
@@ -392,8 +401,8 @@ const BulkpayDataTables = (apikeyDetails) => {
       }
     }
   }
-  const handleChangeapikeyInfoStatus = (valSelected) => {
-    setapikeyInfoStatus(valSelected);
+  const handleChangebulkPayInfoStatus = (valSelected) => {
+    setbulkPayInfoStatus(valSelected);
     performFilter("filterByStatus", valSelected)
   };
   const handleChangeInfoAccTypeInModal = (valSelected) => {
@@ -401,7 +410,7 @@ const BulkpayDataTables = (apikeyDetails) => {
     setPaymentMethodInfoStatusInModalError(false)
   };
   const handleChangeExport = (valSelected) => {
-    setapikeyInfoExport(valSelected);
+    setbulkPayInfoExport(valSelected);
     if(valSelected === "Export to excel"){
       // 
       downloadExcel(tableData);
@@ -413,27 +422,27 @@ const BulkpayDataTables = (apikeyDetails) => {
   };
   const optionsStatus = [
     // {value: "", label: "Se", icon: "", isDisabled: true },
-    {value: "live", label: "Live Key" },
-    {value: "test", label: "Test Key" },
-    {value: "All apikeyInfo", label: "All Keys" }
+    {value: "mobile", label: "MOBILE MONEY" },
+    {value: "bank", label: "BANK" },
+    {value: "All bulkPayInfo", label: "ALL BULK PAY" }
   ];
   const optionsAccTypeInModal = [
     // {value: "", label: "Se", icon: "", isDisabled: true },
-    {value: "mobile", label: "Mobile Money" },
-    {value: "bank", label: "Bank Account" },
+    {value: "mobile", label: "MOBILE MONEY" },
+    {value: "bank", label: "BANK" },
   ];
   
-const optionBankList = Object.keys(banktelcosListInfo?.bank_list || []).map((post, id) => {
+  const optionBankList = Object.keys(banktelcosListInfo?.bank_list || []).map((post, id) => {
+      return {
+        "value": banktelcosListInfo?.bank_list[id].BankSortCode,
+        "label": banktelcosListInfo?.bank_list[id].BankName
+      }});
+    
+  const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || []).map((post, id) => {
     return {
-      "value": banktelcosListInfo?.bank_list[id].BankSortCode,
-      "label": banktelcosListInfo?.bank_list[id].BankName
+      "value": banktelcosListInfo?.telcos_list[id].BankSortCode,
+      "label": banktelcosListInfo?.telcos_list[id].BankName
     }});
-  
-const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || []).map((post, id) => {
-  return {
-    "value": banktelcosListInfo?.telcos_list[id].BankSortCode,
-    "label": banktelcosListInfo?.telcos_list[id].BankName
-  }});
 
   const optionsExport = [
     // {value: "", label: "Se", icon: "", isDisabled: true },
@@ -442,11 +451,11 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
   ];
   function performFilter(type, status){
 
-    // // console.log("by status ", apikeyInfoStatus, "type", type )
+    // // console.log("by status ", bulkPayInfoStatus, "type", type )
     // perform filter by date range
     if(type === "filterByDate"){
       // 
-      let dataFilter = apikeyInfo.filter((post, id) => {return ( moment(post?.created).format('DD/MM/yyyy') >= moment(dateRange[0]).format('DD/MM/yyyy') && moment(post?.created).format('DD/MM/yyyy') <= moment(dateRange[1]).format('DD/MM/yyyy') )});
+      let dataFilter = bulkPayInfo.filter((post, id) => {return ( moment(post?.created).format('DD/MM/yyyy') >= moment(dateRange[0]).format('DD/MM/yyyy') && moment(post?.created).format('DD/MM/yyyy') <= moment(dateRange[1]).format('DD/MM/yyyy') )});
 
       datatablaScript( dataFilter );
 
@@ -454,24 +463,24 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
     }
     else if(type === "filterByStatus"){
       // 
-      // // console.log("by status",status, monitorState, apikeyDetails )
-      if(status === "All apikeyInfo" && monitorState === 1){
-        datatablaScript(apikeyInfo);
+      // // console.log("by status",status, monitorState, bulkPayDetails )
+      if(status === "All bulkPayInfo" && monitorState === 1){
+        datatablaScript(bulkPayInfo);
       }
-      else if(status === "All apikeyInfo" && monitorState === 2){
+      else if(status === "All bulkPayInfo" && monitorState === 2){
         datatablaScript(dateFilterData);
       }
-      else if(status === "test" && monitorState === 1){
-        datatablaScript( apikeyInfo?.filter((post, id) => {return ( post?.is_live === false )}) );
+      else if(status === "bank" && monitorState === 1){
+        datatablaScript( bulkPayInfo?.filter((post, id) => {return ( post?.payment_method === "BANK" )}) );
       }
-      else if(status === "live" && monitorState === 1){
-        datatablaScript( apikeyInfo?.filter((post, id) => {return ( post?.is_live === true )}) );
+      else if(status === "mobile" && monitorState === 1){
+        datatablaScript( bulkPayInfo?.filter((post, id) => {return ( post?.payment_method === "MOBILEMONEY" )}) );
       }
-      else if(status === "test" && monitorState === 2){
-        datatablaScript( dateFilterData?.filter((post, id) => {return ( post?.is_live === false )}) );
+      else if(status === "bank" && monitorState === 2){
+        datatablaScript( dateFilterData?.filter((post, id) => {return ( post?.payment_method === "BANK" )}) );
       }
-      else if(status === "live" && monitorState === 2){
-        datatablaScript( dateFilterData?.filter((post, id) => {return ( post?.is_live === true )}) );
+      else if(status === "mobile" && monitorState === 2){
+        datatablaScript( dateFilterData?.filter((post, id) => {return ( post?.payment_method === "MOBILEMONEY" )}) );
       }
     }
     
@@ -482,8 +491,8 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
     setAmountGreat(0)
     setAmountLess(0)
     setReferanceId("")
-    setapikeyInfoId("")
-    datatablaScript(apikeyInfo)
+    setbulkPayInfoId("")
+    datatablaScript(bulkPayInfo)
   }
   function convertArrayOfObjectsToCSV(array) {
     let result;
@@ -582,7 +591,7 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
       XLSX.writeFile(wb, "WPexportMobileMoney.xlsx");
     }
   };
-  function readExcelFile(file){
+  function readExcelFile(){
     let reader = new FileReader();
 
     reader.onload = function(e) {
@@ -591,12 +600,17 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
         type: 'binary'
       });
 
-      workbook.SheetNames.forEach(function(sheetName) {
+      workbook.SheetNames.forEach(function(sheetName, id) {
         // Here is your object
         let XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
         let json_object = JSON.stringify(XL_row_object);
-        console.log(XL_row_object);
+        if(id === 0){
+          // console.log("arr ",sheetName, id, XL_row_object);
 
+          // pass data as array to api for creation
+          createBulkListApiCall('bulkFromExcel', XL_row_object)
+          
+        }
       })
 
     };
@@ -605,10 +619,10 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
       console.log(ex);
     };
 
-    reader.readAsBinaryString(file);
+    reader.readAsBinaryString(excelFileList);
   }
   function trackActivity() {
-    getbanksandtelcos()
+    // getbanksandtelcos()
     // e.preventDefault();
     // getSessionTimeout();
     const currentUser_new = JSON.parse(localStorage.getItem("userDataStore"));    
@@ -617,24 +631,193 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
       localStorage.setItem('userDataStore', JSON.stringify(currentUser_new))
     }
   }
+  const handleFileOneUpload = () => {
+    const formData1 = new FormData();
+    // console.log("rtghrghhrthrhrthrthrthrtrtrtgrt", excelFileList)
+    // readExcelFile();
 
-
+    // if (response["data"]) {
+    // message.success('file successfully uploaded.');
+    // }
+    // if (!response["data"]) {
+    // message.error('Sorry, something went wrong. Please try again.');
+    // }
   
-  function generateApikey(e) {
-    e.preventDefault();
-    let keyType = false;
-    if(paymentMethodInfoStatusInModal === "live"){
-      keyType = true;
+    setUploading1(false); // You can use any AJAX library you like
+  };
+
+  const props1 = {
+    onRemove: (excelFileId) => {
+      // console.log(excelFileId)
+      // const index = excelFileList.indexOf(excelFileId);
+      // const newExcelFileList = excelFileList.slice();
+      // newExcelFileList.splice(0, 1);
+      setExcelFileList([]);
+    },
+    beforeUpload: (excelFileId) => {
+        setExcelFileList(excelFileId);
+      return false;
+    },
+    excelFileList,
+  };
+
+  const handleChangeBankListInModal = (valSelected, nameSelected) => {
+    setBankDropdownInModal({"code": valSelected, "name": nameSelected});
+  };
+
+  function handleSubmit(event) {
+      event.preventDefault();    
+      let expPhone = /(020|023|024|025|026|027|028|050|054|055|059)[\s.-]?\d{7}$/;
+      // console.log("phoneNumber ", paymentMethodInfoStatusInModal, expPhone.test(phoneNumber))
+
+      if (accountName.length < 1 || !accountName ) {
+        setAccountNameError(true)
+      } 
+      if (email.length < 1 || !email ) {
+        setEmailError(true)
+      }
+      if (accountNumber.length < 1 || !accountNumber ) {
+        setAccountNumberError(true)
+      }
+      if ( !bankDropdownInModal.code ) {
+        setBankCodeError(true)
+      }
+      if (amount.length < 1 || !amount ) {
+        setAmountError(true)
+      }
+      if (note.length < 1 || !note ) {
+        setNoteError(true)
+      }
+      if ( !bankDropdownInModal.code ) {
+        setBankDropdownInModalError(true)
+      }
+      if (batchName.length < 1 || !batchName ) {
+        setBatchNameError(true)
+      }
+      if (telcoEmail.length < 1 || !telcoEmail ) {
+        setTelcoEmailError(true)
+      }
+      if ( !expPhone.test(phoneNumber) ) {
+        setPhoneNumberError(true)
+      }
+      if (networkCode.length < 1 || !networkCode ) {
+        setNetworkCodeError(true)
+      } 
+      if (momoAccountName.length < 1 || !momoAccountName ) {
+        setMomoAccountNameError(true)
+      }
+      if (telcoAmount.length < 1 || !telcoAmount ) {
+        setTelcoAmountError(true)
+      }
+      if (telcoNote.length < 1 || !telcoNote ) {
+        setTelcoNoteError(true)
+      } 
+      if ( !networkName.code ) {
+        setNetworkNameError(true)
+      } 
+      if (singleBatchName.length < 1 || !singleBatchName ) {
+        setSingleBatchNameError(true)
+      } 
+      if( (accountName && email && accountNumber && amount && note && bankDropdownInModal.code && batchName) || (telcoEmail && expPhone.test(phoneNumber) && momoAccountName && telcoAmount && telcoNote && networkName.code ) ){
+        // 
+        createBulkListApiCall('singleForm', [])
+      }
+
+  }
+  // create batch with list
+  function createBulkListApiCall(type, arrayData) {
+    // e.preventDefault();
+    let data;
+    // let bulkPayType = false;
+    let payMethod = "";
+    let account_number = '';
+    let bank_code = '';
+    let destination_bank_name = '';
+    let account_holder_name = '';
+    let currency = 'GHS';
+    let val_amount = '';
+    let c_note = '';
+    let e_mail = '';
+
+    if(paymentMethodInfoStatusInModal === "bank"){
+      // 
+      payMethod = "BANK";
+      account_number = accountNumber;
+      bank_code = bankDropdownInModal.code;
+      destination_bank_name = bankDropdownInModal.name;
+      account_holder_name = accountName;
+      currency = 'GHS';
+      val_amount = amount;
+      c_note = note;
+      e_mail = email;
+    }
+    else{
+      // 
+      payMethod = 'MOBILEMONEY';
+      account_number = phoneNumber;
+      bank_code = networkName.code;
+      destination_bank_name = networkName.name;
+      account_holder_name = momoAccountName;
+      currency = 'GHS';
+      val_amount = telcoAmount;
+      c_note = telcoNote;
+      e_mail = telcoEmail;
     }
 
-    let data = JSON.stringify({
-      "description": description,
-      "is_live": keyType
-    });
+
+    if(type === "bulkFromExcel"){
+      // console.log(" arrayData ", arrayData)
+      let destructureData = Object.keys(arrayData).map((post, id) => {
+        // console.log(" post current ", arrayData[id])
+        return { 
+            "account_number": arrayData[id].account_number || "",
+            "bank_code": arrayData[id]?.network_code || arrayData[id]?.bank_code || "",
+            "destination_bank_name": arrayData[id].network_name || arrayData[id].destination_bank_name || "",
+            "account_holder_name": arrayData[id].account_holder_name || "",
+            "currency": "GHS",
+            "amount": arrayData[id].amount || "",
+            "note": arrayData[id].note || "",
+            "email": arrayData[id].email || "",
+            "source_metadata": ""
+        }
+      })
+
+      // bulk payload setting
+      data = JSON.stringify({
+        "name": batchName, 
+        "payment_method": payMethod,
+        "batch_items": destructureData
+      });
+
+    }
+    else{
+      // single list submit payload
+      data = JSON.stringify({
+        "name": batchName, 
+        "payment_method": payMethod,
+        "batch_items": [
+          {
+            "account_number": account_number,
+            "bank_code": bank_code,
+            "destination_bank_name": destination_bank_name,
+            "account_holder_name": account_holder_name,
+            "currency": currency,
+            "amount": val_amount,
+            "note": c_note,
+            "email": e_mail,
+            "source_metadata": {
+                "full_name": account_holder_name,
+                "email": e_mail,
+                "mobile_number": account_number
+            }
+          }
+        ]
+      });
+    }
 
     let config = {
       method: 'post',
-      url: process.env.REACT_APP_BASE_API + "/account/apikey/generate/",
+      url: process.env.REACT_APP_BASE_API + "/batch/bulk/create/",
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + currentUser?.access
@@ -642,86 +825,45 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
       data: data
     };
     axios(config).then(response => {
-      console.log(response.status);
+      // console.log(response.data);
       if (response?.data?.status === true) { 
-        // // console.log("api key", tableData)
-        // let arryData = [];
-        // // console.log("api key data 1", arryData)
-        // let new_data = {
-        //   "id": response?.data?.id,
-        //   "prefix": response?.data?.prefix,
-        //   "name": response?.data?.name,
-        //   "is_live": response?.data?.is_live,
-        //   "created":  response?.data?.created
-        // }
-        // arryData.push(new_data)
-        // apikeyInfo?.map((post, id)=> {
-        //   arryData.push(post);
-        // })
-        // // console.log("api key data 2", arryData)
-        // datatablaScript(arryData)
-        let textStr = "The API Key below will be shown only once.<p id='api-key-copy'>Key Prefix: " + response?.data?.prefix + "</p>Key Type: " + paymentMethodInfoStatusInModal + "<p>Key Secret: <h6>" + response?.data?.key + "</h6></p>";
+        let bulkPayInfoDataNew = bulkPayData();
+        let bulkPayInfoNew = []
+        bulkPayInfoDataNew?.bulkPay?.then(value => { (bulkPayInfoNew = value) });
 
         Swal.fire({
-          title: 'API key Generated',
-          html: textStr.toString(),
+          title: 'Successfully created!',
           icon: 'success',
           allowOutsideClick: false,
           // allowEscapeKey: false,
           showCancelButton: false,
           confirmButtonColor: '#FF7643',
           // cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes, i have copied and saved the API Key!'
+          confirmButtonText: 'Ok'
         }).then((result) => {
-          // let keyCopyText = document.getElementById("api-key-copy")
-          // keyCopyText.select()
-          // keyCopyText.setSelectionRange(0, 99999)
-          // navigator.clipboard.writeText(keyCopyText.value)
-          // alert(keyCopyText.value)
-          // if (result.isConfirmed) {
-            // 
-          setModal1(false);
-          // window.location.reload()
-          // }
+            // console.log( "old ", bulkPayInfo,  " new ", bulkPayInfoNew)
+            bulkPayInfo = bulkPayInfoNew
+            setBatchName(batchName + " ")
+            setModal2(false);
+          
         });
-        // setTimeout(() => {
-        //   let infoData = apikeyData();
-        //   let infoArray = [];
-        //   infoData?.apikey?.then(value => { 
-        //     infoArray = value;
-        //     datatablaScript(value);
-        //     apikeyDetails = value;
-        //     apikeyInfo = value
-
-        //   }); 
-        //   }, 1000);
       }
       else {
         Swal.fire({
-          title: 'API key Generation Failed!',
+          title: 'Failed!',
           // text: "Try again",
+          text: response?.data?.message,
           icon: 'warning',
           showCancelButton: true,
           showConfirmButton: false,
           cancelButtonColor: '#d33',
+          cancelButtonText: 'Ok'
         }).then((result) => {
           // 
         })
       }
 
     }).catch(function (error) {
-      if(error){
-        Swal.fire({
-          title: 'API key Generation Failed!',
-          text: "Try again!",
-          icon: 'warning',
-          showCancelButton: true,
-          showConfirmButton: false,
-          cancelButtonColor: '#d33',
-        }).then((result) => {
-          // 
-        })
-      }
 
       if (error.response) {
         // // console.log("==>");
@@ -744,92 +886,245 @@ const optionMobileMoneyList = Object.keys(banktelcosListInfo?.telcos_list || [])
     );
   }
 
-  const handleFileOneUpload = () => {
-    const formData1 = new FormData();
-    // console.log("rtghrghhrthrhrthrthrthrtrtrtgrt", excelFileList)
-    readExcelFile(excelFileList);
+  // delete 
+  function deleteBatchOrItem(type, postData){
+    // 
+    let config = {};
+    let data = {};
+    if(type === "batch"){
+      // 
+      config = {
+        method: 'delete',
+        url: process.env.REACT_APP_BASE_API + "/batch/delete/" + postData?.id + "/",
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + currentUser?.access
+        },
+        data: data
+      };
+    }
+    else if( type === "item" ){
+      // 
+      config = {
+        method: 'delete',
+        url: process.env.REACT_APP_BASE_API + "/batch/delete/" + postData?.id + "/",
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + currentUser?.access
+        },
+        data: data
+      };
+    }
 
-    // if (response["data"]) {
-    // message.success('file successfully uploaded.');
-    // }
-    // if (!response["data"]) {
-    // message.error('Sorry, something went wrong. Please try again.');
-    // }
+    Swal.fire({
+      icon: 'info',
+      title: 'Do you want to delete the item?',
+      text: postData?.name,
+      allowOutsideClick: false,
+      // allowEscapeKey: false,
+      showCancelButton: true,
+      confirmButtonColor: '#FF7643',
+      cancelButtonColor: '#d33',
+      cancelButtonText: "Cancel",
+      confirmButtonText: 'Confirm',
+      customClass: {
+        actions: 'my-actions',
+        cancelButton: 'order-1 right-gap',
+        confirmButton: 'order-2'
+      }
+    }).then((result) => {
+        // console.log( "old ", bulkPayInfo,  " new ", bulkPayInfoNew)
+        if (result.isConfirmed) {
+          // 
+          genericApiCall(config)
+        }
+        else{
+          // 
+        }
+        
+    });
+  }
+
+  // generic method
+  function genericApiCall(config){
+    // 
+
+    axios(config).then(response => {
+      // console.log(response.data);
+      if (response?.data?.status === true) { 
+        let bulkPayInfoDataNew = bulkPayData();
+        let bulkPayInfoNew = []
+        bulkPayInfoDataNew?.bulkPay?.then(value => { (bulkPayInfoNew = value) });
+
+        Swal.fire({
+          title: 'Successful!',
+          icon: 'success',
+          allowOutsideClick: false,
+          // allowEscapeKey: false,
+          showCancelButton: false,
+          confirmButtonColor: '#FF7643',
+          // cancelButtonColor: '#d33',
+          confirmButtonText: 'Ok'
+        }).then((result) => {
+            // console.log( "old ", bulkPayInfo,  " new ", bulkPayInfoNew)
+            bulkPayInfo = bulkPayInfoNew;
+            setBatchName(batchName + " ")
+            setModal1(false)
+            setModal2(false)
+            setModal3(false)
+        });
+      }
+      else {
+        Swal.fire({
+          title: 'Failed!',
+          // text: "Try again",
+          text: response?.data?.message,
+          icon: 'warning',
+          showCancelButton: true,
+          showConfirmButton: false,
+          cancelButtonColor: '#d33',
+          cancelButtonText: 'Ok'
+        }).then((result) => {
+          // 
+        })
+      }
+
+    }).catch(function (error) {
+
+      if (error.response) {
+        // // console.log("==>");
+        /*
+          * The request was made and the server responded with a
+          * status code that falls out of the range of 2xx
+          */
+
+      } else if (error.request) {
+        /*
+          * The request was made but no response was received, `error.request`
+          * is an instance of XMLHttpRequest in the browser and an instance
+          * of http.ClientRequest in Node.js
+          */
+
+      } else {
+        // Something happened in setting up the request and triggered an Error
+      }
+    }
+    );
+  }
+
+  // execute pay queue for batch list
+  function payExecute(type, postData){
+
+    let config = {};
+    let data = {};
+    if(type === "batch"){
+      // 
+      config = {
+        method: 'post',
+        url: process.env.REACT_APP_BASE_API + "/batch/pay/" + postData?.id + "/",
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + currentUser?.access
+        },
+        data: data
+      };
+    }
+    else if( type === "item" ){
+      // 
+      config = {
+        method: 'post',
+        url: process.env.REACT_APP_BASE_API + "/batch/pay/" + postData?.id + "/",
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + currentUser?.access
+        },
+        data: data
+      };
+    }
+
+    Swal.fire({
+      icon: 'info',
+      title: 'Proceed to make payment for!',
+      text: postData?.name,
+      allowOutsideClick: false,
+      // allowEscapeKey: false,
+      showCancelButton: true,
+      confirmButtonColor: '#FF7643',
+      cancelButtonColor: '#d33',
+      cancelButtonText: "Cancel",
+      confirmButtonText: 'Confirm',
+      customClass: {
+        actions: 'my-actions',
+        cancelButton: 'order-1 right-gap',
+        confirmButton: 'order-2'
+      }
+    }).then((result) => {
+        // console.log( "old ", bulkPayInfo,  " new ", bulkPayInfoNew)
+        if (result.isConfirmed) {
+          // 
+          genericApiCall(config)
+        }
+        else{
+          // 
+        }   
+    });
+    
+  }
+  // redirect to list for batch selected
+  function itemPage(url){
+    // 
+    window.location.href = url
+  } 
+  // delete 
+  function editBatchOrItem(type){
+    // 
+    let config = {};
+    let data = {
+      "name": batchName,
+      "payment_method": editBatchData?.payment_method
+    };
+    if(type === "batch"){
+      // 
+      config = {
+        method: 'patch',
+        url: process.env.REACT_APP_BASE_API + "/batch/update/" + editBatchData?.id + "/",
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + currentUser?.access
+        },
+        data: data
+      };
+    }
+    
+    Swal.fire({
+      icon: 'info',
+      title: 'Do you want to update the item?',
+      html: `<p> ${editBatchData?.name} to ${ batchName } </p>`,
+      allowOutsideClick: false,
+      // allowEscapeKey: false,
+      showCancelButton: true,
+      confirmButtonColor: '#FF7643',
+      cancelButtonColor: '#d33',
+      cancelButtonText: "Cancel",
+      confirmButtonText: 'Confirm',
+      customClass: {
+        actions: 'my-actions',
+        cancelButton: 'order-1 right-gap',
+        confirmButton: 'order-2'
+      }
+    }).then((result) => {
+        // console.log( "old ", bulkPayInfo,  " new ", bulkPayInfoNew)
+        if (result.isConfirmed) {
+          // 
+          genericApiCall(config)
+        }
+        else{
+          // 
+        }
+        
+    });
+  }
   
-    setUploading1(false); // You can use any AJAX library you like
-};
-
-  const props1 = {
-    onRemove: (excelFileId) => {
-      // console.log(excelFileId)
-      // const index = excelFileList.indexOf(excelFileId);
-      // const newExcelFileList = excelFileList.slice();
-      // newExcelFileList.splice(0, 1);
-      setExcelFileList([]);
-    },
-    beforeUpload: (excelFileId) => {
-        setExcelFileList(excelFileId);
-      return false;
-    },
-    excelFileList,
-  };
-
-  const handleChangeBankListInModal = (valSelected, nameSelected) => {
-    setBankDropdownInModal({"bankName": valSelected, "name": nameSelected});
-  };
-
-
-function handleSubmit(event) {
-    event.preventDefault();    
-    if (accountName.length < 1 || !accountName ) {
-      setAccountNameError(true)
-    }
-    if (email.length < 1 || !email ) {
-      setEmailError(true)
-    }
-    if (accountNumber.length < 1 || !accountNumber ) {
-      setAccountNumberError(true)
-    }
-    if (bankCode.length < 1 || !bankCode ) {
-      setBankCodeError(true)
-    }
-    if (amount.length < 1 || !amount ) {
-      setAmountError(true)
-    }
-    if (note.length < 1 || !note ) {
-      setNoteError(true)
-    }
-    if (bankDropdownInModal.length < 1 || !bankDropdownInModal ) {
-      setBankDropdownInModalError(true)
-    }
-    if (batchName.length < 1 || !batchName ) {
-      setBatchNameError(true)
-    }
-    if (telcoEmail.length < 1 || !telcoEmail ) {
-      setTelcoEmailError(true)
-    }
-    if (phoneNumber.length < 1 || !phoneNumber ) {
-      setPhoneNumberError(true)
-    }
-    if (networkCode.length < 1 || !networkCode ) {
-      setNetworkCodeError(true)
-    }
-    if (momoAccountName.length < 1 || !momoAccountName ) {
-      setMomoAccountNameError(true)
-    }
-    if (telcoAmount.length < 1 || !telcoAmount ) {
-      setTelcoAmountError(true)
-    }
-    if (telcoNote.length < 1 || !telcoNote ) {
-      setTelcoNoteError(true)
-    }
-    if (networkName.length < 1 || !networkName ) {
-      setNetworkNameError(true)
-    } 
-    if (singleBatchName.length < 1 || !singleBatchName ) {
-      setSingleBatchNameError(true)
-    }
-}
   return (
 
     <div className='mt-0'>
@@ -860,7 +1155,7 @@ function handleSubmit(event) {
           <CCardBody>
             <p>Search by:</p>
             <div> 
-              <p className='des-filter-inputs'>apikeyInfo Reference</p>
+              <p className='des-filter-inputs'>bulkPayInfo Reference</p>
               <Box
                 // component="form"
                 // sx={{
@@ -903,8 +1198,8 @@ function handleSubmit(event) {
                 >
                 <TextField 
                   id='filters-d'
-                  value={apikeyInfoId}
-                  onChange={(e) => setapikeyInfoId(e.target.value)} 
+                  value={bulkPayInfoId}
+                  onChange={(e) => setbulkPayInfoId(e.target.value)} 
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="start" >
@@ -1078,17 +1373,17 @@ function handleSubmit(event) {
           </div>
         </Col>
         <Col xs="12" sm="12" md={2} lg={2} >
-          {/* apikeyInfo types */}
+          {/* bulkPayInfo types */}
           <Box sx={{ minWidth: 160 }}>
-            <FormControl fullWidth style={{marginTop: "0px"}}>
-              <Label for="apikeyInfoStatus" className="label-dc"> </Label>
+            <FormControl style={{marginTop: "0px"}}>
+              <Label for="bulkPayInfoStatus" className="label-dc"> </Label>
               <Select
                 placeholder={"Select"}
                 options={optionsStatus}
-                id="apikeyInfoStatus"
+                id="bulkPayInfoStatus"
                 className='other-input-select d-filters'
                 // components={{ Option: paymentOption }}
-                onChange={(e) => handleChangeapikeyInfoStatus(e.value)}
+                onChange={(e) => handleChangebulkPayInfoStatus(e.value)}
               />
           
             </FormControl>
@@ -1147,11 +1442,11 @@ function handleSubmit(event) {
           {/* export */}
           <Box sx={{ minWidth: 120}}>
             <FormControl fullWidth>
-              <Label for="apikeyInfoExport" className="label-dc"> </Label>
+              <Label for="bulkPayInfoExport" className="label-dc"> </Label>
               <Select
                 placeholder={"Select export"}
                 options={optionsExport}
-                id="apikeyInfoExport"
+                id="bulkPayInfoExport"
                 className='other-input-select d-filters'
                 // components={{ Option: paymentOption }}
                 onChange={(e) => handleChangeExport(e.value)}
@@ -1172,8 +1467,7 @@ function handleSubmit(event) {
           <tr>
             <th>No.</th>
             <th>Batch</th>
-            <th>Description</th>
-            <th>Type</th>
+            <th>Payment method</th>
             <th>Date</th>
             <th>Action</th>
           </tr>
@@ -1184,14 +1478,16 @@ function handleSubmit(event) {
             tableData?.map((post, id) =>
               <tr key={id}>
                 <td>{id + 1}</td>
-                <td>{post?.prefix}</td>
                 <td>{post?.name}</td>
-                <td><CBadge color={post?.is_live === true ? "success" : "secondary" }> {post?.is_live === true ? "LIVE" : "TEST"} </CBadge> </td>
+                <td> {post?.payment_method?.toUpperCase()} </td>
                 <td>{moment(post?.created).format('LLLL')}</td>
                 <td>
-                  <CBadge className='bg-text-wp mr-5' style={{marginRight: "5px"}} >Pay</CBadge> 
-                  <CBadge color='black' style={{marginRight: "5px"}} >Delete</CBadge> 
-                  <CBadge color='secondary'>View</CBadge>
+                  {/*  */}
+                  <CBadge className='bg-text-wp mr-5' style={{marginRight: "5px"}} onClick={ (e) => payExecute("batch", post) }  >Pay</CBadge> 
+                  <CBadge color='black' style={{marginRight: "5px"}}  onClick={ (e) => deleteBatchOrItem("batch", post) }  >Delete</CBadge>
+                  <CBadge color='warning' style={{marginRight: "5px"}} onClick={ (e) => {(setModal3(true)); (setBatchName(post.name)); (setEditBatchData(post)) } }  > Edit </CBadge>
+                  <CBadge color='secondary' onClick={()=>itemPage(`/bulk-pay/item/${post?.id}/`)}>View</CBadge>
+                  
                 </td>
                 {/* <td>{post?.amount}</td> */}
                 {/* <td onClick={() => { setModal2(true); setViewData(post) }}><CBadge className='bg-text-wp'>View</CBadge></td> */}
@@ -1221,13 +1517,11 @@ function handleSubmit(event) {
                 noValidate
                 autoComplete="off"
                 >
-                <Label for="apikeyInfoStatus" className="label-dc"> Batch name </Label>
+                <Label for="bulkPayInfoStatus" className="label-dc"> Batch name </Label>
                 <TextField 
+                  value={batchName}                         
                   error = {batchNameError}
-
-                  // id='filters-d'
-                  value={description}
-                  onChange={(e) => { (setBatchName(e.target.value)); (setBatchNameError(false)) }} 
+                  onChange={(e) => { (setBatchName(e.target.value)); (setBatchNameError(false)) }}
                   // label="Filter"
                   placeholder="Eg. my batch name"
                   style={{height: "30px !important" }}
@@ -1237,12 +1531,12 @@ function handleSubmit(event) {
               </div>
           </Col>
           <Col xs="12" sm="12" md={5} lg={5} className="mt-0" >
-            <Label for="apikeyInfoStatus" className="label-dc mb-1"> Payment method </Label>
+            <Label for="bulkPayInfoStatus" className="label-dc mb-1"> Payment method </Label>
             <Select
               error = {paymentMethodInfoStatusInModalError}
               placeholder={"Select"}
               options={optionsAccTypeInModal}
-              id="apikeyInfoStatus"
+              id="bulkPayInfoStatus"
               className='other-input-select'
               // components={{ Option: paymentOption }}
               onChange={(e) => handleChangeInfoAccTypeInModal(e.value)}
@@ -1266,22 +1560,22 @@ function handleSubmit(event) {
           <CButton color="secondary" className='text-white' onClick={(e) => setModal1(false)}> 
           Cancel
           </CButton>
-          <CButton color="" className='text-white bg-text-wp' onClick={(e) => handleFileOneUpload()}> 
+          <CButton color="" className='text-white bg-text-wp' onClick={(e) => readExcelFile()}> 
           Create
           </CButton>
         </CModalFooter>
       </CModal>
 
       {/* modal for create batch list in app */}
-      <CModal visible={modal2} fullscreen="xl" alignment='center' onClose={() => setModal2(false)}>
+      <CModal visible={modal2} alignment='center' onClose={() => setModal2(false)}>
         <CModalHeader>
           <CModalTitle>  Create </CModalTitle>
         </CModalHeader>
-        <CModalBody className='contentForapikeyInfoPrint'>
+        <CModalBody className='contentForbulkPayInfoPrint'>
           <p className="success rounded" style={{ textAlign: "center" }} >
-            {/* <h6> apikeyInfo Details </h6> */}
+            {/* <h6> bulkPayInfo Details </h6> */}
           </p>
-          <Row>
+          <Row style={{ marginLeft: '1%' }}>
 
 
             <Col xs="12" sm="12" md={6} lg={6} className="mt-0" > 
@@ -1291,7 +1585,7 @@ function handleSubmit(event) {
                   noValidate
                   autoComplete="off"
                   >
-                  <Label for="apikeyInfoStatus" className="label-dc"> Batch name </Label>
+                  <Label for="bulkPayInfoStatus" className="label-dc"> Batch name </Label>
                   <TextField 
                     value={batchName}                         
                     error = {batchNameError}
@@ -1304,13 +1598,13 @@ function handleSubmit(event) {
                 </Box>
                 </div>
               </Col>
-              <Col xs="12" sm="12" md={5} lg={5} className="mt-0" >
-              <Label for="apikeyInfoStatus" className="label-dc mb-1"> Payment method </Label>
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-0" >
+              <Label for="bulkPayInfoStatus" className="label-dc mb-1"> Payment method </Label>
               <Select
                 error = {paymentMethodInfoStatusInModalError}
                 placeholder={"Select"}
                 options={optionsAccTypeInModal}
-                id="apikeyInfoStatus"
+                id="bulkPayInfoStatus"
                 className='other-input-select' 
                 // components={{ Option: paymentOption }}
                 onChange={(e) => handleChangeInfoAccTypeInModal(e.value)}
@@ -1322,17 +1616,17 @@ function handleSubmit(event) {
         {
           paymentMethodInfoStatusInModal === "bank" ?
           <div>
-            <Row>
-              <Col xs="12" sm="12" md={6} lg={11} className="mt-2" > 
+              <Row style={{ marginLeft: '1%' }}>
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
                 <div className='bulk-pay-name'  >
                   <Box 
                     component="form"
                     noValidate
-                    autoComplete="off"
+                    // autoComplete="off"
                     >
-                    <Label for="apikeyInfoStatus" className="label-dc"> Name on Account </Label>
+                    <Label for="bulkPayInfoStatus" className="label-dc"> Name on Account </Label>
                     <TextField 
-                      fullWidth
+                      // fullWidth
                       error = {accountNameError}
                       // id='filters-d'
                       // xs="12" sm="12" md={12} lg={12}
@@ -1346,32 +1640,30 @@ function handleSubmit(event) {
                   </Box>
                 </div>
               </Col>
-
-
-              <Col xs="12" sm="12" md={11} lg={11} className="mt-2" >
-              <Label for="apikeyInfoStatus" className="label-dc mb-1"> Bank Name</Label>
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" >
+              <Label for="bulkPayInfoStatus" className="label-dc mb-1"> Bank Name</Label>
               <Select
                 error = {bankDropdownInModalError}
                 maxWidth
                 placeholder={"Select bank"}
                 options={optionBankList}
-                id="apikeyInfoStatus"
+                id="bulkPayInfoStatus"
                 className='other-input-select'
                 // components={{ Option: paymentOption }}
                 onChange={(e) => handleChangeBankListInModal(e.value, e.label)}
               />
               </Col>
-
-              <Col xs="12" sm="12" md={6} lg={11} className="mt-2" > 
+              
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
                 <div className='bulk-pay-name'  >
                   <Box 
                     component="form"
                     noValidate
                     autoComplete="off"
                     >
-                    <Label for="apikeyInfoStatus" className="label-dc"> Email </Label>
+                    <Label for="bulkPayInfoStatus" className="label-dc"> Email </Label>
                     <TextField 
-                    fullWidth
+                    // fullWidth
                     error = {emailError}
                       // id='filters-d'
                       // xs="12" sm="12" md={12} lg={12}
@@ -1379,108 +1671,102 @@ function handleSubmit(event) {
                       onChange={(e) => {(setEmail(e.target.value)); (setEmailError(false))}}
                       // label="Filter"
                       placeholder="youremail@email.com"
-                      style={{height: "30px !important" }}
+                      // style={{height: "30px !important" }}
                       
                       />
                   </Box>
                 </div>
               </Col>
 
-              <Row>
-              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
+              {/* <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
               <div className='bulk-pay-name'  >
                 <Box 
                   component="form"
                   noValidate
                   autoComplete="off"
                   >
-                  <Label for="apikeyInfoStatus" className="label-dc"> Bank Code </Label>
+                  <Label for="bulkPayInfoStatus" className="label-dc"> Bank Code </Label>
                   <TextField
                     error = {bankCodeError} 
-                    // id='filters-d'
                     value={bankCode}
                     onChange={(e) => {(setBankCode(e.target.value)); (setBankCodeError(false))}}
-
-                    
-                    // label="Filter"
                     placeholder="12032123"
                     style={{height: "30px !important" }}
                     
                     />
                 </Box>
               </div>
-              </Col>
-              <Col xs="12" sm="12" md={5} lg={5} className="mt-2 ml-2">
-              <div className='bulk-pay-name'  >
-                <Box 
-                  component="form"
-                  noValidate
-                  autoComplete="off"
-                  >
-                  <Label for="apikeyInfoStatus" className="label-dc"> Bank Account Number </Label>
-                  <TextField 
-                  error = {accountNumberError}
-                    // id='filters-d'
-                    value={accountNumber}
-                    onChange={(e) => {(setAccountNumber(e.target.value)); (setAccountNumberError(false))}}
+              </Col> */}
+                <Col xs="12" sm="12" md={6} lg={6} className="mt-2" >
+                <div className='bulk-pay-name'  >
+                  <Box 
+                    component="form"
+                    noValidate
+                    autoComplete="off"
+                    >
+                    <Label for="bulkPayInfoStatus" className="label-dc"> Bank Account Number </Label>
+                    <TextField 
+                    error = {accountNumberError}
+                      // id='filters-d'
+                      value={accountNumber}
+                      onChange={(e) => {(setAccountNumber(e.target.value)); (setAccountNumberError(false))}}
 
-                    // label="Filter"
-                    placeholder="110324000000"
-                    style={{height: "30px !important" }}
-                    
-                    />
-                </Box>
-              </div>
-              </Col>
+                      // label="Filter"
+                      placeholder="110324000000"
+                      style={{height: "30px !important" }}
+                      
+                      />
+                  </Box>
+                </div>
+                </Col>
+                
+                <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
+                <div className='bulk-pay-name'  >
+                  <Box 
+                    component="form"
+                    noValidate
+                    autoComplete="off"
+                    >
+                    <Label for="bulkPayInfoStatus" className="label-dc"> Amount </Label>
+                    <TextField
+                      error = {amountError} 
+                      // id='filters-d'
+                      value={amount}
+                      onChange={(e) => {(setAmount(e.target.value)); (setAmountError(false))}}
 
-              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
-              <div className='bulk-pay-name'  >
-                <Box 
-                  component="form"
-                  noValidate
-                  autoComplete="off"
-                  >
-                  <Label for="apikeyInfoStatus" className="label-dc"> Amount </Label>
-                  <TextField
-                    error = {amountError} 
-                    // id='filters-d'
-                    value={amount}
-                    onChange={(e) => {(setAmount(e.target.value)); (setAmountError(false))}}
+                      // label="Filter"
+                      placeholder="100"
+                      style={{height: "30px !important" }}
+                      
+                      />
+                  </Box>
+                </div>
+                </Col>
+                <Col xs="12" sm="12" md={6} lg={6} className="mt-2" >
+                <div className='bulk-pay-name'  >
+                  <Box 
+                    component="form"
+                    noValidate
+                    autoComplete="off"
+                    >
+                    <Label for="bulkPayInfoStatus" className="label-dc"> Note </Label>
+                    <TextField 
+                      error = {noteError}
+                      // id='filters-d'
+                      value={note}
+                      onChange={(e) => {(setNote(e.target.value)); (setNoteError(false))}}
 
-                    // label="Filter"
-                    placeholder="100"
-                    style={{height: "30px !important" }}
-                    
-                    />
-                </Box>
-              </div>
-              </Col>
-
-              <Col xs="12" sm="12" md={5} lg={5} className="mt-2 ml-2">
-              <div className='bulk-pay-name'  >
-                <Box 
-                  component="form"
-                  noValidate
-                  autoComplete="off"
-                  >
-                  <Label for="apikeyInfoStatus" className="label-dc"> Note </Label>
-                  <TextField 
-                    error = {noteError}
-                    // id='filters-d'
-                    value={note}
-                    onChange={(e) => {(setNote(e.target.value)); (setNoteError(false))}}
-
-                    // label="Filter"
-                    placeholder="Salaries"
-                    style={{height: "30px !important" }}
-                    
-                    />
-                </Box>
-              </div>
-              </Col>
+                      // label="Filter"
+                      placeholder="Salaries"
+                      style={{height: "30px !important" }}
+                      
+                      />
+                  </Box>
+                </div>
+                </Col>
               </Row>
 
-            </Row>
+            
           </div>
           : ""
         }
@@ -1490,17 +1776,17 @@ function handleSubmit(event) {
         {
           paymentMethodInfoStatusInModal === "mobile" ?
           <div>
-            <Row>
-              <Col xs="12" sm="12" md={6} lg={11} className="mt-2" > 
+            <Row style={{ marginLeft: '1%' }}>
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
                 <div className='bulk-pay-name'  >
                   <Box 
                     component="form"
                     noValidate
                     autoComplete="off"
                     >
-                    <Label for="apikeyInfoStatus" className="label-dc"> Name on Account </Label>
+                    <Label for="bulkPayInfoStatus" className="label-dc"> Name on Account </Label>
                     <TextField 
-                    fullWidth
+                    // fullWidth
                     error = {momoAccountNameError}
                       // id='filters-d'
                       // xs="12" sm="12" md={12} lg={12}
@@ -1516,33 +1802,32 @@ function handleSubmit(event) {
                 </div>
               </Col>
 
-
-              <Col xs="12" sm="12" md={11} lg={11} className="mt-2" >
-              <Label for="apikeyInfoStatus" className="label-dc mb-1"> Network Name</Label>
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
+              <Label for="bulkPayInfoStatus" className="label-dc mb-1"> Network Name</Label>
               <Select
-                value={networkName}
+                // value={networkName}
                 error = {networkNameError}
                 maxWidth
                 placeholder={"Select network"}
                 options={optionMobileMoneyList}
-                id="apikeyInfoStatus"
+                id="bulkPayInfoStatus"
                 className='other-input-select'
                 // components={{ Option: paymentOption }}
-                onChange={(e) => {(setNetworkName(e.target.value)); (setNetworkNameError(false))}}
+                onChange={(e) => {(setNetworkName({"code": e.value, "name": e.label})); (setNetworkNameError(false))}}
 
               />
               </Col>
 
-              <Col xs="12" sm="12" md={6} lg={11} className="mt-2" > 
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" >  
                 <div className='bulk-pay-name'  >
                   <Box 
                     component="form"
                     noValidate
                     autoComplete="off"
                     >
-                    <Label for="apikeyInfoStatus" className="label-dc"> Email </Label>
+                    <Label for="bulkPayInfoStatus" className="label-dc"> Email </Label>
                     <TextField 
-                      fullWidth
+                      // fullWidth
                       error = {telcoEmailError}
                       // id='filters-d'
                       // xs="12" sm="12" md={12} lg={12}
@@ -1557,16 +1842,15 @@ function handleSubmit(event) {
                 </div>
               </Col>
 
-              <Row>
-              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
+              
+              {/* <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
               <div className='bulk-pay-name'  >
                 <Box 
-
                   component="form"
                   noValidate
                   autoComplete="off"
                   >
-                  <Label for="apikeyInfoStatus" className="label-dc"> Network Code </Label>
+                  <Label for="bulkPayInfoStatus" className="label-dc"> Network Code </Label>
                   <TextField 
                     error = {networkCodeError}
                     // id='filters-d'
@@ -1580,15 +1864,15 @@ function handleSubmit(event) {
                     />
                 </Box>
               </div>
-              </Col>
-              <Col xs="12" sm="12" md={5} lg={5} className="mt-2 ml-2">
+              </Col> */}
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
               <div className='bulk-pay-name'  >
                 <Box 
                   component="form"
                   noValidate
                   autoComplete="off"
                   >
-                  <Label for="apikeyInfoStatus" className="label-dc"> Phone Number </Label>
+                  <Label for="bulkPayInfoStatus" className="label-dc"> Phone Number </Label>
                   <TextField 
                     error = {phoneNumberError}
                     // id='filters-d'
@@ -1611,7 +1895,7 @@ function handleSubmit(event) {
                   noValidate
                   autoComplete="off"
                   >
-                  <Label for="apikeyInfoStatus" className="label-dc"> Amount </Label>
+                  <Label for="bulkPayInfoStatus" className="label-dc"> Amount </Label>
                   <TextField 
                     // id='filters-d'
                     value={telcoAmount}
@@ -1626,14 +1910,14 @@ function handleSubmit(event) {
               </div>
               </Col>
 
-              <Col xs="12" sm="12" md={5} lg={5} className="mt-2 ml-2">
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
               <div className='bulk-pay-name'  >
                 <Box 
                   component="form"
                   noValidate
                   autoComplete="off"
                   >
-                  <Label for="apikeyInfoStatus" className="label-dc"> Note </Label>
+                  <Label for="bulkPayInfoStatus" className="label-dc"> Note </Label>
                   <TextField 
                     error = {noteError}
                     // id='filters-d'
@@ -1648,7 +1932,6 @@ function handleSubmit(event) {
                 </Box>
               </div>
               </Col>
-              </Row>
 
             </Row>
           </div>
@@ -1661,15 +1944,71 @@ function handleSubmit(event) {
             Close
           </CButton>
           <CButton 
-          type = 'submit'
+          // type = 'submit'
+          color=''
           className='text-white bg-text-wp'
-          onClick={handleSubmit}
+          onClick={(e)=>handleSubmit(e)}
           >
             Create
           </CButton>
 
         </CModalFooter>
       </CModal>
+
+
+      {/* modal for create batch list in app */}
+      <CModal visible={modal3} alignment='center' onClose={() => setModal3(false)}>
+        <CModalHeader>
+          <CModalTitle>  Edit Batch Name </CModalTitle>
+        </CModalHeader>
+        <CModalBody className='contentForbulkPayInfoPrint'>
+          <p className="success rounded"  >
+            {/* <h6> bulkPayInfo Details </h6> */}
+          </p>
+          {/* <Row style={{ marginRight: '30%' }}> */}
+
+
+            <Col xs="12" sm="12" md={12} lg={12} className="mt-0" > 
+              <div className='bulk-pay-name'  >
+                <Box 
+                  component="form"
+                  noValidate
+                  autoComplete="off"
+                  >
+                  <Label for="bulkPayInfoBatchName" className="label-dc"> Batch name </Label>
+                  <TextField 
+                    value={batchName}    
+                    fullWidth                     
+                    error = {batchNameError}
+                    onChange={(e) => { (setBatchName(e.target.value)); (setBatchNameError(false)) }}
+                    // label="Filter"
+                    placeholder="Eg. my batch name"
+                    style={{height: "30px !important"}}
+                    
+                    />
+                </Box>
+                </div>
+            </Col>
+            
+          {/* </Row> */}
+
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" className='text-white' onClick={() => setModal3(false)}>
+            Close
+          </CButton>
+          <CButton 
+          // type = 'submit'
+          color=''
+          className='text-white bg-text-wp'
+          onClick={(e)=>editBatchOrItem("batch")}
+          >
+            Save
+          </CButton>
+
+        </CModalFooter>
+      </CModal>
+
     </div>
   )
 }

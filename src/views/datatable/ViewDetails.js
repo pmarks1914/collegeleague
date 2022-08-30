@@ -129,18 +129,18 @@ export default function ViewDetails(post) {
             <hr />
         </Row>  
         <Row className='mb-0 d-flex'>
-            <Col sm="4" xm="4" md="4" lg="4" xl="4">
+            <Col sm="4" xm="2" md="2" lg="2" xl="2">
                 <a style={{ color: "#000" }}>
                     {/* <p className=""> Device Info. </p> */}
                 </a>
             </Col>
-            <Col sm="4" className='ml-120'>
+            <Col sm="8" className='ml-120'>
                 <p style={{ color: "#000", textAlign: "center" }} >
                     <b>Device Info. </b> <br />
 
                     {post?.viewData?.device_info["X-Real-Ip"]}
                     <br />
-                    {/* {post?.viewData?.device_info["User-Agent"]} */}
+                    {post?.viewData?.device_info["User-Agent"]}
                 </p>
 
             </Col>

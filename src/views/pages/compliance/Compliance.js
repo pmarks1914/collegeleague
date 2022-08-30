@@ -16,7 +16,8 @@ export default function Compliance() {
 
     // Business Information useState declaration
     const [postal_address, setPostalAddress] = useState(userData.postal_address)
-    const [business_email, setBusinessEmail] = useState(userData.business_email)
+    const [business_email, setBusinessEmail] = useState(userData.business_email) 
+    const [business_name, setBusinessName] = useState(userData.business_name)
     const [gps, setGps] = useState(userData.gps)
     const [business_TIN, setBusinessTIN] = useState(userData.business_TIN)
     const [NID_director_1, setNID_director_1] = useState(userData.NID_director_1)
@@ -54,6 +55,7 @@ export default function Compliance() {
         const payload = {
           "postal_address": postal_address,
           "business_email": business_email,
+          "business_name": business_name,
           "gps": gps,
           "business_TIN": business_TIN,
           "postal_address": postal_address,
@@ -332,6 +334,14 @@ export default function Compliance() {
                     userData[id] =  user_data[id]
                 })
                 break;
+            case "business_name":
+                user_data = {
+                    "business_name": value
+                };
+                Object.keys(user_data)?.map(id=>{
+                    userData[id] =  user_data[id]
+                })
+                break;
             case "gps":
                 user_data = {
                     "gps": value
@@ -474,6 +484,9 @@ return(
                 <Grid templateColumns='repeat(5, 1fr)' gap={4}>
                     <GridItem colStart={1} colEnd={3} h='10'>
                     <p>Receving funds should not be a headache. With our platform, your payments are secure and swift.</p>
+                    </GridItem>
+                    <GridItem colStart={3} colEnd={5} h='10'>
+                        <Input placeholder='Business Name' focusBorderColor='orange.500' onChange={(e) => { (setBusinessName(e.target.value)); (updateKycInUserSession("business_name", e.target.value)) }} value = {business_name} />
                     </GridItem>
                     <GridItem colStart={3} colEnd={5} h='10'>
                         <Input placeholder='Business Physical Address' focusBorderColor='orange.500' onChange={(e) => { (setPhysicalAddress(e.target.value)); (updateKycInUserSession("physical_address", e.target.value)) }} value = {physical_address} />

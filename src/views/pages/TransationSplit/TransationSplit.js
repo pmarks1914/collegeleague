@@ -16,7 +16,7 @@ const TransationSplit = () => {
 
   window.onclick = function (event) {
     event.preventDefault()
-    trackActivity()
+    // trackActivity()
   }
     return (
         <div>

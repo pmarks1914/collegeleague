@@ -12,7 +12,7 @@ const SubAccount = () => {
       }
     
       window.onclick = function (event) {
-        event.preventDefault()
+        // event.preventDefault()
         trackActivity()
       }
     return (
