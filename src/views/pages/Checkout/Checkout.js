@@ -418,6 +418,8 @@ export default function Checkout() {
                     // setAmount(response?.data?.data?.amount)
                     // setFee(response?.data?.data?.fee || "0.00")
                     setPrefix(response?.data?.prefix)
+                    setDefaulName(response?.data?.merchant_name)
+                    
                     // setSourceMetadata(response?.data?.data)
 
                     // window.history.pushState("", "", '/checkout')
