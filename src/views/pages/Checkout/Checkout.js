@@ -151,7 +151,7 @@ export default function Checkout() {
         if(window.location.pathname.split("/")[1] === "checkout"){
             // 
             let checkoutId = window.location.pathname.split("/")[2]
-            console.log("window", checkoutId)
+            // console.log("window", checkoutId)
             setIsCheckout(true)
             if(checkoutId){
                 setMerchantId(checkoutId);
@@ -389,10 +389,98 @@ export default function Checkout() {
 
             }
         }
-        else{
-            setDefaulName("WingiPay Transaction")
+        if(window.location.pathname.split("/")[1] === "merchant"){
+            // 
+            let checkoutId = window.location.pathname.split("/")[3]
+            // console.log("window", checkoutId)
+            // setIsCheckout(true)
+            setMerchantId(checkoutId);
+            let data = '';
+            let config_ch = {
+                method: 'get',
+                url: process.env.REACT_APP_BASE_API + "/checkout/" + checkoutId + "/",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                data: data
+            };
+        
+            axios(config_ch).then(response => {
+                // console.log("data checkout 1 ==", response?.data);
+                if (response?.data?.status === true) {
+                    // 
+                    // console.log("g>>>") sessionData?.merchant_id)
+                    sessionStorage.setItem("sessionData", JSON.stringify(response?.data))
+                    
+                    // setSessionData(response?.data)
+                    // setAccountNumber(response?.data?.data?.phone)
+                    // setPhoneNumber(response?.data?.data?.phone)
+                    // setAmount(response?.data?.data?.amount)
+                    // setFee(response?.data?.data?.fee || "0.00")
+                    setPrefix(response?.data?.prefix)
+                    // setSourceMetadata(response?.data?.data)
+
+                    // window.history.pushState("", "", '/checkout')
+
+                }
+                else{
+                    Swal.fire({
+                        title: 'Oops',
+                        html: "<div class='pb-0 pt-0'> Invalid Session</div>",
+                        icon: 'error',
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        allowOutsideClick: false,
+                    }).then((result) => {
+                        // 
+                    })
+                }
+                
+
+            }).catch(function (error) {
+                // 
+                if(error){
+                    Swal.fire({
+                        title: 'Application Error',
+                        title: 'Oops',
+                        html: "<div class='pb-0 pt-0'> Try again later </div>",
+                        icon: 'warning',
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        allowOutsideClick: false,
+                        // cancelButtonColor: '#d33',
+                        // timer: 4000
+                    }).then((result) => {
+                        // 
+                    })
+                }
+                if (error.response) {
+                    // // console.log("==");
+                    /*
+                    * The request was made and the server responded with a
+                    * status code that falls out of the range of 2xx
+                    */
+
+                } else if (error.request) {
+                    /*
+                    * The request was made but no response was received, `error.request`
+                    * is an instance of XMLHttpRequest in the browser and an instance
+                    * of http.ClientRequest in Node.js
+                    */
+
+                } else {
+                    // Something happened in setting up the request and triggered an Error
+
+                }
+            });
+            
         }
-        console.log("fff", accountType, methodOfPayment?.filter((post) => {return post?.id === accountType } )[0]?.name )
+        else{
+            // 
+            setDefaulName("WingiPay Transaction")
+            
+        }
+        // console.log("fff", accountType, methodOfPayment?.filter((post) => {return post?.id === accountType } )[0]?.name )
         setAccountName( methodOfPayment?.filter((post) => {return post.id === accountType } )[0]?.name )
         // if(accountType === 1){
         //     // 
