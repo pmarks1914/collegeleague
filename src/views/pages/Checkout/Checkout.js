@@ -146,11 +146,11 @@ export default function Checkout() {
     const [modal2, setModal2] = useState(false)
 
     useEffect(()=>{
-        // condition for only normal checkout
+        // condition for only normal checkout 
         if(window.location.pathname.split("/")[1] === "checkout"){
             // 
             let checkoutId = window.location.pathname.split("/")[2]
-            // // console.log("window", checkoutId)
+            console.log("window", checkoutId)
             setIsCheckout(true)
             if(checkoutId){
                 setMerchantId(checkoutId);
@@ -165,11 +165,12 @@ export default function Checkout() {
                 };
             
                 axios(config_ch).then(response => {
-                    // // console.log("data checkout 1 ==", response?.data);
+                    console.log("data checkout 1 ==", response?.data);
                     if (response?.data?.status === true) {
                         // 
-                        // // console.log("g>>>")
+                        // // console.log("g>>>") sessionData?.merchant_id
                         sessionStorage.setItem("sessionData", JSON.stringify(response?.data))
+                        
                         setSessionData(response?.data)
                         setAccountNumber(response?.data?.data?.phone)
                         setPhoneNumber(response?.data?.data?.phone)
@@ -178,7 +179,7 @@ export default function Checkout() {
                         setPrefix(response?.data?.prefix)
                         setSourceMetadata(response?.data?.data)
 
-                        window.history.pushState("", "", '/checkout')
+                        // window.history.pushState("", "", '/checkout')
 
                     }
                     else{
@@ -387,8 +388,7 @@ export default function Checkout() {
 
             }
         }
-
-
+        console.log("fff", accountType, methodOfPayment)
         if(accountType === 1){
             // 
             setAccountName(methodOfPayment[0].name)
@@ -403,6 +403,7 @@ export default function Checkout() {
         }
         else if(accountType === 7){
             // 
+            // console.log(">>> ", methodOfPayment)
             setAccountName(methodOfPayment[3].name)
         }
     }, [accountType])
@@ -606,14 +607,13 @@ export default function Checkout() {
         // });
     };
 
-
     const [selectedValue, setSelectedValue] = React.useState('a');
     const handleRadioChange = (event) => {
         setSelectedValue(event.target.value);
     };
 
     const methodOfPayment = [
-        // { "name": "WINGIPAY", "id": 1 },
+        { "name": "WINGIPAY", "id": 1 },
         { "name": "MTN", "id": 5 },
         { "name": "VODAFONE", "id": 6 },
         { "name": "AIRTELTIGO", "id": 7 },
@@ -779,7 +779,7 @@ export default function Checkout() {
             data: data
         };
         setLoader('<div class="spinner dashboard-loader" style="color: #e0922f; text: center"></div>')
-
+        
         axios(config).then(response => {
             // // console.log("data otp==", response?.data);
             if (response?.data?.status) {
@@ -1205,7 +1205,7 @@ export default function Checkout() {
                     <img src="https://wingipay.com/static/wingipay/logo/wingipay-2.4086593aa042.png" className='mb-3' />
 
                     <Typography component="h1" variant="h5" className='mb-5 checkout-0'>
-                        { sessionData?.merchant_id || "WingiPay Transaction" }
+                        { sessionData?.merchant_id || sessionData?.merchant_name || "WingiPay Transaction" }
                     </Typography>
                 </Box>
 

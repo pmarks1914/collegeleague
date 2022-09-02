@@ -7,9 +7,21 @@
     left: 50%;
     bottom: 50%
 }
-.bg-text-wp{
+.bg-text-wp{ 
     background-color: #FF7643;
     color: #fff;
+}
+.bg-text-wp-no-action{ 
+  background-color: #eee8e7;
+  color: #fff;
+}
+.bg-text-wp-action{ 
+    background-color: #9B918D !important;
+    color: #fff !important;
+}
+.bg-text-wp-action:hover{
+  background-color: #020202 !important;
+  color: #fff !important;
 }
 .bg-text-wp:hover{
   background-color: #020202;
@@ -40,6 +52,11 @@
         padding-top: 72px;
         padding-bottom: 72px ;
     } */
+}
+@media only screen and (min-width: 801px) { 
+  .float-item-media{
+      float: right;
+  }
 }
 .viewDescription{
     /* display: block; */
@@ -109,8 +126,8 @@
   }
   .other-input-select{
       /* height: 35px; */
-      width: 180px;
-      /* float: right; */
+      /* width: 180px; */
+      float: right;
   }
   .bulk-pay-name form div div{
     height: 32px;
@@ -147,8 +164,9 @@
   }
   #dateRange-control{
     /* padding: 16px 0px; */
+    /* position: absolute; */
     margin: 6px 0px 0px 0px;
-    height: 2px;
+    /* height: 2px; */
   }
   .dropdown-content a {
     color: black;

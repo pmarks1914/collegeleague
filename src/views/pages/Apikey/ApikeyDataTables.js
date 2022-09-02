@@ -469,8 +469,6 @@ const ApikeyDataTables = (apikeyDetails) => {
       localStorage.setItem('userDataStore', JSON.stringify(currentUser_new))
     }
   }
-
-
   
   function generateApikey(e) {
     e.preventDefault();
@@ -765,8 +763,6 @@ const ApikeyDataTables = (apikeyDetails) => {
         </CCard>
       </div>
 
-      <Container>
-
       <Row>
         <Col xs="12" sm="12" md={2} lg={2} >
           {/* filter */}
@@ -888,10 +884,7 @@ const ApikeyDataTables = (apikeyDetails) => {
           </Box>
         </Col>
       </Row>
-      </Container>
-
-
-
+      
       {/* {dateTo.toString()}{" rrr "}{dateFrom.toString()} */}
       <br /><br />
 

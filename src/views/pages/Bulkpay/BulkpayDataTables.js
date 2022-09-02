@@ -241,7 +241,7 @@ const BulkpayDataTables = (apikeyDetails) => {
           columnDefs: [
             { "width": "15%", "targets": 0 },
             { "width": "20%", "targets": 2 },
-            { "width": "10%", "targets": 3 }
+            { "width": "18%", "targets": 3 }
           ],
           processing: true,
           deferLoading: true,
@@ -1075,7 +1075,7 @@ const BulkpayDataTables = (apikeyDetails) => {
     // 
     window.location.href = url
   } 
-  // delete 
+  // edit 
   function editBatchOrItem(type){
     // 
     let config = {};
@@ -1167,6 +1167,7 @@ const BulkpayDataTables = (apikeyDetails) => {
                 className='filters-d'
                 >
                 <TextField 
+                  
                   id='filters-d'
                   value={referanceId}
                   onChange={(e) => setReferanceId(e.target.value)} 
@@ -1302,7 +1303,7 @@ const BulkpayDataTables = (apikeyDetails) => {
         </CCard>
       </div>
 
-      <Container>
+      {/* <Container> */}
       <Row>
         <Col xs="12" sm="12" md={4} lg={4} >
           {/* filter */}
@@ -1438,7 +1439,7 @@ const BulkpayDataTables = (apikeyDetails) => {
             </Box>
           {/* </FormControl> */}
         </Col>
-        <Col xs="12" sm="12" md={2} lg={2} >
+        <Col xs="12" sm="12" md={3} lg={3} >
           {/* export */}
           <Box sx={{ minWidth: 120}}>
             <FormControl fullWidth>
@@ -1447,7 +1448,7 @@ const BulkpayDataTables = (apikeyDetails) => {
                 placeholder={"Select export"}
                 options={optionsExport}
                 id="bulkPayInfoExport"
-                className='other-input-select d-filters'
+                className='other-input-select d-filters float-item-media'
                 // components={{ Option: paymentOption }}
                 onChange={(e) => handleChangeExport(e.value)}
               />
@@ -1455,7 +1456,7 @@ const BulkpayDataTables = (apikeyDetails) => {
           </Box>
         </Col>
       </Row>
-      </Container>
+      {/* </Container> */}
 
 
 
@@ -1483,10 +1484,10 @@ const BulkpayDataTables = (apikeyDetails) => {
                 <td>{moment(post?.created).format('LLLL')}</td>
                 <td>
                   {/*  */}
-                  <CBadge className='bg-text-wp mr-5' style={{marginRight: "5px"}} onClick={ (e) => payExecute("batch", post) }  >Pay</CBadge> 
+                  {/* <CBadge className='bg-text-wp mr-5' style={{marginRight: "5px"}} onClick={ (e) => payExecute("batch", post) }  >Pay</CBadge> 
                   <CBadge color='black' style={{marginRight: "5px"}}  onClick={ (e) => deleteBatchOrItem("batch", post) }  >Delete</CBadge>
-                  <CBadge color='warning' style={{marginRight: "5px"}} onClick={ (e) => {(setModal3(true)); (setBatchName(post.name)); (setEditBatchData(post)) } }  > Edit </CBadge>
-                  <CBadge color='secondary' onClick={()=>itemPage(`/bulk-pay/item/${post?.id}/`)}>View</CBadge>
+                  <CBadge color='warning' style={{marginRight: "5px"}} onClick={ (e) => {(setModal3(true)); (setBatchName(post.name)); (setEditBatchData(post)) } }  > Edit </CBadge> */}
+                  <CBadge className='bg-text-wp' onClick={()=>itemPage(`/bulk-pay/item/${post?.id}/`)}>View Batch Details </CBadge>
                   
                 </td>
                 {/* <td>{post?.amount}</td> */}

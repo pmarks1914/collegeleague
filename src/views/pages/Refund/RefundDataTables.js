@@ -682,7 +682,7 @@ const RefundDataTables = (transactionDetails) => {
         </CCard>
       </div>
 
-      <Container>
+      {/* <Container> */}
 
       <Row>
         <Col xs="12" sm="12" md={2} lg={2} >
@@ -805,7 +805,7 @@ const RefundDataTables = (transactionDetails) => {
           </Box>
         </Col>
       </Row>
-      </Container>
+      {/* </Container> */}
 
 
 
