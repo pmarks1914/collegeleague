@@ -26,12 +26,13 @@ import {
   cilLibrary,
   cilControl,
   cilMoodBad,
+  cilDataTransferDown,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
 
 
-if(["/", "/theme", "/dashboard", "/payment/transaction", "/payment/refunds", "/payment/payouts", "/compliance", "/api-keys", "/bulk-pay", `/bulk-pay/item/${window.location.pathname.split("/")[3]}`, `/bulk-pay/item/${window.location.pathname.split("/")[3]}/`].includes(window.location.pathname)){
+if(["/", "/theme", "/dashboard", "/payment/transaction", "/payment/refunds", "/payment/payouts", "/compliance", "/api-keys", "/bulk-pay", `/bulk-pay/item/${window.location.pathname.split("/")[3]}`, `/bulk-pay/item/${window.location.pathname.split("/")[3]}/`, '/payment-link'].includes(window.location.pathname)){
   // 
 }
 else{
@@ -95,6 +96,12 @@ const account_nav = [
         name: 'Dispute',
         to: '/payment/disputes',
         icon: <CIcon icon={cilDataTransferUp} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Payment Link',
+        to: '/payment-link',
+        icon: <CIcon icon={cilDataTransferDown} customClassName="nav-icon" />,
       },
     ],
   },

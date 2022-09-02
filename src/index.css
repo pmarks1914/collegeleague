@@ -21,7 +21,13 @@ body, .dash-info-des-0{
     line-height: 1.5 !important;
 }
 
-
+.f-w-label{
+    font-weight: 500 !important;
+}
+.f-w-label-checkbox{
+    font-weight: 10 !important;
+    font-size: 10rem !important;
+}
 .bg-text-com-wp{
     background-color: #FF7643;
     color: #fff;

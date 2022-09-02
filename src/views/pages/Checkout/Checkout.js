@@ -150,7 +150,7 @@ export default function Checkout() {
         if(window.location.pathname.split("/")[1] === "checkout"){
             // 
             let checkoutId = window.location.pathname.split("/")[2]
-            // // console.log("window", checkoutId)
+            console.log("window", checkoutId)
             setIsCheckout(true)
             if(checkoutId){
                 setMerchantId(checkoutId);
@@ -165,11 +165,12 @@ export default function Checkout() {
                 };
             
                 axios(config_ch).then(response => {
-                    // // console.log("data checkout 1 ==", response?.data);
+                    console.log("data checkout 1 ==", response?.data);
                     if (response?.data?.status === true) {
                         // 
-                        // // console.log("g>>>")
+                        // // console.log("g>>>") sessionData?.merchant_id
                         sessionStorage.setItem("sessionData", JSON.stringify(response?.data))
+                        
                         setSessionData(response?.data)
                         setAccountNumber(response?.data?.data?.phone)
                         setPhoneNumber(response?.data?.data?.phone)
@@ -178,7 +179,7 @@ export default function Checkout() {
                         setPrefix(response?.data?.prefix)
                         setSourceMetadata(response?.data?.data)
 
-                        window.history.pushState("", "", '/checkout')
+                        // window.history.pushState("", "", '/checkout')
 
                     }
                     else{
@@ -387,8 +388,7 @@ export default function Checkout() {
 
             }
         }
-
-
+        console.log("fff", accountType)
         if(accountType === 1){
             // 
             setAccountName(methodOfPayment[0].name)
@@ -605,7 +605,6 @@ export default function Checkout() {
         //   password: data.get('password'),
         // });
     };
-
 
     const [selectedValue, setSelectedValue] = React.useState('a');
     const handleRadioChange = (event) => {
@@ -1205,7 +1204,7 @@ export default function Checkout() {
                     <img src="https://wingipay.com/static/wingipay/logo/wingipay-2.4086593aa042.png" className='mb-3' />
 
                     <Typography component="h1" variant="h5" className='mb-5 checkout-0'>
-                        { sessionData?.merchant_id || "WingiPay Transaction" }
+                        { sessionData?.merchant_id || sessionData?.merchant_name || "WingiPay Transaction" }
                     </Typography>
                 </Box>
 

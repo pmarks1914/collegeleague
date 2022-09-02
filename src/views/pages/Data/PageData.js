@@ -358,6 +358,11 @@ export function bulkPayItemData(id){
                 <a dangerouslySetInnerHTML={{ __html: loader }}></a>;
                 return response.data;
             }
+            else{
+                setTimeout(()=>{
+                    window.location.href = '/bulk-pay'
+                }, 3000)
+            }
             return
 
         }).catch(function (error) {

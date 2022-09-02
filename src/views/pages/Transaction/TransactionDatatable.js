@@ -712,7 +712,7 @@ const Transaction = (transactionDetails) => {
         </CCard>
       </div>
 
-      <Container>
+      {/* <Container> */}
 
       <Row>
         <Col xs="12" sm="12" md={2} lg={2} >
@@ -827,7 +827,7 @@ const Transaction = (transactionDetails) => {
                 placeholder={"Select export"}
                 options={optionsExport}
                 id="transactionExport"
-                className='other-input-select d-filters'
+                className='other-input-select d-filters float-item-media'
                 // components={{ Option: paymentOption }}
                 onChange={(e) => handleChangeExport(e.value)}
               />
@@ -835,7 +835,7 @@ const Transaction = (transactionDetails) => {
           </Box>
         </Col>
       </Row>
-      </Container>
+      {/* </Container> */}
 
 
 
