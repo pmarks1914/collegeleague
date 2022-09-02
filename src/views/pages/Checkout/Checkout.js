@@ -388,7 +388,7 @@ export default function Checkout() {
 
             }
         }
-        console.log("fff", accountType)
+        console.log("fff", accountType, methodOfPayment)
         if(accountType === 1){
             // 
             setAccountName(methodOfPayment[0].name)
@@ -403,6 +403,7 @@ export default function Checkout() {
         }
         else if(accountType === 7){
             // 
+            // console.log(">>> ", methodOfPayment)
             setAccountName(methodOfPayment[3].name)
         }
     }, [accountType])
@@ -612,7 +613,7 @@ export default function Checkout() {
     };
 
     const methodOfPayment = [
-        // { "name": "WINGIPAY", "id": 1 },
+        { "name": "WINGIPAY", "id": 1 },
         { "name": "MTN", "id": 5 },
         { "name": "VODAFONE", "id": 6 },
         { "name": "AIRTELTIGO", "id": 7 },
@@ -778,7 +779,7 @@ export default function Checkout() {
             data: data
         };
         setLoader('<div class="spinner dashboard-loader" style="color: #e0922f; text: center"></div>')
-
+        
         axios(config).then(response => {
             // // console.log("data otp==", response?.data);
             if (response?.data?.status) {
