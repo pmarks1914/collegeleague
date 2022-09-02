@@ -135,6 +135,7 @@ export default function Checkout() {
     const [feeTypeError, setFeeTypeError] = useState(false)
     const [admissionIdError, setAdmissionIdError] = useState(false)
     const [emailError, setEmailError] = useState(false)
+    const [defaulName, setDefaulName] = useState("")
     
     // data
     const [payeeData, setPayeeData] = useState({})
@@ -388,24 +389,28 @@ export default function Checkout() {
 
             }
         }
-        console.log("fff", accountType, methodOfPayment)
-        if(accountType === 1){
-            // 
-            setAccountName(methodOfPayment[0].name)
+        else{
+            setDefaulName("WingiPay Transaction")
         }
-        else if(accountType === 5){
-            // 
-            setAccountName(methodOfPayment[1].name)
-        }
-        else if(accountType === 6){
-            // 
-            setAccountName(methodOfPayment[2].name)
-        }
-        else if(accountType === 7){
-            // 
-            // console.log(">>> ", methodOfPayment)
-            setAccountName(methodOfPayment[3].name)
-        }
+        console.log("fff", accountType, methodOfPayment?.filter((post) => {return post?.id === accountType } )[0]?.name )
+        setAccountName( methodOfPayment?.filter((post) => {return post.id === accountType } )[0]?.name )
+        // if(accountType === 1){
+        //     // 
+        //     setAccountName(methodOfPayment[0].name)
+        // }
+        // else if(accountType === 5){
+        //     // 
+        //     setAccountName(methodOfPayment[1].name)
+        // }
+        // else if(accountType === 6){
+        //     // 
+        //     setAccountName(methodOfPayment[2].name)
+        // }
+        // else if(accountType === 7){
+        //     // 
+        //     // console.log(">>> ", methodOfPayment)
+        //     setAccountName(methodOfPayment[3].name)
+        // }
     }, [accountType])
     const handleDropdownChange = (event) => {
         // setbusinessType(event.target.value);
@@ -1067,7 +1072,7 @@ export default function Checkout() {
                     ccount = 0;
                     sessionStorage.setItem("trackTransaction", true)
                     
-                    let textStr = "<p>Payment of GHS" + amount.toString() + " to " + (sessionData?.merchant_name?.toString() || sessionData?.merchant_id || '') + " </p> <p>Reference : " + " " + response?.data?.reference_id + "</p>";
+                    let textStr = "<p>Payment of GHS" + amount.toString() + " to " + (sessionData?.merchant_name?.toString() || sessionData?.merchant_id || defaulName) + " </p> <p>Reference : " + " " + response?.data?.reference_id + "</p>";
 
                     Swal.fire({
                     title: 'Successful',
@@ -1205,7 +1210,7 @@ export default function Checkout() {
                     <img src="https://wingipay.com/static/wingipay/logo/wingipay-2.4086593aa042.png" className='mb-3' />
 
                     <Typography component="h1" variant="h5" className='mb-5 checkout-0'>
-                        { sessionData?.merchant_id || sessionData?.merchant_name || "WingiPay Transaction" }
+                        { sessionData?.merchant_id || sessionData?.merchant_name || defaulName }
                     </Typography>
                 </Box>
 
