@@ -30,6 +30,7 @@ const Page500 = React.lazy(() => import('./views/pages/page500/Page500'))
 const Checkout = React.lazy(() => import('./views/pages/Checkout/Checkout'))
 const Compliance = React.lazy(() => import('./views/pages/Compliance/Compliance'))
 const Otp = React.lazy(() => import('./views/pages/register/Otp'))
+const ChangePassword = React.lazy(() => import('./views/pages/AccountSetup/ChangePassword'))
 
 class App extends Component {
   render() {
@@ -51,6 +52,7 @@ class App extends Component {
             <Route exact path='/pay/:id' name="" element={<Checkout />} />
             <Route exact path='/pay' name="" element={<Checkout />} />
             <Route exact path="/otp" name="Otp Verification" element={<Otp />} />
+            <Route exact path="/change-password" name="Change Password" element={<ChangePassword />} />
             {
               userData?.access ?
               <Route path="*" name="Home" element={<DefaultLayout />} />

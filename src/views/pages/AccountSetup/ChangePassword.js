@@ -1,3 +1,161 @@
+// import React, { useState } from 'react'
+// import {
+//   CCard,
+//   CCardBody,
+//   CCardGroup,
+//   CCol,
+//   CContainer,
+//   CForm,
+//   CRow,
+// } from '@coreui/react'
+
+// import axios from 'axios';
+// import TextField from '@mui/material/TextField';
+// import Button from '@mui/material/Button';
+// import Box from '@mui/material/Box';
+// import { useNavigate } from 'react-router-dom';
+// import CircularProgress from '@mui/material/CircularProgress';
+
+
+// const swal = require("sweetalert2");
+
+// export default function ChangePassword(){
+//     const navigate = useNavigate()
+
+//     const handleSubmit = (event) => {
+
+//         event.preventDefault();
+//         const data = new FormData(event.currentTarget);
+    
+//             const oldPassword = data.get('oldPassword')
+//             const newPassword = data.get('newPassword')
+//             const newPassword2 = data.get('newPassword2')
+//             console.log(oldPassword)
+//             console.log(newPassword)
+//             console.log(newPassword2)
+
+//             const payload = JSON.stringify({
+//                 "old_password": oldPassword,
+//                 "password": newPassword,
+//                 "password2": newPassword2
+//             })
+
+//             console.log(payload)
+//                 let config = {
+//                 method: 'post',
+//                 url: process.env.REACT_APP_BASE_API + 'auth/changePassword/',
+                
+//                 headers: {
+//                     'Content-Type': 'application/json'
+//                 },
+//                 data: payload
+//                 };
+//                 axios(config).then(function (response){
+//                 console.log(response["data"])
+//                 if (response["data"]["message"] === "Otp has been sent successfully." && response["data"]["status"] === true){
+//                     localStorage.setItem("signupInfo", payload)
+//                     navigate('/otp')
+//                 }
+//                 else if (!response){
+//                     <Box sx={{ display: 'flex' }}>
+//                     <CircularProgress />
+//                     </Box>
+//                 }
+//                 })
+//                 .catch(function (error) {
+//                 console.log(error);
+//                 });
+// };
+
+//     // // console.log("fff", process.env.REACT_APP_BASE_API, passwordVar, usernameVar)
+//   return (
+//     <div className="bg-light min-vh-100 min-vw-100 d-flex flex-row align-items-center">
+//       <CContainer>
+//       <Box
+//         sx={{
+//             display: 'flex',
+//             flexDirection: 'column',
+//             alignItems: 'center',
+//             marginBottom: '10px'
+//         }}
+//     >
+//         <img src="https://wingipay.com/static/wingipay/logo/wingipay-2.4086593aa042.png" className='mb-3' style={{ width: "160px"}}/>
+
+//     </Box>
+//         <CRow className="justify-content-center">
+//           <CCol lg={5} xl={5}>
+//             <CCardGroup>
+//               <CCard className="p-4">
+//                 <CCardBody>
+//                   <CForm>
+//                     <h2>Change Password</h2>
+
+//                     <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+
+//                     <TextField 
+//                     id="standard-basic"
+//                     name = "oldPassword"
+//                     label="Old Password"
+//                     variant="standard"
+//                     margin = "normal" 
+//                     type="password"
+//                     fullWidth
+//                     required
+//                     />
+
+//                     <TextField
+//                     margin="normal"
+//                     required
+//                     fullWidth
+//                     name="newPassword"
+//                     label="New Password"
+//                     type="password"
+//                     id="standard-basic"
+//                     variant = "standard"
+//                     autoComplete="current-password"
+//                     />
+
+//                     <TextField
+//                     margin="normal"
+//                     required
+//                     fullWidth
+//                     name="newPassword2"
+//                     label="Confirm New Password"
+//                     type="password"
+//                     id="standard-basic"
+//                     variant = "standard"
+//                     autoComplete="current-password"
+//                     />
+
+//                     <CRow>
+//                       <CCol xs={12}>
+                     
+//                       <Button
+//                         type="submit"
+//                         fullWidth
+//                         variant="contained"
+//                         sx={{ mt: 3, mb: 2 }}
+//                         style = {{color: "#fff"}}
+//                         >
+//                         Change Password
+//                         </Button>
+//                       </CCol>
+//                     </CRow>
+//                       </Box>
+//                   </CForm>
+//                 </CCardBody>
+//               </CCard>
+              
+//             </CCardGroup>
+//           </CCol>
+//         </CRow>
+//       </CContainer>
+//     </div>
+//   )
+// }
+
+
+
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -21,9 +179,6 @@ import theme from "src/styles/Styles"
 import axios from "axios"
 import { useNavigate } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
-
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 
 export default function SignUp() {
@@ -58,7 +213,6 @@ export default function SignUp() {
       const is_developer = data.get('is_developer')
       const password = data.get('password')
       
-      
 
       const payload = JSON.stringify({
         "firstname": firstname,
@@ -83,23 +237,11 @@ export default function SignUp() {
           data: payload
         };
         axios(config).then(function (response){
-          console.log(response["data"]["message"])
-          if (response["data"]["message"] === "email already exist."){
-            toast.error('Email already exists', {
-                position: toast.POSITION.TOP_RIGHT
-            });
-          }
-          // else if (phone.length < 10){
-          //   toast.error('Invalid phone number', {
-          //     position: toast.POSITION.TOP_RIGHT
-          // });
-          // }
-          
+          console.log(response["data"])
           if (response["data"]["message"] === "Otp has been sent successfully." && response["data"]["status"] === true){
             localStorage.setItem("signupInfo", payload)
             navigate('/otp')
           }
-          
           else if (!response){
             <Box sx={{ display: 'flex' }}>
               <CircularProgress />
@@ -240,8 +382,6 @@ export default function SignUp() {
             
           </Box>
         </Box>
-        <ToastContainer />
-
       </Container>
     </ThemeProvider>
   );

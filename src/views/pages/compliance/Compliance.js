@@ -6,6 +6,8 @@ import 'antd/dist/antd.css';
 import { message, Upload } from 'antd';
 import { ArrowUpIcon } from '@chakra-ui/icons';
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // import { UploadOutlined } from '@ant-design/icons';
 
@@ -22,7 +24,7 @@ export default function Compliance() {
     const [business_TIN, setBusinessTIN] = useState(userData.business_TIN)
     const [NID_director_1, setNID_director_1] = useState(userData.NID_director_1)
     const [NID_director_2, setNID_director_2] = useState(userData.NID_director_2)
-    const [physical_address, setPhysicalAddress] = useState(userData.physical_address)
+    const [business_address, setBusinessAddress] = useState(userData.business_address)
 
     // Settlement Information useState declaration
     const [bank_name, setBankName] = useState(userData.bank_name)
@@ -48,6 +50,46 @@ export default function Compliance() {
     const [uploading, setUploading] = useState(false);
 
 
+    // Personal Info Patch request
+        
+    const handlePersonalInfoSubmit = (event) => {
+        event.preventDefault();
+    
+        const payload = {
+            "firstname": firstname,
+            "lastname": lastname,
+        }
+        console.log(payload)
+            let config = {
+            method: 'patch',
+            url: process.env.REACT_APP_BASE_API + '/account/update/',
+            
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization" : `Bearer ${userData.access}`
+            },
+            data: payload
+            };
+            axios(config).then(function (response){
+                if (response["data"]["message"] === "Account successfully updated." && response["data"]["status"] === true){
+                    console.log("dddddddddd", response["data"]["message"], response["data"]["status"])
+
+                    toast.success('Personal Information updated!', {
+                        position: toast.POSITION.TOP_RIGHT
+                    });
+                }
+                if (response["data"]["message"] === "Failed to update account details." && response["data"]["status"] === false) {
+                    toast.error('An error occured. Please try again', {
+                        position: toast.POSITION.TOP_RIGHT
+                    });            
+                }
+            })
+            .catch(function (error) {
+            console.log(error);
+            });
+        };
+
+        
     //Business Information
     const handleBusinessInfoSubmit = (event) => {
         event.preventDefault();
@@ -58,32 +100,39 @@ export default function Compliance() {
           "business_name": business_name,
           "gps": gps,
           "business_TIN": business_TIN,
-          "postal_address": postal_address,
+          "business_address": business_address,
           "NID_director_1": NID_director_1,
           "NID_director_2": NID_director_2,
         }
-        console.log(payload)
-          let config = {
-            method: 'patch',
-            url: process.env.REACT_APP_BASE_API + '/account/update/',
-           
-            headers: {
-              'Content-Type': 'application/json',
-              "Authorization" : `Bearer ${userData.access}`
-            },
-            data: payload
-          };
-          console.log(config)
-          axios(config).then(function (response){
-            // if (response["data"]["message"] === "Account successfully updated." && response["data"]["status"] === true){
-                message.success('Account successfully updated.');
-            //   }
-
-            })
-            .catch(function (error) {
-            console.log(error);
-          });
+        let config = {
+        method: 'patch',
+        url: process.env.REACT_APP_BASE_API + '/account/update/',
+        
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization" : `Bearer ${userData.access}`
+        },
+        data: payload
         };
+        console.log(config)
+        axios(config).then(function (response){
+            console.log(response)
+        if (response["data"]["message"] === "Account successfully updated." && response["data"]["status"] === true){
+            toast.success('Business Information updated', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+        }
+        if (response["data"]["message"] === "Failed to update account details." && response["data"]["status"] === false) {
+            toast.error('An error occured. Please try again', {
+                position: toast.POSITION.TOP_RIGHT
+            });            
+        }
+
+        })
+        .catch(function (error) {
+        console.log(error);
+        });
+    };
 
 
     // Settlement Info Patch request      
@@ -109,6 +158,16 @@ export default function Compliance() {
             console.log(config)
             axios(config).then(function (response){
                 console.log(response)
+                if (response["data"]["message"] === "Account successfully updated." && response["data"]["status"] === true){
+                    toast.success('Settlement Information updated!', {
+                        position: toast.POSITION.TOP_RIGHT
+                    });
+                }
+                if (response["data"]["message"] === "Failed to update account details." && response["data"]["status"] === false) {
+                    toast.error('An error occured. Please try again', {
+                        position: toast.POSITION.TOP_RIGHT
+                    });            
+                }
             })
             .catch(function (error) {
             console.log(error);
@@ -116,38 +175,12 @@ export default function Compliance() {
         };
 
 
-    // Personal Info Patch request
-            
-    const handlePersonalInfoSubmit = (event) => {
-        event.preventDefault();
-    
-        const payload = {
-            "firstname": firstname,
-            "lastname": lastname,
-        }
-        console.log(payload)
-            let config = {
-            method: 'patch',
-            url: process.env.REACT_APP_BASE_API + '/account/update/',
-            
-            headers: {
-                'Content-Type': 'application/json',
-                "Authorization" : `Bearer ${userData.access}`
-            },
-            data: payload
-            };
-            axios(config).then(function (response){
-                console.log(response["data"])
-            })
-            .catch(function (error) {
-            console.log(error);
-            });
-        };
+
     // File Upload section
 
 
     //Business Documents
-    const handleUpload = () => {
+    const handleBusinessDocumentsUpload = () => {
         const formData3 = new FormData();
         fileList.forEach((certOfIncoporation) => {
             formData3.append('business_registration_docs', certOfIncoporation);
@@ -165,12 +198,16 @@ export default function Compliance() {
         console.log(config)
             axios(config).then(function (response){
             
-            console.log(response["data"])
-            if (response["data"]) {
-                message.success('file successfully uploaded.');
+            console.log(response.status)
+            if (response.status === 200){
+                toast.success('File Upload Successful', {
+                    position: toast.POSITION.TOP_RIGHT
+                });
             }
-            if (!response["data"]) {
-                message.error('Sorry, something went wrong. Please try again.');
+            if (response.status != 200) {
+                toast.error('An error occured. Please try again', {
+                    position: toast.POSITION.TOP_RIGHT
+                });            
             }
 
             })
@@ -216,12 +253,15 @@ export default function Compliance() {
         console.log(config)
             axios(config).then(function (response){
             
-            console.log(response["data"])
-            if (response["data"]) {
-                message.success('file successfully uploaded.');
+            if (response.status === 200){
+                toast.success('File Upload Successful', {
+                    position: toast.POSITION.TOP_RIGHT
+                });
             }
-            if (!response["data"]) {
-                message.error('Sorry, something went wrong. Please try again.');
+            if (response.status != 200) {
+                toast.error('An error occured. Please try again', {
+                    position: toast.POSITION.TOP_RIGHT
+                });            
             }
 
             })
@@ -268,11 +308,15 @@ export default function Compliance() {
             axios(config).then(function (response){
             
             console.log(response["data"])
-            if (response["data"]) {
-                message.success('file successfully uploaded.');
+            if (response.status === 200){
+                toast.success('File Upload Successful', {
+                    position: toast.POSITION.TOP_RIGHT
+                });
             }
-            if (!response["data"]) {
-                message.error('Sorry, something went wrong. Please try again.');
+            if (response.status != 200) {
+                toast.error('An error occured. Please try again', {
+                    position: toast.POSITION.TOP_RIGHT
+                });            
             }
 
             })
@@ -414,9 +458,9 @@ export default function Compliance() {
                     userData[id] =  user_data[id]
                 })
                 break;
-            case "physical_address":
+            case "business_address":
                 user_data = {
-                    "physical_address": value
+                    "business_address": value
                 };
                 Object.keys(user_data)?.map(id=>{
                     userData[id] =  user_data[id]
@@ -427,8 +471,8 @@ export default function Compliance() {
         }
         localStorage.setItem("userDataStore", JSON.stringify(userData));
     }
+      
     
-
 
 return(
     <div className="bg-light mt-5 d-flex flex-row align-items-center">
@@ -475,6 +519,7 @@ return(
                     </GridItem>
                     <GridItem colStart={3} colEnd={5} h='10'>
                     <Button colorScheme='orange' onClick={handlePersonalInfoSubmit} style = {{color: "#fff"}}>Save Changes</Button>
+
                     </GridItem>
                 </Grid>                                   
                 </Stack>
@@ -489,7 +534,7 @@ return(
                         <Input placeholder='Business Name' focusBorderColor='orange.500' onChange={(e) => { (setBusinessName(e.target.value)); (updateKycInUserSession("business_name", e.target.value)) }} value = {business_name} />
                     </GridItem>
                     <GridItem colStart={3} colEnd={5} h='10'>
-                        <Input placeholder='Business Physical Address' focusBorderColor='orange.500' onChange={(e) => { (setPhysicalAddress(e.target.value)); (updateKycInUserSession("physical_address", e.target.value)) }} value = {physical_address} />
+                        <Input placeholder='Business Physical Address' focusBorderColor='orange.500' onChange={(e) => { (setBusinessAddress(e.target.value)); (updateKycInUserSession("business_address", e.target.value)) }} value = {business_address} />
                     </GridItem>
                     <GridItem colStart={1} colEnd={3} h='10'>
                     </GridItem>
@@ -525,6 +570,7 @@ return(
                     </GridItem>
                     <GridItem colStart={3} colEnd={5} h='10'>
                     <Button type = "submit" colorScheme='orange' onClick={(e) => handleBusinessInfoSubmit(e)} style = {{color: "#fff"}}>Save Changes</Button>
+
                     </GridItem>
                     </Grid>
                     </Stack>                    
@@ -624,7 +670,7 @@ return(
                     </Upload>
                     <Button
                     type="primary"
-                    onClick={handleUpload}
+                    onClick={handleBusinessDocumentsUpload}
                     disabled={fileList.length === 0}
                     loading={uploading}
                     style={{
@@ -676,6 +722,7 @@ return(
                 </TabPanel>
                 </TabPanels>
                 </Tabs>
+                    <ToastContainer />
             </Box>
         </ChakraProvider>
     </CContainer>
