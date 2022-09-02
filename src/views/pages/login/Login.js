@@ -103,7 +103,7 @@ const Login = () => {
             bank_branch: response?.data?.kyc?.bank_branch,
             email: response?.data?.email,
             business_registration_docs: response?.data?.business_registration_docs,
-            physical_address: response?.data?.business_address,
+            business_address: response?.data?.kyc?.business_address,
 
           };
 
