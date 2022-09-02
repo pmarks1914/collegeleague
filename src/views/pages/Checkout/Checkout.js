@@ -146,7 +146,7 @@ export default function Checkout() {
     const [modal2, setModal2] = useState(false)
 
     useEffect(()=>{
-        // condition for only normal checkout
+        // condition for only normal checkout 
         if(window.location.pathname.split("/")[1] === "checkout"){
             // 
             let checkoutId = window.location.pathname.split("/")[2]
