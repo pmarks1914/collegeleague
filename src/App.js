@@ -51,6 +51,7 @@ class App extends Component {
             <Route exact path='/checkout' name="" element={<Checkout />} />
             <Route exact path='/pay/:id' name="" element={<Checkout />} />
             <Route exact path='/pay' name="" element={<Checkout />} />
+            <Route exact path='/link/:id' name="" element={<Checkout />} />
             <Route exact path="/otp" name="Otp Verification" element={<Otp />} />
             <Route exact path="/change-password" name="Change Password" element={<ChangePassword />} />
             {

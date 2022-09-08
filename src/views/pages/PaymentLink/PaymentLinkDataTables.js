@@ -55,7 +55,7 @@ import {
   CNavItem,
   CTooltip,
 } from '@coreui/react'
-import { apikeyData } from '../Data/PageData';
+import { paymentLinkData } from '../Data/PageData';
 import ViewDetails from '../../datatable/ViewDetails';
 import CIcon from '@coreui/icons-react';
 import {
@@ -67,18 +67,19 @@ import {
   // cilFile,
   cilLockLocked,
   // cilSettings,
-  cilFilter, cilCheckCircle, cilSettings, cilCalendar, cilSearch, cilPlus, cilKeyboard,
+  cilFilter, cilCheckCircle, cilSettings, cilCalendar, cilSearch, cilPlus, cilKeyboard, cilMinus,
 } from '@coreui/icons'
-import Select from 'react-select';
+import Select, { ActionMeta, OnChangeValue } from 'react-select';
+import CreatableSelect from 'react-select/creatable';
 import * as XLSX from 'xlsx';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { Button } from 'antd';
 
 let currentUser = JSON.parse(localStorage.getItem("userDataStore")); 
-let apikeyInfoData = apikeyData();
-let apikeyInfo = []
-apikeyInfoData?.apikey?.then(value => { (apikeyInfo = value) });
+let paymentLinkInfoData = paymentLinkData();
+let paymentLinkInfo = []
+paymentLinkInfoData?.paymentLink?.then(value => { (paymentLinkInfo = value) });
 
 const PaymentLinkDataTables = (apikeyDetails) => {
   const [loader, setLoader] = useState('<div class="spinner-border dashboard-loader" style="color: #e0922f;"></div>')
@@ -87,15 +88,18 @@ const PaymentLinkDataTables = (apikeyDetails) => {
   const [monitorState, setMonitorState] = useState(1);
   const [dropValue, setDropValue] = useState(0);
 
+  // handle state transition for delete action to update data
+  const [actionDel, setActionDel] = useState(0)
+
   // date time
   const [dateTo, setDateTo] = useState(new Date('2014-08-18T21:11:54'));
   const [dateFrom, setDateFrom] = useState(new Date('2014-08-18T21:11:54')); 
   const [value, setValue] = useState([null, null]);
 
   // modals
-  // filer apikeyInfo
+  // filer paymentLinkInfo
   const [modal1, setModal1] = useState(false)
-  // view single apikeyInfo 
+  // view single paymentLinkInfo 
   const [modal2, setModal2] = useState(false)
 
   // set Show form fields
@@ -105,18 +109,21 @@ const PaymentLinkDataTables = (apikeyDetails) => {
   const [openDateRange, setOpenDateRange] = useState(true);
   const [dateRange, setDateRange] = useState({});
   const [description, setDescription] = useState("");
-  const [apikeyInfoStatusInModal, setapikeyInfoStatusInModal] = useState("");
+  const [paymentLinkInfoStatusInModal, setpaymentLinkInfoStatusInModal] = useState("");
   // startDate: Date.parse("2022-01-13"), endDate: Date.now()
   
-
-  const [apikeyInfoStatus, setapikeyInfoStatus] = useState("");
-  const [apikeyInfoId, setapikeyInfoId] = useState("");
+  const [paymentLinkInfoStatus, setpaymentLinkInfoStatus] = useState("");
+  const [paymentLinkInfoId, setpaymentLinkInfoId] = useState("");
   const [referanceId, setReferanceId] = useState("");
-  const [apikeyInfoExport, setapikeyInfoExport] = useState({});
+  const [paymentLinkInfoExport, setpaymentLinkInfoExport] = useState({});
   const [dateFilterData, setDateFilterData] = useState({});
   const [amountLess, setAmountLess] = useState(0.00);
   const [amountGreat, setAmountGreat] = useState(0.00);
   const [amountEqual, setAmountEqual] = useState(0.00);
+
+  // get form data 
+  const [formData, setFormData] = useState({});
+  const [editFormData, setEditFormData] = useState({});
 
   const toggle = () => setOpenDateRange(!openDateRange);
 
@@ -125,20 +132,20 @@ const PaymentLinkDataTables = (apikeyDetails) => {
     if(dateRange.length > 0 && monitorState === 1){
       setMonitorState(2)
       performFilter("filterByDate", "none")
-      setapikeyInfoStatus("")
+      setpaymentLinkInfoStatus("")
 
       setLoader('<a></a>')
     }
-    else if (apikeyInfo?.length > 0 && monitorState === 1) {
+    else if (paymentLinkInfo?.length > 0 && monitorState === 1) {
       // setMonitorState(2)
-      // console.log("info ", apikeyInfo )
-      datatablaScript(apikeyInfo);
+      // console.log("info ", paymentLinkInfo )
+      datatablaScript(paymentLinkInfo);
 
       setLoader('<a></a>')
     }
     else if(dateRange && monitorState === 2){
       performFilter("filterByDate", "none")
-      setapikeyInfoStatus("")
+      setpaymentLinkInfoStatus("")
       // setMonitorState(3)
     }
     else{
@@ -149,14 +156,14 @@ const PaymentLinkDataTables = (apikeyDetails) => {
         // }, 200)
     }
 
-    // if(apikeyInfoStatus && monitorState === 2){
+    // if(paymentLinkInfoStatus && monitorState === 2){
     //   performFilter("filterByStatus")
     // }
 
     
-    // console.log("props ", dateRange, apikeyInfo, apikeyInfoStatus, monitorState)
+    // console.log("props ", dateRange, paymentLinkInfo, paymentLinkInfoStatus, monitorState)
 
-  }, [dateRange, apikeyInfo])
+  }, [dateRange, paymentLinkInfo, actionDel])
 
   // perform filter 
   function datatablaScript(tdata) {
@@ -168,7 +175,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
        
       $('#myTable').DataTable(
         {
-          // data: apikeyInfo,
+          // data: paymentLinkInfo,
           columnDefs: [
             { "width": "10%", "targets": 2 }
           ],
@@ -210,7 +217,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
                 }
               },
               customize: function (anytype) {
-                let sheet = anytype.xl.worksheets['wingipayapikeyInfo.xml'];
+                let sheet = anytype.xl.worksheets['wingipaypaymentLinkInfo.xml'];
                 $('row:first c', sheet).attr('s', '7');
               }
             },
@@ -232,7 +239,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
                 }
               },
               customize: function (anytype) {
-                let sheet = anytype.xl.worksheets['wingipayapikeyInfo.pdf'];
+                let sheet = anytype.xl.worksheets['wingipaypaymentLinkInfo.pdf'];
                 $('row:first c', sheet).attr('s', '7');
               }
             },
@@ -258,11 +265,11 @@ const PaymentLinkDataTables = (apikeyDetails) => {
     // 
     e.preventDefault();
     // console.log("post tableData ", tableData);
-    // apikeyInfo = posts;
+    // paymentLinkInfo = posts;
     try {
       // setTableData(posts);
-      let newFilterData = apikeyInfo.filter((post) => { return moment(post?.created).format('LLLL') <= moment(dateFrom).format('LLLL') })
-      // // console.log("post tableData ", apikeyInfo);
+      let newFilterData = paymentLinkInfo.filter((post) => { return moment(post?.created).format('LLLL') <= moment(dateFrom).format('LLLL') })
+      // // console.log("post tableData ", paymentLinkInfo);
       // console.log("post tableData ", newFilterData);
       datatablaScript(newFilterData);
       setModal1(false)
@@ -288,7 +295,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
     // $(".viewDescription").css("max-width", "50%");
     $(".viewDescription").css("flex-basis", "50%");
 
-    w.document.write($('.contentForapikeyInfoPrint').html());
+    w.document.write($('.contentForpaymentLinkInfoPrint').html());
     w.print();
     w.close();
   }
@@ -330,15 +337,15 @@ const PaymentLinkDataTables = (apikeyDetails) => {
       }
     }
   }
-  const handleChangeapikeyInfoStatus = (valSelected) => {
-    setapikeyInfoStatus(valSelected);
+  const handleChangepaymentLinkInfoStatus = (valSelected) => {
+    setpaymentLinkInfoStatus(valSelected);
     performFilter("filterByStatus", valSelected)
   };
-  const handleChangeapikeyInfoStatusInModal = (valSelected) => {
-    setapikeyInfoStatusInModal(valSelected);
+  const handleChangepaymentLinkInfoStatusInModal = (valSelected) => {
+    setpaymentLinkInfoStatusInModal(valSelected);
   };
   const handleChangeExport = (valSelected) => {
-    setapikeyInfoExport(valSelected);
+    setpaymentLinkInfoExport(valSelected);
     if(valSelected === "Export to excel"){
       // 
       downloadExcel(tableData);
@@ -352,7 +359,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
     // {value: "", label: "Se", icon: "", isDisabled: true },
     {value: "live", label: "Live Key" },
     {value: "test", label: "Test Key" },
-    {value: "All apikeyInfo", label: "All Keys" }
+    {value: "All paymentLinkInfo", label: "All Keys" }
   ];
   const optionsStatusInModal = [
     // {value: "", label: "Se", icon: "", isDisabled: true },
@@ -366,11 +373,11 @@ const PaymentLinkDataTables = (apikeyDetails) => {
   ];
   function performFilter(type, status){
 
-    // // console.log("by status ", apikeyInfoStatus, "type", type )
+    // // console.log("by status ", paymentLinkInfoStatus, "type", type )
     // perform filter by date range
     if(type === "filterByDate"){
       // 
-      let dataFilter = apikeyInfo.filter((post, id) => {return ( moment(post?.created).format('DD/MM/yyyy') >= moment(dateRange[0]).format('DD/MM/yyyy') && moment(post?.created).format('DD/MM/yyyy') <= moment(dateRange[1]).format('DD/MM/yyyy') )});
+      let dataFilter = paymentLinkInfo.filter((post, id) => {return ( moment(post?.created).format('DD/MM/yyyy') >= moment(dateRange[0]).format('DD/MM/yyyy') && moment(post?.created).format('DD/MM/yyyy') <= moment(dateRange[1]).format('DD/MM/yyyy') )});
 
       datatablaScript( dataFilter );
 
@@ -379,17 +386,17 @@ const PaymentLinkDataTables = (apikeyDetails) => {
     else if(type === "filterByStatus"){
       // 
       // // console.log("by status",status, monitorState, apikeyDetails )
-      if(status === "All apikeyInfo" && monitorState === 1){
-        datatablaScript(apikeyInfo);
+      if(status === "All paymentLinkInfo" && monitorState === 1){
+        datatablaScript(paymentLinkInfo);
       }
-      else if(status === "All apikeyInfo" && monitorState === 2){
+      else if(status === "All paymentLinkInfo" && monitorState === 2){
         datatablaScript(dateFilterData);
       }
       else if(status === "test" && monitorState === 1){
-        datatablaScript( apikeyInfo?.filter((post, id) => {return ( post?.is_live === false )}) );
+        datatablaScript( paymentLinkInfo?.filter((post, id) => {return ( post?.is_live === false )}) );
       }
       else if(status === "live" && monitorState === 1){
-        datatablaScript( apikeyInfo?.filter((post, id) => {return ( post?.is_live === true )}) );
+        datatablaScript( paymentLinkInfo?.filter((post, id) => {return ( post?.is_live === true )}) );
       }
       else if(status === "test" && monitorState === 2){
         datatablaScript( dateFilterData?.filter((post, id) => {return ( post?.is_live === false )}) );
@@ -406,8 +413,8 @@ const PaymentLinkDataTables = (apikeyDetails) => {
     setAmountGreat(0)
     setAmountLess(0)
     setReferanceId("")
-    setapikeyInfoId("")
-    datatablaScript(apikeyInfo)
+    setpaymentLinkInfoId("")
+    datatablaScript(paymentLinkInfo)
   }
   function convertArrayOfObjectsToCSV(array) {
     let result;
@@ -470,22 +477,40 @@ const PaymentLinkDataTables = (apikeyDetails) => {
   
   const handleChangeTo = (newValue) => {
     setDateTo(newValue);
+    setFormData({...formData, ...{"dateTo": newValue}})
+  };
+  
+  const handleEditChangeTo = (newValue) => {
+    // setDateTo(newValue); 
+    setEditFormData({...editFormData, ...{"expiration_date": newValue}}) 
   };
   function generateApikey(e) {
     e.preventDefault();
-    let keyType = false;
-    if(apikeyInfoStatusInModal === "live"){
-      keyType = true;
-    }
-
-    let data = JSON.stringify({
-      "description": description,
-      "is_live": keyType
+    // console.log("setFormData ", formData)
+    let data = JSON.stringify({ 
+      // collectFixAmount: true 
+      "type": formData?.oneTime,
+      "custom_link": formData?.customLink,
+      "page_name": formData?.payLinkName, 
+      "description": formData?.description,
+      "is_fixed": formData?.recurring,
+      "phone_required": formData?.collectPhoneNumber,
+      "phone_number": formData?.phoneNumber,
+      "fixed_amount": formData?.amount,
+      "custom_success_message": formData?.successMessage, 
+      "notify_email": formData?.email,
+      "expiration_date": formData?.dateTo,
+      "split_payment": formData?.splitPayment,
+      "additional_fields": {
+          "address": formData?.customField
+      },
+      "callback_url": "", 
+      "redirect_url": formData?.redirectUrl
     });
 
     let config = {
       method: 'post',
-      url: process.env.REACT_APP_BASE_API + "/account/apikey/generate/",
+      url: process.env.REACT_APP_BASE_API + "/payment/link/create/",
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + currentUser?.access
@@ -493,32 +518,16 @@ const PaymentLinkDataTables = (apikeyDetails) => {
       data: data
     };
     axios(config).then(response => {
-      console.log(response.status);
+      // console.log(response.data);
       if (response?.data?.status === true) { 
 
-        let apikeyInfoDataNew = apikeyData();
-        let apikeyInfoNew = []
-        apikeyInfoDataNew?.apikey?.then(value => { (apikeyInfoNew = value) });
-        // // console.log("api key", tableData)
-        // let arryData = [];
-        // // console.log("api key data 1", arryData)
-        // let new_data = {
-        //   "id": response?.data?.id,
-        //   "prefix": response?.data?.prefix,
-        //   "name": response?.data?.name,
-        //   "is_live": response?.data?.is_live,
-        //   "created":  response?.data?.created
-        // }
-        // arryData.push(new_data)
-        // apikeyInfo?.map((post, id)=> {
-        //   arryData.push(post);
-        // })
-        // // console.log("api key data 2", arryData)
-        // datatablaScript(arryData)
-        let textStr = "The API Key below will be shown only once.<p id='api-key-copy'>Key Prefix: " + response?.data?.prefix + "</p>Key Type: " + apikeyInfoStatusInModal + "<p>Key Secret: <h6>" + response?.data?.key + "</h6></p>";
+        let paymentLinkInfoDataNew = paymentLinkData();
+        let paymentLinkInfoNew = []
+        paymentLinkInfoDataNew?.paymentLink?.then(value => { (paymentLinkInfoNew = value) });
+        let textStr = "The Payment Link below .<p> <h6>" +  "/link/" + response?.data?.custom_url + "</h6></p>";
 
         Swal.fire({
-          title: 'API key Generated',
+          title: 'Payment Link Generated',
           html: textStr.toString(),
           icon: 'success',
           allowOutsideClick: false,
@@ -526,7 +535,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
           showCancelButton: false,
           confirmButtonColor: '#FF7643',
           // cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes, i have copied and saved the API Key!'
+          confirmButtonText: 'Yes, i have copied and saved the Payment Link!'
         }).then((result) => {
           // let keyCopyText = document.getElementById("api-key-copy")
           // keyCopyText.select()
@@ -535,28 +544,28 @@ const PaymentLinkDataTables = (apikeyDetails) => {
           // alert(keyCopyText.value)
           // if (result.isConfirmed) {
             // 
-            // console.log( "old ", apikeyInfo,  " new ", apikeyInfoNew)
-            apikeyInfo = apikeyInfoNew
+            // console.log( "old ", paymentLinkInfo,  " new ", paymentLinkInfoNew)
+            paymentLinkInfo = paymentLinkInfoNew
             setModal1(false);
           // window.location.reload()
           // }
         });
         // setTimeout(() => {
-        //   let infoData = apikeyData();
+        //   let infoData = paymentLinkData();
         //   let infoArray = [];
-        //   infoData?.apikey?.then(value => { 
+        //   infoData?.paymentLink?.then(value => { 
         //     infoArray = value;
         //     datatablaScript(value);
         //     apikeyDetails = value;
-        //     apikeyInfo = value
+        //     paymentLinkInfo = value
 
         //   }); 
         //   }, 1000);
       }
       else {
         Swal.fire({
-          title: 'API key Generation Failed!',
-          // text: "Try again",
+          title: 'Payment Link Generation Failed!',
+          text: response.data.message,
           icon: 'warning',
           showCancelButton: true,
           showConfirmButton: false,
@@ -569,7 +578,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
     }).catch(function (error) {
       if(error){
         Swal.fire({
-          title: 'API key Generation Failed!',
+          title: 'Payment Link Generation Failed!',
           text: "Try again!",
           icon: 'warning',
           showCancelButton: true,
@@ -600,6 +609,242 @@ const PaymentLinkDataTables = (apikeyDetails) => {
     }
     );
   }
+  function editPaymentLink(e) {
+    e.preventDefault();
+    console.log("editFormData ", editFormData)
+    let data = JSON.stringify({ 
+      // collectFixAmount: true 
+      "type": editFormData?.type,
+      "custom_link": editFormData?.custom_link,
+      "page_name": editFormData?.page_name, 
+      "description": editFormData?.description,
+      "is_fixed": editFormData?.is_fixed,
+      "phone_required": editFormData?.phone_required,
+      "phone_number": editFormData?.phone_number,
+      "fixed_amount": editFormData?.fixed_amount,
+      "custom_success_message": editFormData?.custom_success_message, 
+      "notify_email": editFormData?.notify_email,
+      "expiration_date": editFormData?.expiration_date,
+      "split_payment": editFormData?.split_payment,
+      "additional_fields": editFormData?.additional_fields,
+      "callback_url": editFormData?.callback_url, 
+      "redirect_url": editFormData?.redirect_url
+    });
+
+    let config = {
+      method: 'patch',
+      url: process.env.REACT_APP_BASE_API + "/payment/link/update/" + editFormData.id + "/",
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + currentUser?.access
+      },
+      data: data
+    };
+    axios(config).then(response => {
+      console.log(response.data);
+      if (response?.data?.status === true) { 
+
+        let paymentLinkInfoDataNew = paymentLinkData();
+        let paymentLinkInfoNew = []
+        paymentLinkInfoDataNew?.paymentLink?.then(value => { (paymentLinkInfoNew = value) });
+
+        Swal.fire({
+          title: 'Payment Link Edited',
+          icon: 'success',
+          allowOutsideClick: false,
+          // allowEscapeKey: false,
+          showCancelButton: false,
+          confirmButtonColor: '#FF7643',
+          // cancelButtonColor: '#d33',
+          confirmButtonText: 'OK!'
+        }).then((result) => {
+            paymentLinkInfo = paymentLinkInfoNew
+            setModal2(false);
+        });
+      }
+      else {
+        Swal.fire({
+          title: 'Failed To Edit Payment Link!',
+          text: response.data.message,
+          icon: 'warning',
+          showCancelButton: true,
+          showConfirmButton: false,
+          cancelButtonColor: '#d33',
+        }).then((result) => {
+          // 
+        })
+      }
+
+    }).catch(function (error) {
+      if(error){
+        Swal.fire({
+          title: 'Failed To Edit Payment Link!',
+          text: "Try again!",
+          icon: 'warning',
+          showCancelButton: true,
+          showConfirmButton: false,
+          cancelButtonColor: '#d33',
+        }).then((result) => {
+          // 
+        })
+      }
+
+      if (error.response) {
+        // // console.log("==>");
+        /*
+          * The request was made and the server responded with a
+          * status code that falls out of the range of 2xx
+          */
+
+      } else if (error.request) {
+        /*
+          * The request was made but no response was received, `error.request`
+          * is an instance of XMLHttpRequest in the browser and an instance
+          * of http.ClientRequest in Node.js
+          */
+
+      } else {
+        // Something happened in setting up the request and triggered an Error
+      }
+    }
+    );
+  }
+  // delete
+  function deletePaymentLink(e) {
+    e.preventDefault();
+    let data = {}
+    let config = {
+      method: 'delete',
+      url: process.env.REACT_APP_BASE_API + "/payment/link/delete/" + editFormData.id + "/",
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + currentUser?.access
+      },
+      data: data
+    };
+
+    Swal.fire({
+      icon: 'info',
+      title: 'Do you want to delete the item?',
+      allowOutsideClick: false,
+      // allowEscapeKey: false,
+      showCancelButton: true,
+      confirmButtonColor: '#FF7643',
+      cancelButtonColor: '#d33',
+      cancelButtonText: "Cancel",
+      confirmButtonText: 'Confirm',
+      customClass: {
+        actions: 'my-actions',
+        cancelButton: 'order-1 right-gap',
+        confirmButton: 'order-2'
+      }
+    }).then((result) => {
+        // console.log( "old ", bulkPayInfo,  " new ", bulkPayInfoNew)
+        if (result.isConfirmed) {
+          // 
+          passConfigDeleteLink(config)
+        }
+        else{
+          // 
+        }
+        
+    });
+  }
+  // get delete config for delete action 
+  function passConfigDeleteLink(config){
+    // 
+    axios(config).then(response => {
+      // console.log(response.data);
+      if (response?.data?.status === true) { 
+        let paymentLinkInfoDataNew = paymentLinkData();
+        let paymentLinkInfoNew = []
+        paymentLinkInfoDataNew?.paymentLink?.then(value => { (paymentLinkInfoNew = value) });
+        // console.log("out ", paymentLinkInfoNew)
+        Swal.fire({
+          title: 'Payment Link Deleted',
+          icon: 'success',
+          allowOutsideClick: false,
+          // allowEscapeKey: false,
+          showCancelButton: false,
+          confirmButtonColor: '#FF7643',
+          // cancelButtonColor: '#d33',
+          confirmButtonText: 'OK!'
+        }).then((result) => {
+            // console.log("in ", paymentLinkInfoNew)
+            paymentLinkInfo = paymentLinkInfoNew
+            setActionDel(2)
+            // setModal2(false);
+        });
+      }
+      else {
+        Swal.fire({
+          title: 'Failed To Delete Payment Link!',
+          text: response.data.message,
+          icon: 'warning',
+          showCancelButton: true,
+          showConfirmButton: false,
+          cancelButtonColor: '#d33',
+        }).then((result) => {
+          // 
+        })
+      }
+
+    }).catch(function (error) {
+      if(error){
+        Swal.fire({
+          title: 'Failed To Delete Payment Link!',
+          text: "Try again!",
+          icon: 'warning',
+          showCancelButton: true,
+          showConfirmButton: false,
+          cancelButtonColor: '#d33',
+        }).then((result) => {
+          // 
+        })
+      }
+
+      if (error.response) {
+        // // console.log("==>");
+        /*
+          * The request was made and the server responded with a
+          * status code that falls out of the range of 2xx
+          */
+
+      } else if (error.request) {
+        /*
+          * The request was made but no response was received, `error.request`
+          * is an instance of XMLHttpRequest in the browser and an instance
+          * of http.ClientRequest in Node.js
+          */
+
+      } else {
+        // Something happened in setting up the request and triggered an Error
+      }
+    }
+    );
+  }
+
+  function handleInputChange(e){
+    // console.group('Input Changed');
+    // console.log(e);
+    setFormData({...formData, ...{"customField": e}})
+    // console.log(`action: ${actionMeta.action}`);
+    // console.groupEnd();
+  };
+  function handleInputEditChange(e){
+    // console.group('Input Changed');
+    // let additional_fields = editFormData?.additional_fields 
+    let array3 = (editFormData?.additional_fields?.address || []).concat(e)
+    // console.log(array3)
+    let array4 = array3?.filter((item, pos) => array3?.indexOf(item) === pos) 
+    // console.log(array4)
+    setEditFormData({...editFormData, ...{"additional_fields": {
+      "address": array4
+    }}})
+    // console.log(`action: ${actionMeta.action}`);
+    // console.groupEnd();
+  };
+
   return (
 
     <div>
@@ -617,7 +862,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
           <CCardBody>
             <p>Search by:</p>
             <div> 
-              <p className='des-filter-inputs'>apikeyInfo Reference</p>
+              <p className='des-filter-inputs'>paymentLinkInfo Reference</p>
               <Box
                 // component="form"
                 // sx={{
@@ -660,8 +905,8 @@ const PaymentLinkDataTables = (apikeyDetails) => {
                 >
                 <TextField 
                   id='filters-d'
-                  value={apikeyInfoId}
-                  onChange={(e) => setapikeyInfoId(e.target.value)} 
+                  value={paymentLinkInfoId}
+                  onChange={(e) => setpaymentLinkInfoId(e.target.value)} 
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="start" >
@@ -785,21 +1030,20 @@ const PaymentLinkDataTables = (apikeyDetails) => {
 
         </Col>
         <Col xs="12" sm="12" md={3} lg={3} >
-          {/* apikeyInfo types */}
-          <Box sx={{ minWidth: 160 }}>
+          {/* paymentLinkInfo types */}
+          {/* <Box sx={{ minWidth: 160 }}>
             <FormControl fullWidth style={{marginTop: "0px"}}>
-              <Label for="apikeyInfoStatus" className="label-dc"> </Label>
+              <Label for="paymentLinkInfoStatus" className="label-dc"> </Label>
               <Select
                 placeholder={"Select status"}
                 options={optionsStatus}
-                id="apikeyInfoStatus"
+                id="paymentLinkInfoStatus"
                 className='other-input-select d-filters'
-                // components={{ Option: paymentOption }}
-                onChange={(e) => handleChangeapikeyInfoStatus(e.value)}
+                onChange={(e) => handleChangepaymentLinkInfoStatus(e.value)}
               />
           
             </FormControl>
-          </Box>
+          </Box> */}
         </Col>
         {/* Date range */}
         <Col xs="12" sm="12" md={4} lg={4} >
@@ -854,11 +1098,11 @@ const PaymentLinkDataTables = (apikeyDetails) => {
           {/* export */}
           <Box sx={{ minWidth: 120 }}>
             <FormControl fullWidth>
-              <Label for="apikeyInfoExport" className="label-dc"> </Label>
+              <Label for="paymentLinkInfoExport" className="label-dc"> </Label>
               <Select
                 placeholder={"Select export"}
                 options={optionsExport}
-                id="apikeyInfoExport"
+                id="paymentLinkInfoExport"
                 className='other-input-select d-filters mt-0'
                 // components={{ Option: paymentOption }}
                 onChange={(e) => handleChangeExport(e.value)}
@@ -875,25 +1119,27 @@ const PaymentLinkDataTables = (apikeyDetails) => {
         <thead>
           <tr>
             <th>No.</th>
-            <th>Prefix</th>
+            <th>Name</th>
             <th>Description</th>
-            <th>Status</th>
-            <th>Date</th>
+            <th>Recurring</th>
+            <th>Amount</th>
+            <th>Link</th>
+            <th>Expiration Date</th>
             <th>Action</th>
           </tr>
         </thead>
-
         <tbody>
           {
             tableData?.map((post, id) =>
               <tr key={id}>
                 <td>{id + 1}</td>
-                <td>{post?.prefix}</td>
-                <td>{post?.name}</td>
-                <td><CBadge color={post?.is_live === true ? "success" : "secondary" }> {post?.is_live === true ? "LIVE" : "TEST"} </CBadge> </td>
-                <td>{moment(post?.created).format('LLLL')}</td>
-                {/* <td>{post?.amount}</td> */}
-                <td onClick={() => { setModal2(true); setViewData(post) }}><CBadge className='bg-text-wp'> Edit </CBadge></td>
+                <td>{post?.page_name}</td>
+                <td>{post?.description}</td>
+                <td>{post?.is_fixed ? "Yes" : "No" }</td>
+                <td>{post?.fixed_amount || "No" }</td>
+                <td><a href={ "/link/"+post?.custom_link} > { window.location.hostname + "/link/" + post?.custom_link} </a></td>   
+                <td>{moment(post?.expiration_date || Date() ).format('LLLL') }</td>            
+                <td><CBadge className='bg-text-wp' onClick={() => { setModal2(true); setEditFormData(post) }} > Edit </CBadge> <CBadge color='black' style={{marginRight: "5px"}} onClick={(e) => { setEditFormData(post); deletePaymentLink(e) }} > Delete </CBadge> </td>
               </tr>
             )}
             
@@ -905,12 +1151,13 @@ const PaymentLinkDataTables = (apikeyDetails) => {
       <a dangerouslySetInnerHTML={{ __html: loader }}></a>
 
       {/* modals */}
-      {/* modal for filter date range */}
+      {/* modal for create */}
       <CModal visible={modal1} alignment="center" onClose={() => setModal1(false)}>
-        <CModalHeader> Create a Payment Link </CModalHeader>
+        <CModalHeader> <CModalTitle> Create a Payment Link </CModalTitle> </CModalHeader>
         <CModalBody> 
           {/* <Checkbox {...label} /> */}
           <Row style={{ marginRight: '1px' }}>
+            {/* name for payment link */}
             <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
             <div className='bulk-pay-name' >
               <Box 
@@ -918,19 +1165,20 @@ const PaymentLinkDataTables = (apikeyDetails) => {
                 noValidate
                 autoComplete="off"
                 >
-                <Label for="description" className="f-w-label"> Page name </Label>
+                <Label for="payLinkName" className="f-w-label"> Page name </Label>
                 <TextField
                   fullWidth
                   // error = {pageNameError} 
-                  id='description'
+                  id='payLinkName'
                   // value={pageName} 
+                  onChange={(e)=>setFormData({...formData, ...{"payLinkName": e.target.value}})}
                   // onChange={(e) => {(setPageName(e.target.value)); (setPageNameError(false))}}
                   // label="description"                      
                   />
               </Box>
             </div>
             </Col>
-
+            {/* description */}
             <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
             <div className='bulk-pay-name' >
               <Box 
@@ -943,6 +1191,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
                   fullWidth
                   // error = {descriptionError} 
                   id='description'
+                  onChange={(e)=>setFormData({...formData, ...{"description": e.target.value}})}
                   // value={amount}
                   // onChange={(e) => {(setDescription(e.target.value)); (setDescriptionError(false))}}
                   // label="description"                      
@@ -957,28 +1206,32 @@ const PaymentLinkDataTables = (apikeyDetails) => {
               {/* <FormControlLabel disabled control={<Checkbox />} label="Disabled" /> */}
 
             </Col>
-
+            {/* collect fixed amount */}
             <Col xs="12" sm="12" md={12} lg={12} className="mt-2" >
               {/*  */}
               <FormGroup>
-                <FormControlLabel className="f-w-label" control={<Checkbox defaultChecked />} label="I want to collect a fix amount on this page." />
+                {/* <FormControlLabel className="f-w-label" control={<Checkbox defaultChecked/>}  */}
+                <FormControlLabel className="f-w-label" control={<Checkbox />} label="I want to collect a fix amount on this page." 
+                  onClick={(e)=>setFormData({...formData, ...{"collectFixAmount": e.target.checked }})} />
               </FormGroup>
             </Col>
-
+            {/* collect phone */}
             <Col xs="12" sm="12" md={12} lg={12} className="mt-0" >
               {/*  */}
               <FormGroup>
-                <FormControlLabel className="f-w-label" control={<Checkbox defaultChecked />} label="I want to collect phone number." />
+                <FormControlLabel className="f-w-label" control={<Checkbox />} label="I want to collect phone number." 
+                  onClick={(e)=>setFormData({...formData, ...{"collectPhoneNumber": e.target.checked }})} />
               </FormGroup>
             </Col>
-
+            {/* set status to active */}
             <Col xs="12" sm="12" md={12} lg={12} className="mt-0" >
               {/*  */}
               {/* <FormGroup> */}
-                <FormControlLabel className="f-w-label" control={<Checkbox defaultChecked />} label="I want to set the status to be active." />
+                <FormControlLabel className="f-w-label" control={<Checkbox />} label="I want to set the status to be active."
+                  onClick={(e)=>setFormData({...formData, ...{"setStatusToActive": e.target.checked }})} />
               {/* </FormGroup> */}
             </Col>
-
+            {/* recurring */}
             <Col xs="12" sm="12" md={12} lg={12} className="mt-2" >
               {/*  */}
               <p>                
@@ -995,28 +1248,81 @@ const PaymentLinkDataTables = (apikeyDetails) => {
                     className='d-flex'
 
                   > 
+                  {/* recurring onetime action */}
                   <Row>
                     <Col md={6} lg={6}>
-                      <FormControlLabel className='mt-0' value="oneTime" control={<Radio />} label="One time" />
+                      <FormControlLabel className='mt-0' value="oneTime" control={<Radio />} label="One time" onClick={(e)=>setFormData({...formData, ...{"oneTime": e.target.checked},  ...{"recurring": false} }) }  />
                     </Col>
                     <Col md={6} lg={6}>
-                      <FormControlLabel className='mt-0' value="recurring" control={<Radio />} label="Recurring" md={6} lg={6} />
+                      <FormControlLabel className='mt-0' value="recurring" control={<Radio />} label="Recurring" onClick={(e)=>setFormData({...formData, ...{"recurring": e.target.checked}, ...{"oneTime": false} })} md={6} lg={6} />
                     </Col>
-                  </Row>
+                  </Row> 
                   </RadioGroup>
                 </FormControl>
               </p>
             </Col>
-            {/* Additional Fields (optional) */}
 
+            {/* phone number*/}
+            {
+              formData?.collectPhoneNumber ? 
+
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-3" > 
+                <div className='bulk-pay-name' >
+                  <Box 
+                    component="form"
+                    noValidate
+                    autoComplete="off"
+                    >
+                    <Label for="phoneNumber" className="f-w-label"> Phone Number </Label>
+                    <TextField
+                      fullWidth
+                      // error = {phoneNumberError} 
+                      id='customLink'
+                      placeholder='eg. 0202538033'
+                      onChange={(e)=>setFormData({...formData, ...{"phoneNumber": e.target.value}})}                     
+                      />
+                  </Box>
+                </div>
+              </Col>
+              : ""
+            }
+
+            {/* amount */}
+            {
+              formData?.collectFixAmount ? 
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-3" > 
+                <div className='bulk-pay-name' >
+                  <Box 
+                    component="form"
+                    noValidate
+                    autoComplete="off"
+                    >
+                    <Label for="amount" className="f-w-label"> Amount </Label>
+                    <TextField
+                      fullWidth
+                      type="number"
+                      inputProps={{ min: 0, step: 0.01 }}
+                      // error = {phoneNumberError} 
+                      id='amount'
+                      placeholder='eg. 2.00'
+                      onChange={(e)=>setFormData({...formData, ...{"amount": e.target.value}})}                     
+                      />
+                  </Box>
+                </div>
+              </Col>
+              : ""
+            }
+
+            {/* Additional Fields (optional) */}
             { 
               show ?
               <>
-            <Row>
-              <Col xs="12" sm="12" md={12} lg={12} className="mt-2 d-flex" > 
-              <h6 style={{ marginRight: '4px'}} > Additional Fields </h6>{" "}(optional) 
-              </Col>
-            </Row>
+              <Row>
+                <Col xs="12" sm="12" md={12} lg={12} className="mt-2 d-flex" > 
+                <h6 style={{ marginRight: '4px'}} > Additional </h6>{" "}(optional) 
+                </Col>
+              </Row>
+              {/* set expiration date */}
               <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
                 <div className='bulk-pay-name' width='100%' >
                   <Box
@@ -1047,7 +1353,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
                   </Box>
                 </div>
               </Col>
-
+              {/* custom payment link */}
               <Col xs="12" sm="12" md={6} lg={6} className="mt-3" > 
                 <div className='bulk-pay-name' >
                   <Box 
@@ -1060,6 +1366,8 @@ const PaymentLinkDataTables = (apikeyDetails) => {
                       fullWidth
                       // error = {customLinkError} 
                       id='customLink'
+                      placeholder='eg. myPage'
+                      onChange={(e)=>setFormData({...formData, ...{"customLink": e.target.value}})}
                       // value={amount}
                       // onChange={(e) => {(setCustomLink(e.target.value)); (setCustomLinkError(false))}}
                       // label="description"                      
@@ -1067,7 +1375,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
                   </Box>
                 </div>
               </Col>
-
+              {/* success message */}
               <Col xs="12" sm="12" md={6} lg={6} className="mt-3" > 
               <div className='bulk-pay-name' >
                 <Box 
@@ -1080,6 +1388,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
                     fullWidth
                     // error = {successMessageError} 
                     id='successMessage'
+                    onChange={(e)=>setFormData({...formData, ...{"successMessage": e.target.value}})}
                     // value={amount}
                     // onChange={(e) => {(setSuccessMessage(e.target.value)); (setSuccessMessageError(false))}}
                     // label="description"                      
@@ -1087,7 +1396,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
                 </Box>
               </div>
               </Col>
-
+              {/* split payment */}
               <Col xs="12" sm="12" md={6} lg={6} className="mt-3" > 
               <div className='bulk-pay-name' >
                 <Box 
@@ -1100,6 +1409,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
                     fullWidth
                     // error = {splitPaymentError} 
                     id='splitPayment'
+                    onChange={(e)=>setFormData({...formData, ...{"splitPayment": e.target.value}})}
                     // value={amount}
                     // onChange={(e) => {(setSplitPayment(e.target.value)); (setSplitPaymentError(false))}}
                     // label="description"                      
@@ -1107,8 +1417,8 @@ const PaymentLinkDataTables = (apikeyDetails) => {
                 </Box>
               </div>
               </Col>
-
-              <Col xs="12" sm="12" md={6} lg={6} className="mt-3" > 
+              {/* redirect url */}
+              <Col xs="12" sm="12" md={12} lg={12} className="mt-3" > 
                 <div className='bulk-pay-name' >
                   <Box 
                     component="form"
@@ -1119,7 +1429,9 @@ const PaymentLinkDataTables = (apikeyDetails) => {
                     <TextField
                       fullWidth
                       // error = {redirectUrlError} 
+                      placeholder='eg. wingipay.com/buy'
                       id='redirectUrl'
+                      onChange={(e)=>setFormData({...formData, ...{"redirectUrl": e.target.value}})}
                       // value={amount}
                       // onChange={(e) => {(setRedirectUrl(e.target.value)); (setRedirectUrlError(false))}}
                       // label="description"                      
@@ -1128,33 +1440,51 @@ const PaymentLinkDataTables = (apikeyDetails) => {
                 </div>
               </Col>
 
-              <Col xs="12" sm="12" md={6} lg={6} className="mt-3" > 
+            {/* email */}
+            {
+              formData?.collectFixAmount ? 
+              <Col xs="12" sm="12" md={12} lg={12} className="mt-3" > 
                 <div className='bulk-pay-name' >
                   <Box 
                     component="form"
                     noValidate
                     autoComplete="off"
                     >
-                    <Label for="customField" className="f-w-label"> Custom Field </Label>
+                    <Label for="email" className="f-w-label"> Email </Label>
                     <TextField
                       fullWidth
-                      // error = {customFieldError} 
-                      id='customField'
-                      // value={amount}
-                      // onChange={(e) => {(setCustomField(e.target.value)); (setCustomFieldError(false))}}
-                      // label="description"                      
+                      // error = {phoneNumberError} 
+                      id='email'
+                      placeholder='eg. test@gmail.com'
+                      onChange={(e)=>setFormData({...formData, ...{"email": e.target.value}})}                     
                       />
                   </Box>
                 </div>
               </Col>
+              : ""
+            }
+              {/* Custom Field */}
+              <Col xs="12" sm="12" md={12} lg={12} className="mt-3" >
+                {/*  */}
+                <Label for="customField" className="f-w-label"> Custom Field(s) </Label>
+                <CreatableSelect
+                  isMulti
+                  placeholder="Type to create custom field(s)"
+                  // onChange={handleChange}
+                  onChange={(e)=>handleInputChange(e)}
+                  options={[]}
+                />
+              </Col>
+
             </>
-            : "" }
+            : "" 
+            }
 
           </Row>
           <p style={{ textAlign: 'center' }} className='mt-4' >
             { 
-              show ? <a href='#' onClick={ (e)=>setShow(false)}> Show less </a> :
-              <a href='#' onClick={ (e)=>setShow(true)}> Show more </a>
+              show ? <a href='#' onClick={ (e)=>setShow(false) }> Show less </a> :
+              <a href='#' onClick={ (e)=>setShow(true) }> Show more </a>
             }
           </p>
           
@@ -1162,31 +1492,364 @@ const PaymentLinkDataTables = (apikeyDetails) => {
         </CModalBody>
         <CModalFooter>
           <CButton color="secondary" className='text-white' onClick={(e) => setModal1(false)}> 
-          Cancel
+            Cancel
           </CButton>
           <CButton color="" className='text-white bg-text-wp' onClick={(e) => generateApikey(e)}> 
-          Create
+            Create
           </CButton>
         </CModalFooter>
       </CModal>
 
-      {/* modal for filter date range */}
-      <CModal visible={modal2} scrollable backdrop="static" fullscreen="xl" onClose={() => setModal2(false)}>
+      {/* modal for edit */}
+      <CModal visible={modal2} scrollable backdrop="static" onClose={() => setModal2(false)}>
         <CModalHeader>
           <CModalTitle> Edit Payment Link </CModalTitle>
         </CModalHeader>
-        <CModalBody className='contentForapikeyInfoPrint'>
+        <CModalBody> 
+          {/* <Checkbox {...label} /> */}
+          <Row style={{ marginRight: '1px' }}>
+            {/* name for payment link */}
+            <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
+            <div className='bulk-pay-name' >
+              <Box 
+                component="form"
+                noValidate
+                autoComplete="off"
+                >
+                <Label for="payLinkName" className="f-w-label"> Page name </Label>
+                <TextField
+                  fullWidth
+                  // error = {pageNameError} 
+                  id='payLinkName'
+                  value={editFormData?.page_name} 
+                  onChange={(e)=>setEditFormData({...editFormData, ...{"payLinkName": e.target.value}})}
+                  // onChange={(e) => {(setPageName(e.target.value)); (setPageNameError(false))}}
+                  // label="description"                      
+                  />
+              </Box>
+            </div>
+            </Col>
+            {/* description */}
+            <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
+            <div className='bulk-pay-name' >
+              <Box 
+                component="form"
+                noValidate
+                autoComplete="off"
+                >
+                <Label for="description" className="f-w-label"> Description </Label>
+                <TextField
+                  fullWidth
+                  // error = {descriptionError} 
+                  id='description'
+                  value={editFormData?.description} 
+                  onChange={(e)=>setEditFormData({...editFormData, ...{"description": e.target.value}})}
+                  // value={amount}
+                  // onChange={(e) => {(setDescription(e.target.value)); (setDescriptionError(false))}}
+                  // label="description"                      
+                  />
+              </Box>
+            </div>
+            </Col>
 
-          {/* view only data for apikeyInfo */}
+            <Col xs="12" sm="12" md={6} lg={6} className="mt-2" >
+              {/*  */}
+              
+              {/* <FormControlLabel disabled control={<Checkbox />} label="Disabled" /> */}
+
+            </Col>
+            {/* collect fixed amount */}
+            <Col xs="12" sm="12" md={12} lg={12} className="mt-2" >
+              {/*  */}
+              <FormGroup>
+                {/* <FormControlLabel className="f-w-label" control={<Checkbox defaultChecked/>}  */}
+                <FormControlLabel className="f-w-label" control={<Checkbox  defaultChecked={editFormData?.is_fixed || false }/>} label="I want to collect a fix amount on this page." 
+                  onClick={(e)=>setEditFormData({...editFormData, ...{"is_fixed": e.target.checked }})} />
+              </FormGroup>
+            </Col>
+            {/* collect phone */}
+            <Col xs="12" sm="12" md={12} lg={12} className="mt-0" >
+              {/*  */}
+              <FormGroup>
+                <FormControlLabel className="f-w-label" control={<Checkbox defaultChecked={editFormData?.phone_number || false } />} label="I want to collect phone number." 
+                  onClick={(e)=>setEditFormData({...editFormData, ...{"phone_number": e.target.checked }})} />
+              </FormGroup>
+            </Col>
+            {/* set status to active */}
+            <Col xs="12" sm="12" md={12} lg={12} className="mt-0" >
+              {/*  */}
+              {/* <FormGroup> */}
+                <FormControlLabel className="f-w-label" control={<Checkbox defaultChecked={editFormData?.setStatusToActive || false } />} label="I want to set the status to be active."
+                  onClick={(e)=>setEditFormData({...editFormData, ...{"setStatusToActive": e.target.checked }})} />
+              {/* </FormGroup> */}
+            </Col>
+            {/* recurring */}
+            <Col xs="12" sm="12" md={12} lg={12} className="mt-2" >
+              {/*  */}
+              <p>                
+                <FormControl>
+                    <p className="f-w-label mb-0" > 
+                      <Row className='mb-1' style={{ marginLeft: '0px'}}> Recurring Payment </Row >
+                      Select if the link is a recurring payment link or one time payment link.
+                    </p>
+                  <FormLabel id="demo-radio-buttons-group-label"> </FormLabel>
+                  <RadioGroup
+                    aria-labelledby="demo-radio-buttons-group-label"
+                    defaultValue= { editFormData?.oneTime ? "oneTime" : (editFormData?.recurring ? "recurring" : "" )}
+                    name="radio-buttons-group"
+                    className='d-flex'
+
+                  > 
+                  {/* recurring onetime action */}
+                  <Row> 
+                    <Col md={6} lg={6}>
+                      <FormControlLabel className='mt-0' value="oneTime" control={<Radio />} label="One time" onClick={(e)=>setEditFormData({...editFormData, ...{"oneTime": e.target.checked},  ...{"recurring": false} }) }  />
+                    </Col>
+                    <Col md={6} lg={6}>
+                      <FormControlLabel className='mt-0' value="recurring" control={<Radio />} label="Recurring" onClick={(e)=>setEditFormData({...editFormData, ...{"recurring": e.target.checked}, ...{"oneTime": false} })} md={6} lg={6} />
+                    </Col>
+                  </Row> 
+                  </RadioGroup>
+                </FormControl>
+              </p>
+            </Col>
+
+            {/* phone number*/}
+            {
+              editFormData?.phone_number ? 
+
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-3" > 
+                <div className='bulk-pay-name' >
+                  <Box 
+                    component="form"
+                    noValidate
+                    autoComplete="off"
+                    >
+                    <Label for="phoneNumber" className="f-w-label"> Phone Number </Label>
+                    <TextField
+                      fullWidth
+                      // error = {phoneNumberError} 
+                      value={editFormData?.phone_number} 
+                      id='customLink'
+                      placeholder='eg. 0202538033'
+                      onChange={(e)=>setEditFormData({...editFormData, ...{"phone_number": e.target.value}})}                     
+                      />
+                  </Box>
+                </div>
+              </Col>
+              : ""
+            }
+
+            {/* amount */}
+            {
+              editFormData?.is_fixed ? 
+              <Col xs="12" sm="12" md={6} lg={6} className="mt-3" > 
+                <div className='bulk-pay-name' >
+                  <Box 
+                    component="form"
+                    noValidate
+                    autoComplete="off"
+                    >
+                    <Label for="amount" className="f-w-label"> Amount </Label>
+                    <TextField
+                      fullWidth
+                      type="number"
+                      inputProps={{ min: 0, step: 0.01 }}
+                      // error = {phoneNumberError} 
+                      value={editFormData?.fixed_amount}
+                      id='amount'
+                      placeholder='eg. 2.00'
+                      onChange={(e)=>setEditFormData({...editFormData, ...{"fixed_amount": e.target.value}})}                     
+                      />
+                  </Box>
+                </div>
+              </Col>
+              : ""
+            }
+
+            {/* Additional Fields (optional) */}
+            <Row>
+              <Col xs="12" sm="12" md={12} lg={12} className="mt-2 d-flex" > 
+              <h6 style={{ marginRight: '4px'}} > Additional </h6>{" "}(optional) 
+              </Col>
+            </Row>
+            {/* set expiration date */}
+            <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
+              <div className='bulk-pay-name' width='100%' >
+                <Box
+                  component="form"
+                  fullWidth
+                  noValidate
+                  autoComplete="off"
+                  >
+                  <Label for="expirationPeriod" className="f-w-label" xs="12" sm="12" md="12" lg="12"> Set expiration period </Label>
+                    {/* <TextField
+                    fullWidth
+                    error = {expirationPeriodError} 
+                    id='expirationPeriod'
+                    value={expirationPeriod}
+                    onChange={(e) => {(setExpirationPeriod(e.target.value)); (setExpirationPeriodError(false))}}
+                    label="expirationPeriod"                      
+                    /> */}
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <DateTimePicker
+                      sx={{ width: 720 }}
+                      id="expirationPeriod"
+                      inputFormat="dd/MM/yyyy hh:mm:ss"
+                      // value={dateTo}
+                      value={editFormData?.expiration_date}
+                      onChange={handleEditChangeTo}
+                      renderInput={(params) => <TextField {...params} />}
+                    />
+                    </LocalizationProvider>
+                </Box>
+              </div>
+            </Col>
+            {/* custom payment link */}
+            <Col xs="12" sm="12" md={6} lg={6} className="mt-3" > 
+              <div className='bulk-pay-name' >
+                <Box 
+                  component="form"
+                  noValidate
+                  autoComplete="off"
+                  >
+                  <Label for="customLink" className="f-w-label"> Custom Payment Link </Label>
+                  <TextField
+                    fullWidth
+                    // error = {customLinkError} 
+                    value={editFormData?.custom_link}
+                    id='customLink'
+                    placeholder='eg. myPage'
+                    onChange={(e)=>setEditFormData({...editFormData, ...{"custom_link": e.target.value}})}
+                    // value={amount}
+                    // onChange={(e) => {(setCustomLink(e.target.value)); (setCustomLinkError(false))}}
+                    // label="description"                      
+                    />
+                </Box>
+              </div>
+            </Col>
+            {/* success message */}
+            <Col xs="12" sm="12" md={6} lg={6} className="mt-3" > 
+            <div className='bulk-pay-name' >
+              <Box 
+                component="form"
+                noValidate
+                autoComplete="off"
+                >
+                <Label for="successMessage" className="f-w-label"> Success Message </Label>
+                <TextField
+                  fullWidth
+                  // error = {successMessageError} 
+                  value={editFormData?.custom_success_message}
+                  id='successMessage'
+                  onChange={(e)=>setEditFormData({...editFormData, ...{"custom_success_message": e.target.value}})}
+                  // value={amount}
+                  // onChange={(e) => {(setSuccessMessage(e.target.value)); (setSuccessMessageError(false))}}
+                  // label="description"                      
+                  />
+              </Box>
+            </div>
+            </Col>
+            {/* split payment */}
+            <Col xs="12" sm="12" md={6} lg={6} className="mt-3" > 
+            <div className='bulk-pay-name' >
+              <Box 
+                component="form"
+                noValidate
+                autoComplete="off"
+                >
+                <Label for="splitPayment" className="f-w-label"> Split Payment </Label>
+                <TextField
+                  fullWidth
+                  // error = {splitPaymentError} 
+                  id='splitPayment'
+                  value={editFormData?.split_payment}
+                  onChange={(e)=>setEditFormData({...editFormData, ...{"split_payment": e.target.value}})}
+                  // value={amount}
+                  // onChange={(e) => {(setSplitPayment(e.target.value)); (setSplitPaymentError(false))}}
+                  // label="description"                      
+                  />
+              </Box>
+            </div>
+            </Col>
+            {/* redirect url */}
+            <Col xs="12" sm="12" md={12} lg={12} className="mt-3" > 
+              <div className='bulk-pay-name' >
+                <Box 
+                  component="form"
+                  noValidate
+                  autoComplete="off"
+                  >
+                  <Label for="redirectUrl" className="f-w-label"> Redirect URL </Label>
+                  <TextField
+                    fullWidth
+                    // error = {redirectUrlError} 
+                    placeholder='eg. wingipay.com/buy'
+                    id='redirectUrl'
+                    value={editFormData?.redirect_url}
+                    onChange={(e)=>setEditFormData({...editFormData, ...{"redirect_url": e.target.value}})}
+                    // value={amount}
+                    // onChange={(e) => {(setRedirectUrl(e.target.value)); (setRedirectUrlError(false))}}
+                    // label="description"                      
+                    />
+                </Box>
+              </div>
+            </Col>
+
+            {/* email */}
+            {
+              editFormData?.collectFixAmount ? 
+              <Col xs="12" sm="12" md={12} lg={12} className="mt-3" > 
+                <div className='bulk-pay-name' >
+                  <Box 
+                    component="form"
+                    noValidate
+                    autoComplete="off"
+                    >
+                    <Label for="email" className="f-w-label"> Email </Label>
+                    <TextField
+                      fullWidth
+                      value={editFormData?.email}
+                      // error = {phoneNumberError} 
+                      id='email'
+                      placeholder='eg. test@gmail.com'
+                      onChange={(e)=>setEditFormData({...editFormData, ...{"email": e.target.value}})}                     
+                      />
+                  </Box>
+                </div>
+              </Col>
+              : ""
+            }
+            {/* Custom Field */}
+            <Col xs="12" sm="12" md={12} lg={12} className="mt-3" >
+              {/*  */}
+              <Label for="customField" className="f-w-label"> Custom Field(s) </Label>
+              <CreatableSelect
+                isMulti
+                placeholder="Type to create custom field(s)"
+                // onChange={handleChange}
+                onChange={(e)=>handleInputEditChange(e)}
+                options={editFormData?.additional_fields?.address}
+              />
+            </Col>
+
+            
+          </Row>
+          {/* <p style={{ textAlign: 'center' }} className='mt-4' >
+            { 
+              show ? <a href='#' onClick={ (e)=>setShow(false) }> Show less </a> :
+              <a href='#' onClick={ (e)=>setShow(true) }> Show more </a>
+            }
+          </p> */}
+                  
         </CModalBody>
         <CModalFooter>
-          <CButton color="secondary" className='text-white' onClick={() => setModal2(false)}>
-            Close
+          <CButton color="secondary" className='text-white' onClick={(e) => setModal2(false)}> 
+            Cancel
           </CButton>
-          <CButton className='text-white bg-text-wp' onClick={() => printContent()}>
-            Print
+          <CButton color="" className='text-white bg-text-wp' onClick={(e) => editPaymentLink(e)}> 
+            Create
           </CButton>
-
         </CModalFooter>
       </CModal>
     </div>

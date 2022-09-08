@@ -10,7 +10,7 @@ import "datatables.net-buttons/js/buttons.html5.js";
 import "datatables.net-buttons/js/buttons.print.js";
 import '../../datatable/table.css';
 import { apikeyData } from '../Data/PageData';
-import PaymentLinkDataTables from './PaymentLinkDataTables'
+import ApikeyDataTables from './PaymentLinkDataTables'
 
 
 // let transactionData = getTransactionData();
@@ -33,7 +33,7 @@ const PaymentLink = () => {
             {/* open modal for filter date range */}
             {/* <CButton onClick={() => setModal1(!modal1)} icon={cilArrowRight} className="float-end" >Filter</CButton> */}
             <br /><br />
-            <PaymentLinkDataTables apikeyDetails={apikeyDetails} />
+            <ApikeyDataTables apikeyDetails={apikeyDetails} />
 
         </div>
     )

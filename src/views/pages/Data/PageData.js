@@ -394,3 +394,59 @@ export function bulkPayItemData(id){
         "bulkPayItems": bulkPayItemDetails()
     }
 }
+
+
+export function paymentLinkData(){
+    let data = '';
+    let config_transaction = {
+        method: 'get',
+        url: process.env.REACT_APP_BASE_API + "/payment/links/",
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + userData?.access
+        },
+        data: data
+    };
+
+    function paymentLinkDetails(){
+        <a dangerouslySetInnerHTML={{ __html: loader }}></a>
+        return axios(config_transaction).then(response => {
+            // console.log("data ==", response?.data?.data);
+            if (response.data.data) {
+                // 
+                if(response?.data){loader = "<a></>";}
+                
+                <a dangerouslySetInnerHTML={{ __html: loader }}></a>;
+                return response.data.data;
+            }
+            return
+
+        }).catch(function (error) {
+            loader = "<a></>";
+            <a dangerouslySetInnerHTML={{ __html: loader }}></a>;
+            if (error.response) {
+                // // console.log("==");
+                /*
+                * The request was made and the server responded with a
+                * status code that falls out of the range of 2xx
+                */
+            } else if (error.request) {
+                /*
+                * The request was made but no response was received, `error.request`
+                * is an instance of XMLHttpRequest in the browser and an instance
+                * of http.ClientRequest in Node.js
+                */
+
+            } else {
+                // Something happened in setting up the request and triggered an Error
+
+            }
+        }
+        );
+
+    }
+    
+    return {
+        "paymentLink": paymentLinkDetails()
+    }
+}

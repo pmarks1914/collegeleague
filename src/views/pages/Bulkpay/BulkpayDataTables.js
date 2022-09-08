@@ -771,14 +771,15 @@ const BulkpayDataTables = (apikeyDetails) => {
         // console.log(" post current ", arrayData[id])
         return { 
             "account_number": arrayData[id].account_number || "",
-            "bank_code": arrayData[id]?.network_code || arrayData[id]?.bank_code || "",
-            "destination_bank_name": arrayData[id].network_name || arrayData[id].destination_bank_name || "",
+            "bank_code": arrayData[id]?.code || arrayData[id]?.network_code || arrayData[id]?.bank_code || "",
+            "destination_bank_name": arrayData[id].network_name || arrayData[id].destination_bank_name || arrayData[id].network_name_or_destination_bank_name  || "",
             "account_holder_name": arrayData[id].account_holder_name || "",
             "currency": "GHS",
             "amount": arrayData[id].amount || "",
             "note": arrayData[id].note || "",
             "email": arrayData[id].email || "",
-            "source_metadata": ""
+            "source_metadata": "",
+            "payment_method": arrayData[id].payment_method || ""
         }
       })
 
@@ -1167,7 +1168,7 @@ const BulkpayDataTables = (apikeyDetails) => {
                 className='filters-d'
                 >
                 <TextField 
-                  
+                  fullWidth
                   id='filters-d'
                   value={referanceId}
                   onChange={(e) => setReferanceId(e.target.value)} 
@@ -1198,6 +1199,7 @@ const BulkpayDataTables = (apikeyDetails) => {
                 className='filters-d'
                 >
                 <TextField 
+                  fullWidth
                   id='filters-d'
                   value={bulkPayInfoId}
                   onChange={(e) => setbulkPayInfoId(e.target.value)} 
@@ -1256,6 +1258,7 @@ const BulkpayDataTables = (apikeyDetails) => {
                 <Col sm={6} md={6} lg={6} > 
                   <Label for="amount-less"> Less = </Label>
                   <TextField
+                    fullWidth
                     id='amount-less'
                     type="number"
                     value={amountLess}
@@ -1269,6 +1272,7 @@ const BulkpayDataTables = (apikeyDetails) => {
                 <Col sm={6} md={6} lg={6} > 
                   <Label for="amount-great"> Greter = </Label>
                   <TextField
+                    fullWidth
                     id='amount-great'
                     type="number"
                     value={amountGreat}
@@ -1284,6 +1288,7 @@ const BulkpayDataTables = (apikeyDetails) => {
                   <Col sm={6} md={6} lg={6} >
                     <Label for="amount-great"> Equal </Label>
                     <TextField
+                      fullWidth
                       id='amount-equal'
                       type="number"
                       value={amountEqual}
@@ -1320,6 +1325,7 @@ const BulkpayDataTables = (apikeyDetails) => {
                 // sx={{ minWidth: 40 }} 
                 >
                 <TextField 
+                  fullWidth
                   id="dropbtn" 
                   className='d-filters'
                   onClick={(e) => setModal2(true)} 
@@ -1353,6 +1359,7 @@ const BulkpayDataTables = (apikeyDetails) => {
                 // sx={{ minWidth: 40 }} 
                 >
                   <TextField 
+                    fullWidth
                     id="dropbtn" 
                     className='d-filters'
                     onClick={(e) => setModal1(true)} 
@@ -1468,8 +1475,9 @@ const BulkpayDataTables = (apikeyDetails) => {
           <tr>
             <th>No.</th>
             <th>Batch</th>
-            <th>Payment method</th>
-            <th>Date</th>
+            <th>Status</th>
+            <th>Date created</th>
+            <th>Date updated</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -1480,8 +1488,9 @@ const BulkpayDataTables = (apikeyDetails) => {
               <tr key={id}>
                 <td>{id + 1}</td>
                 <td>{post?.name}</td>
-                <td> {post?.payment_method?.toUpperCase()} </td>
-                <td>{moment(post?.created).format('LLLL')}</td>
+                <td>{post?.batch_items_count}</td>
+                <td>{moment(post?.created_at).format('LLLL')}</td>
+                <td>{moment(post?.updated_at).format('LLLL')}</td>
                 <td>
                   {/*  */}
                   {/* <CBadge className='bg-text-wp mr-5' style={{marginRight: "5px"}} onClick={ (e) => payExecute("batch", post) }  >Pay</CBadge> 
@@ -1520,6 +1529,7 @@ const BulkpayDataTables = (apikeyDetails) => {
                 >
                 <Label for="bulkPayInfoStatus" className="label-dc"> Batch name </Label>
                 <TextField 
+                  fullWidth
                   value={batchName}                         
                   error = {batchNameError}
                   onChange={(e) => { (setBatchName(e.target.value)); (setBatchNameError(false)) }}
@@ -1539,7 +1549,6 @@ const BulkpayDataTables = (apikeyDetails) => {
               options={optionsAccTypeInModal}
               id="bulkPayInfoStatus"
               className='other-input-select'
-              // components={{ Option: paymentOption }}
               onChange={(e) => handleChangeInfoAccTypeInModal(e.value)}
             />
           </Col>
@@ -1576,7 +1585,7 @@ const BulkpayDataTables = (apikeyDetails) => {
           <p className="success rounded" style={{ textAlign: "center" }} >
             {/* <h6> bulkPayInfo Details </h6> */}
           </p>
-          <Row style={{ marginLeft: '1%' }}>
+          <Row style={{ marginLeft: '-10px' }}>
 
 
             <Col xs="12" sm="12" md={6} lg={6} className="mt-0" > 
@@ -1588,6 +1597,7 @@ const BulkpayDataTables = (apikeyDetails) => {
                   >
                   <Label for="bulkPayInfoStatus" className="label-dc"> Batch name </Label>
                   <TextField 
+                    fullWidth
                     value={batchName}                         
                     error = {batchNameError}
                     onChange={(e) => { (setBatchName(e.target.value)); (setBatchNameError(false)) }}
@@ -1598,18 +1608,17 @@ const BulkpayDataTables = (apikeyDetails) => {
                     />
                 </Box>
                 </div>
-              </Col>
-              <Col xs="12" sm="12" md={6} lg={6} className="mt-0" >
-              <Label for="bulkPayInfoStatus" className="label-dc mb-1"> Payment method </Label>
-              <Select
-                error = {paymentMethodInfoStatusInModalError}
-                placeholder={"Select"}
-                options={optionsAccTypeInModal}
-                id="bulkPayInfoStatus"
-                className='other-input-select' 
-                // components={{ Option: paymentOption }}
-                onChange={(e) => handleChangeInfoAccTypeInModal(e.value)}
-              />
+            </Col>
+            <Col xs="12" sm="12" md={6} lg={6} className="mt-0" >
+            <Label for="bulkPayInfoStatus" className="label-dc mb-1"> Payment method </Label>
+            <Select
+              error = {paymentMethodInfoStatusInModalError}
+              placeholder={"Select"}
+              options={optionsAccTypeInModal}
+              id="bulkPayInfoStatus"
+              className='other-input-select' 
+              onChange={(e) => handleChangeInfoAccTypeInModal(e.value)}
+            />
             </Col>
           </Row>
 
@@ -1617,7 +1626,7 @@ const BulkpayDataTables = (apikeyDetails) => {
         {
           paymentMethodInfoStatusInModal === "bank" ?
           <div>
-              <Row style={{ marginLeft: '1%' }}>
+              <Row style={{ marginLeft: '-10px' }}>
               <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
                 <div className='bulk-pay-name'  >
                   <Box 
@@ -1627,7 +1636,7 @@ const BulkpayDataTables = (apikeyDetails) => {
                     >
                     <Label for="bulkPayInfoStatus" className="label-dc"> Name on Account </Label>
                     <TextField 
-                      // fullWidth
+                      fullWidth
                       error = {accountNameError}
                       // id='filters-d'
                       // xs="12" sm="12" md={12} lg={12}
@@ -1664,7 +1673,7 @@ const BulkpayDataTables = (apikeyDetails) => {
                     >
                     <Label for="bulkPayInfoStatus" className="label-dc"> Email </Label>
                     <TextField 
-                    // fullWidth
+                    fullWidth
                     error = {emailError}
                       // id='filters-d'
                       // xs="12" sm="12" md={12} lg={12}
@@ -1777,7 +1786,7 @@ const BulkpayDataTables = (apikeyDetails) => {
         {
           paymentMethodInfoStatusInModal === "mobile" ?
           <div>
-            <Row style={{ marginLeft: '1%' }}>
+            <Row style={{ marginLeft: '-10px' }}>
               <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
                 <div className='bulk-pay-name'  >
                   <Box 
@@ -1787,7 +1796,7 @@ const BulkpayDataTables = (apikeyDetails) => {
                     >
                     <Label for="bulkPayInfoStatus" className="label-dc"> Name on Account </Label>
                     <TextField 
-                    // fullWidth
+                    fullWidth
                     error = {momoAccountNameError}
                       // id='filters-d'
                       // xs="12" sm="12" md={12} lg={12}
@@ -1828,7 +1837,7 @@ const BulkpayDataTables = (apikeyDetails) => {
                     >
                     <Label for="bulkPayInfoStatus" className="label-dc"> Email </Label>
                     <TextField 
-                      // fullWidth
+                      fullWidth
                       error = {telcoEmailError}
                       // id='filters-d'
                       // xs="12" sm="12" md={12} lg={12}
@@ -1875,6 +1884,7 @@ const BulkpayDataTables = (apikeyDetails) => {
                   >
                   <Label for="bulkPayInfoStatus" className="label-dc"> Phone Number </Label>
                   <TextField 
+                    fullWidth
                     error = {phoneNumberError}
                     // id='filters-d'
                     value={phoneNumber}
@@ -1899,6 +1909,7 @@ const BulkpayDataTables = (apikeyDetails) => {
                   <Label for="bulkPayInfoStatus" className="label-dc"> Amount </Label>
                   <TextField 
                     // id='filters-d'
+                    fullWidth
                     value={telcoAmount}
                     onChange={(e) => {(setTelcoAmount(e.target.value)); (setTelcoAmountError(false))}}
 
@@ -1920,6 +1931,7 @@ const BulkpayDataTables = (apikeyDetails) => {
                   >
                   <Label for="bulkPayInfoStatus" className="label-dc"> Note </Label>
                   <TextField 
+                    fullWidth
                     error = {noteError}
                     // id='filters-d'
                     value={telcoNote}
@@ -1978,8 +1990,8 @@ const BulkpayDataTables = (apikeyDetails) => {
                   >
                   <Label for="bulkPayInfoBatchName" className="label-dc"> Batch name </Label>
                   <TextField 
-                    value={batchName}    
-                    fullWidth                     
+                    fullWidth
+                    value={batchName}               
                     error = {batchNameError}
                     onChange={(e) => { (setBatchName(e.target.value)); (setBatchNameError(false)) }}
                     // label="Filter"
