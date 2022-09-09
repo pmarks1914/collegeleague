@@ -139,7 +139,9 @@ export default function Checkout() {
     const [feeTypeError, setFeeTypeError] = useState(false)
     const [admissionIdError, setAdmissionIdError] = useState(false)
     const [emailError, setEmailError] = useState(false)
+
     const [defaulName, setDefaulName] = useState("")
+    const [wingiLogo, setDefaultWingiLogo] = useState("")
     
     // data
     const [payeeData, setPayeeData] = useState({})
@@ -575,6 +577,10 @@ export default function Checkout() {
             setDefaulName("WingiPay Transaction")
             
         }
+        setTimeout(()=>{
+            // 
+            setDefaultWingiLogo("https://wingipay.com/static/wingipay/logo/wingipay-2.4086593aa042.png")
+        }, 3000)
         // console.log("fff", accountType, methodOfPayment?.filter((post) => {return post?.id === accountType } )[0]?.name )
         setAccountName( methodOfPayment?.filter((post) => {return post.id === accountType } )[0]?.name )
         // if(accountType === 1){
@@ -1419,7 +1425,8 @@ export default function Checkout() {
                     }}
                 >
 
-                    <img src={  ("https://test.wingipay.com" + sessionData['photo50x50']) || "https://wingipay.com/static/wingipay/logo/wingipay-2.4086593aa042.png"} className='mb-2' />
+                    <img src={  sessionData['photo50x50'] 
+                    ? ("https://test.wingipay.com" + (sessionData['photo50x50'])) : wingiLogo} className='mb-2' />
 
                     <Typography component="h6" variant="h6" className='mb-0 checkout-0'>
                         { sessionData?.data?.page_name || "" }
