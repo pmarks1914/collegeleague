@@ -525,7 +525,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
         let paymentLinkInfoDataNew = paymentLinkData();
         let paymentLinkInfoNew = []
         paymentLinkInfoDataNew?.paymentLink?.then(value => { (paymentLinkInfoNew = value) });
-        let textStr = "The Payment Link below .<p> <h6>" + window.location.hostname  + "/" + response?.data?.custom_link + "</h6></p>";
+        let textStr = "The Payment Link below .<p> <h6>" + window.location.hostname  + "/" + ( response?.data?.data?.custom_link || response?.data?.prefix ) + "</h6></p>";
 
         Swal.fire({
           title: 'Payment Link Generated',
