@@ -1408,7 +1408,7 @@ export default function Checkout() {
         <ThemeProvider theme={theme}>
             <Container component="main" maxWidth="xs"
                 style={{
-                    paddingTop: 80,
+                    paddingTop: 30,
                 }}
                 className="checkout-0"
             >
@@ -1422,13 +1422,16 @@ export default function Checkout() {
 
                     <img src={ sessionData['photo50x50'] ? ("https://test.wingipay.com" + sessionData['photo50x50']) : "https://wingipay.com/static/wingipay/logo/wingipay-2.4086593aa042.png"} className='mb-2' />
 
-                    <Typography component="h1" variant="h5" className='mb-3 checkout-0'>
-                        { sessionData?.merchant_id || sessionData?.merchant_name || defaulName }
+                    <Typography component="h6" variant="h6" className='mb-0 checkout-0'>
+                        { sessionData?.data?.page_name || "" }
                     </Typography>
-
-                    <Typography className='mb-4'>
-                    { sessionData?.data?.page_name || "" }
+                    <Typography className='mb-2 checkout-description-0'>
+                        { "BY " + (sessionData?.merchant_id || sessionData?.merchant_name || defaulName)?.toUpperCase() }
                     </Typography>
+                    <Typography className='mb-3 checkout-description-1'>
+                        { sessionData?.data?.description }
+                    </Typography>
+                    
                 </Box>
 
                 <CssBaseline />
