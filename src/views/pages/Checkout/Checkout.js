@@ -1217,7 +1217,6 @@ export default function Checkout() {
         }
     }
     // fee types orga
-
     function getFeeType(){
         let data = {}
 
@@ -1420,7 +1419,7 @@ export default function Checkout() {
                     }}
                 >
 
-                    <img src={ sessionData['photo50x50'] ? ("https://test.wingipay.com" + sessionData['photo50x50']) : "https://wingipay.com/static/wingipay/logo/wingipay-2.4086593aa042.png"} className='mb-2' />
+                    <img src={  ("https://test.wingipay.com" + sessionData['photo50x50']) || "https://wingipay.com/static/wingipay/logo/wingipay-2.4086593aa042.png"} className='mb-2' />
 
                     <Typography component="h6" variant="h6" className='mb-0 checkout-0'>
                         { sessionData?.data?.page_name || "" }

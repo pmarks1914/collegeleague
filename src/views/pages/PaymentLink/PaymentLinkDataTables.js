@@ -836,12 +836,12 @@ const PaymentLinkDataTables = (apikeyDetails) => {
   function handleInputEditChange(e){
     // console.group('Input Changed');
     // let additional_fields = editFormData?.additional_fields 
-    let array3 = (editFormData?.additional_fields?.address || []).concat(e)
+    // let array3 = (editFormData?.additional_fields?.address || []).concat(e)
     // console.log(array3)
-    let array4 = array3?.filter((item, pos) => array3?.indexOf(item) === pos) 
-    // console.log(array4)
+    // let array4 = array3?.filter((item, pos) => array3?.indexOf(item) === pos) 
+    // console.log(e)
     setEditFormData({...editFormData, ...{"additional_fields": {
-      "address": array4
+      "address": e
     }}})
     // console.log(`action: ${actionMeta.action}`);
     // console.groupEnd();
@@ -1828,10 +1828,11 @@ const PaymentLinkDataTables = (apikeyDetails) => {
               <Label for="customField" className="f-w-label"> Custom Field(s) </Label>
               <CreatableSelect
                 isMulti
+                defaultValue={editFormData?.additional_fields?.address}
                 placeholder="Type to create custom field(s)"
                 // onChange={handleChange}
                 onChange={(e)=>handleInputEditChange(e)}
-                options={editFormData?.additional_fields?.address}
+                // options={editFormData?.additional_fields?.address}
               />
             </Col>
 
