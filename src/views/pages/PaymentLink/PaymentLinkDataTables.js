@@ -484,7 +484,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
     // setDateTo(newValue); 
     setEditFormData({...editFormData, ...{"expiration_date": newValue}}) 
   };
-  function generateApikey(e) {
+  function generateLinkkey(e) {
     e.preventDefault();
     // console.log("setFormData ", formData)
     let data = JSON.stringify({ 
@@ -493,7 +493,8 @@ const PaymentLinkDataTables = (apikeyDetails) => {
       "custom_link": formData?.customLink,
       "page_name": formData?.payLinkName, 
       "description": formData?.description,
-      "is_fixed": formData?.recurring,
+      "is_fixed": formData?.collectFixAmount,
+      "is_recurring": formData?.recurring ? true : false,
       "phone_required": formData?.collectPhoneNumber,
       "phone_number": formData?.phoneNumber,
       "fixed_amount": formData?.amount,
@@ -524,7 +525,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
         let paymentLinkInfoDataNew = paymentLinkData();
         let paymentLinkInfoNew = []
         paymentLinkInfoDataNew?.paymentLink?.then(value => { (paymentLinkInfoNew = value) });
-        let textStr = "The Payment Link below .<p> <h6>" +  "/link/" + response?.data?.custom_url + "</h6></p>";
+        let textStr = "The Payment Link below .<p> <h6>" + window.location.hostname  + "/" + response?.data?.custom_link + "</h6></p>";
 
         Swal.fire({
           title: 'Payment Link Generated',
@@ -619,6 +620,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
       "page_name": editFormData?.page_name, 
       "description": editFormData?.description,
       "is_fixed": editFormData?.is_fixed,
+      "is_recurring": editFormData?.recurring === true ? true : false,
       "phone_required": editFormData?.phone_required,
       "phone_number": editFormData?.phone_number,
       "fixed_amount": editFormData?.fixed_amount,
@@ -1494,7 +1496,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
           <CButton color="secondary" className='text-white' onClick={(e) => setModal1(false)}> 
             Cancel
           </CButton>
-          <CButton color="" className='text-white bg-text-wp' onClick={(e) => generateApikey(e)}> 
+          <CButton color="" className='text-white bg-text-wp' onClick={(e) => generateLinkkey(e)}> 
             Create
           </CButton>
         </CModalFooter>
@@ -1595,7 +1597,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
                   <FormLabel id="demo-radio-buttons-group-label"> </FormLabel>
                   <RadioGroup
                     aria-labelledby="demo-radio-buttons-group-label"
-                    defaultValue= { editFormData?.oneTime ? "oneTime" : (editFormData?.recurring ? "recurring" : "" )}
+                    defaultValue= { editFormData?.is_recurring === true ? "recurring" : "oneTime"}
                     name="radio-buttons-group"
                     className='d-flex'
 

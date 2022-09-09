@@ -499,7 +499,7 @@ export default function Checkout() {
                 data: data
             };
             axios(config_ch).then(response => {
-                console.log("data checkout 1 ==", response?.data);
+                // console.log("data checkout 1 ==", response?.data);
                 if (response?.data?.status === true) {
                     // 
                     // console.log("g>>>") sessionData?.merchant_id)
@@ -987,7 +987,7 @@ export default function Checkout() {
             method: 'post',
             url: process.env.REACT_APP_BASE_API + "/transactions/transfers/",
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json', 
                 // 'Authorization': 'Bearer ' + userData?.access
             },
             data: data
@@ -1419,10 +1419,15 @@ export default function Checkout() {
                         alignItems: 'center',
                     }}
                 >
-                    <img src="https://wingipay.com/static/wingipay/logo/wingipay-2.4086593aa042.png" className='mb-3' />
 
-                    <Typography component="h1" variant="h5" className='mb-5 checkout-0'>
+                    <img src={ sessionData['photo50x50'] ? ("https://test.wingipay.com" + sessionData['photo50x50']) : "https://wingipay.com/static/wingipay/logo/wingipay-2.4086593aa042.png"} className='mb-2' />
+
+                    <Typography component="h1" variant="h5" className='mb-3 checkout-0'>
                         { sessionData?.merchant_id || sessionData?.merchant_name || defaulName }
+                    </Typography>
+
+                    <Typography className='mb-4'>
+                    { sessionData?.data?.page_name || "" }
                     </Typography>
                 </Box>
 
