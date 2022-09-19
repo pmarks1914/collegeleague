@@ -10,7 +10,7 @@ import "datatables.net-buttons/js/buttons.flash.js";
 import "datatables.net-buttons/js/buttons.html5.js";
 import "datatables.net-buttons/js/buttons.print.js";
 import '../../datatable/table.css';
-import {Checkbox, FormGroup, FormLabel, Radio, RadioGroup, TextField} from '@mui/material';
+import {Checkbox, FormGroup, FormLabel, Radio, RadioGroup, TextareaAutosize, TextField} from '@mui/material';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Box from '@mui/material/Box';
 import FormControl from '@mui/material/FormControl';
@@ -55,7 +55,7 @@ import {
   CNavItem,
   CTooltip,
 } from '@coreui/react'
-import { paymentLinkData } from '../Data/PageData';
+import { userGetData } from '../Data/PageData';
 import ViewDetails from '../../datatable/ViewDetails';
 import CIcon from '@coreui/icons-react';
 import {
@@ -75,18 +75,24 @@ import * as XLSX from 'xlsx';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { Button } from 'antd';
+import './user.css'
 
 let currentUser = JSON.parse(localStorage.getItem("userDataStore")); 
-let paymentLinkInfoData = paymentLinkData();
-let paymentLinkInfo = []
-paymentLinkInfoData?.paymentLink?.then(value => { (paymentLinkInfo = value) });
+let userGetInfoData = userGetData();
+let userGetInfo = []
+userGetInfoData?.userGet?.then(value => { (userGetInfo = value) });
 
-const PaymentLinkDataTables = (apikeyDetails) => {
+let permissionList = [];
+
+const UserManagementDataTables = (props) => {
   const [loader, setLoader] = useState('<div class="spinner-border dashboard-loader" style="color: #e0922f;"></div>')
   const [tableData, setTableData] = useState([]);
   const [noData, setNoData] = useState("")
   const [monitorState, setMonitorState] = useState(1);
   const [dropValue, setDropValue] = useState(0);
+  const [roleData , setRoleData] = useState({})
+
+  const [formInviteData, setFormInviteData] = useState({})
 
   // handle state transition for delete action to update data
   const [actionDel, setActionDel] = useState(0)
@@ -94,13 +100,15 @@ const PaymentLinkDataTables = (apikeyDetails) => {
   // date time
   const [dateTo, setDateTo] = useState(new Date('2014-08-18T21:11:54'));
   const [dateFrom, setDateFrom] = useState(new Date('2014-08-18T21:11:54')); 
-  const [value, setValue] = useState([null, null]);
+  const [value, setValue] = useState({});
 
   // modals
-  // filer paymentLinkInfo
+  // create role and add permission
   const [modal1, setModal1] = useState(false)
-  // view single paymentLinkInfo 
+  // view single userGetInfo 
   const [modal2, setModal2] = useState(false)
+  // invite user modal state
+  const [modal3, setModal3] = useState(false)
 
   // set Show form fields
   const [show, setShow] = useState(false)
@@ -109,13 +117,13 @@ const PaymentLinkDataTables = (apikeyDetails) => {
   const [openDateRange, setOpenDateRange] = useState(true);
   const [dateRange, setDateRange] = useState({});
   const [description, setDescription] = useState("");
-  const [paymentLinkInfoStatusInModal, setpaymentLinkInfoStatusInModal] = useState("");
+  const [userGetInfoStatusInModal, setuserGetInfoStatusInModal] = useState("");
   // startDate: Date.parse("2022-01-13"), endDate: Date.now()
   
-  const [paymentLinkInfoStatus, setpaymentLinkInfoStatus] = useState("");
-  const [paymentLinkInfoId, setpaymentLinkInfoId] = useState("");
+  const [userGetInfoStatus, setuserGetInfoStatus] = useState("");
+  const [userGetInfoId, setuserGetInfoId] = useState("");
   const [referanceId, setReferanceId] = useState("");
-  const [paymentLinkInfoExport, setpaymentLinkInfoExport] = useState({});
+  const [userGetInfoExport, setuserGetInfoExport] = useState({});
   const [dateFilterData, setDateFilterData] = useState({});
   const [amountLess, setAmountLess] = useState(0.00);
   const [amountGreat, setAmountGreat] = useState(0.00);
@@ -132,20 +140,20 @@ const PaymentLinkDataTables = (apikeyDetails) => {
     if(dateRange.length > 0 && monitorState === 1){
       setMonitorState(2)
       performFilter("filterByDate", "none")
-      setpaymentLinkInfoStatus("")
+      setuserGetInfoStatus("")
 
       setLoader('<a></a>')
     }
-    else if (paymentLinkInfo?.length > 0 && monitorState === 1) {
+    else if (userGetInfo?.length > 0 && monitorState === 1) {
       // setMonitorState(2)
-      // console.log("info ", paymentLinkInfo )
-      datatablaScript(paymentLinkInfo);
+      // console.log("info ", userGetInfo )
+      datatablaScript(userGetInfo);
 
       setLoader('<a></a>')
     }
     else if(dateRange && monitorState === 2){
       performFilter("filterByDate", "none")
-      setpaymentLinkInfoStatus("")
+      setuserGetInfoStatus("")
       // setMonitorState(3)
     }
     else{
@@ -155,15 +163,67 @@ const PaymentLinkDataTables = (apikeyDetails) => {
         //     setNoData("dd")
         // }, 200)
     }
-
-    // if(paymentLinkInfoStatus && monitorState === 2){
-    //   performFilter("filterByStatus")
-    // }
-
     
-    // console.log("props ", dateRange, paymentLinkInfo, paymentLinkInfoStatus, monitorState)
+    // console.log("props ", dateRange, userGetInfo, userGetInfoStatus, monitorState)
 
-  }, [dateRange, paymentLinkInfo, actionDel])
+
+    let data = '';
+    let config_roles = {
+        method: 'get',                    
+        url: process.env.REACT_APP_BASE_API + "/roles/" + currentUser?.account + "/",
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + currentUser?.access
+        },
+        data: data
+    };
+    axios(config_roles).then(response => {
+        // console.log("data 1 ==", response?.data);
+        if (response?.data?.status === true) {
+            // 
+            // console.log("g>>>", response?.data?.data)
+            setRoleData(response?.data)
+
+        }
+        
+
+    }).catch(function (error) {
+        // 
+        if(error){
+            // Swal.fire({
+            //     title: 'Application Error',
+            //     title: 'Oops',
+            //     html: "<div class='pb-0 pt-0'> Try again later </div>",
+            //     icon: 'warning',
+            //     showCancelButton: false,
+            //     showConfirmButton: false,
+            //     allowOutsideClick: false,
+            //     // cancelButtonColor: '#d33',
+            //     // timer: 4000
+            // }).then((result) => {
+            //     // 
+            // })
+        }
+        if (error.response) {
+            // // console.log("==");
+            /*
+            * The request was made and the server responded with a
+            * status code that falls out of the range of 2xx
+            */
+
+        } else if (error.request) {
+            /*
+            * The request was made but no response was received, `error.request`
+            * is an instance of XMLHttpRequest in the browser and an instance
+            * of http.ClientRequest in Node.js
+            */
+
+        } else {
+            // Something happened in setting up the request and triggered an Error
+
+        }
+    });
+  }, [dateRange, userGetInfo, actionDel])
 
   // perform filter 
   function datatablaScript(tdata) {
@@ -175,7 +235,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
        
       $('#myTable').DataTable(
         {
-          // data: paymentLinkInfo,
+          // data: userGetInfo,
           columnDefs: [
             { "width": "10%", "targets": 2 }
           ],
@@ -217,7 +277,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
                 }
               },
               customize: function (anytype) {
-                let sheet = anytype.xl.worksheets['wingipaypaymentLinkInfo.xml'];
+                let sheet = anytype.xl.worksheets['wingipayuserGetInfo.xml'];
                 $('row:first c', sheet).attr('s', '7');
               }
             },
@@ -239,7 +299,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
                 }
               },
               customize: function (anytype) {
-                let sheet = anytype.xl.worksheets['wingipaypaymentLinkInfo.pdf'];
+                let sheet = anytype.xl.worksheets['wingipayuserGetInfo.pdf'];
                 $('row:first c', sheet).attr('s', '7');
               }
             },
@@ -265,11 +325,11 @@ const PaymentLinkDataTables = (apikeyDetails) => {
     // 
     e.preventDefault();
     // console.log("post tableData ", tableData);
-    // paymentLinkInfo = posts;
+    // userGetInfo = posts;
     try {
       // setTableData(posts);
-      let newFilterData = paymentLinkInfo.filter((post) => { return moment(post?.created).format('LLLL') <= moment(dateFrom).format('LLLL') })
-      // // console.log("post tableData ", paymentLinkInfo);
+      let newFilterData = userGetInfo.filter((post) => { return moment(post?.created).format('LLLL') <= moment(dateFrom).format('LLLL') })
+      // // console.log("post tableData ", userGetInfo);
       // console.log("post tableData ", newFilterData);
       datatablaScript(newFilterData);
       setModal1(false)
@@ -295,7 +355,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
     // $(".viewDescription").css("max-width", "50%");
     $(".viewDescription").css("flex-basis", "50%");
 
-    w.document.write($('.contentForpaymentLinkInfoPrint').html());
+    w.document.write($('.contentForuserGetInfoPrint').html());
     w.print();
     w.close();
   }
@@ -337,15 +397,8 @@ const PaymentLinkDataTables = (apikeyDetails) => {
       }
     }
   }
-  const handleChangepaymentLinkInfoStatus = (valSelected) => {
-    setpaymentLinkInfoStatus(valSelected);
-    performFilter("filterByStatus", valSelected)
-  };
-  const handleChangepaymentLinkInfoStatusInModal = (valSelected) => {
-    setpaymentLinkInfoStatusInModal(valSelected);
-  };
   const handleChangeExport = (valSelected) => {
-    setpaymentLinkInfoExport(valSelected);
+    setuserGetInfoExport(valSelected);
     if(valSelected === "Export to excel"){
       // 
       downloadExcel(tableData);
@@ -359,7 +412,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
     // {value: "", label: "Se", icon: "", isDisabled: true },
     {value: "live", label: "Live Key" },
     {value: "test", label: "Test Key" },
-    {value: "All paymentLinkInfo", label: "All Keys" }
+    {value: "All userGetInfo", label: "All Keys" }
   ];
   const optionsStatusInModal = [
     // {value: "", label: "Se", icon: "", isDisabled: true },
@@ -371,13 +424,19 @@ const PaymentLinkDataTables = (apikeyDetails) => {
     {value: "Export to excel", label: "Export to excel" },
     {value: "Export to csv", label: "Export to csv" }
   ];
+  const optionRoles = Object.keys( roleData?.all_roles || []).map((post, id) => {
+    // console.log("optionRoles ", roleData?.all_roles)
+    return {
+      "value": roleData?.all_roles[id].role_id,
+      "label": roleData?.all_roles[id]?.name?.toUpperCase()
+  }});
   function performFilter(type, status){
 
-    // // console.log("by status ", paymentLinkInfoStatus, "type", type )
+    // // console.log("by status ", userGetInfoStatus, "type", type )
     // perform filter by date range
     if(type === "filterByDate"){
       // 
-      let dataFilter = paymentLinkInfo.filter((post, id) => {return ( moment(post?.created).format('DD/MM/yyyy') >= moment(dateRange[0]).format('DD/MM/yyyy') && moment(post?.created).format('DD/MM/yyyy') <= moment(dateRange[1]).format('DD/MM/yyyy') )});
+      let dataFilter = userGetInfo.filter((post, id) => {return ( moment(post?.created).format('DD/MM/yyyy') >= moment(dateRange[0]).format('DD/MM/yyyy') && moment(post?.created).format('DD/MM/yyyy') <= moment(dateRange[1]).format('DD/MM/yyyy') )});
 
       datatablaScript( dataFilter );
 
@@ -386,17 +445,17 @@ const PaymentLinkDataTables = (apikeyDetails) => {
     else if(type === "filterByStatus"){
       // 
       // // console.log("by status",status, monitorState, apikeyDetails )
-      if(status === "All paymentLinkInfo" && monitorState === 1){
-        datatablaScript(paymentLinkInfo);
+      if(status === "All userGetInfo" && monitorState === 1){
+        datatablaScript(userGetInfo);
       }
-      else if(status === "All paymentLinkInfo" && monitorState === 2){
+      else if(status === "All userGetInfo" && monitorState === 2){
         datatablaScript(dateFilterData);
       }
       else if(status === "test" && monitorState === 1){
-        datatablaScript( paymentLinkInfo?.filter((post, id) => {return ( post?.is_live === false )}) );
+        datatablaScript( userGetInfo?.filter((post, id) => {return ( post?.is_live === false )}) );
       }
       else if(status === "live" && monitorState === 1){
-        datatablaScript( paymentLinkInfo?.filter((post, id) => {return ( post?.is_live === true )}) );
+        datatablaScript( userGetInfo?.filter((post, id) => {return ( post?.is_live === true )}) );
       }
       else if(status === "test" && monitorState === 2){
         datatablaScript( dateFilterData?.filter((post, id) => {return ( post?.is_live === false )}) );
@@ -413,8 +472,8 @@ const PaymentLinkDataTables = (apikeyDetails) => {
     setAmountGreat(0)
     setAmountLess(0)
     setReferanceId("")
-    setpaymentLinkInfoId("")
-    datatablaScript(paymentLinkInfo)
+    setuserGetInfoId("")
+    datatablaScript(userGetInfo)
   }
   function convertArrayOfObjectsToCSV(array) {
     let result;
@@ -477,95 +536,79 @@ const PaymentLinkDataTables = (apikeyDetails) => {
   
   const handleChangeTo = (newValue) => {
     setDateTo(newValue);
-    setFormData({...formData, ...{"dateTo": newValue}})
+    setEditFormData({...editFormData, ...{"dateTo": newValue}})
   };
   
   const handleEditChangeTo = (newValue) => {
     // setDateTo(newValue); 
     setEditFormData({...editFormData, ...{"expiration_date": newValue}}) 
   };
-  function generateLinkkey(e) {
+  function sendAction(e, type) {
     e.preventDefault();
     // console.log("setFormData ", formData)
-    let data = JSON.stringify({ 
-      // collectFixAmount: true 
-      "type": formData?.oneTime,
-      "custom_link": formData?.customLink,
-      "page_name": formData?.payLinkName, 
-      "description": formData?.description,
-      "is_fixed": formData?.collectFixAmount,
-      "is_recurring": formData?.recurring ? true : false,
-      "phone_required": formData?.collectPhoneNumber,
-      "phone_number": formData?.phoneNumber,
-      "fixed_amount": formData?.amount,
-      "custom_success_message": formData?.successMessage, 
-      "notify_email": formData?.email,
-      "expiration_date": formData?.dateTo,
-      "split_payment": formData?.splitPayment,
-      "additional_fields": {
-          "address": formData?.customField
-      },
-      "callback_url": "", 
-      "redirect_url": formData?.redirectUrl
-    });
+    let data = {};
 
-    let config = {
+    let config = {};
+    if(type === "invite"){
+      //  
+      data = JSON.stringify({ 
+      // collectFixAmount: true 
+      "invitee_email": formInviteData?.email,
+      "invitee_account": "",
+      "role_id": formInviteData?.role?.value,
+      "account_id": currentUser?.account
+    });
+      config = {
       method: 'post',
-      url: process.env.REACT_APP_BASE_API + "/payment/link/create/",
+      url: process.env.REACT_APP_BASE_API + "/team/member/invite/",
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + currentUser?.access
       },
       data: data
     };
+    }
     axios(config).then(response => {
       // console.log(response.data);
       if (response?.data?.status === true) { 
 
-        let paymentLinkInfoDataNew = paymentLinkData();
-        let paymentLinkInfoNew = []
-        paymentLinkInfoDataNew?.paymentLink?.then(value => { (paymentLinkInfoNew = value) });
-        let textStr = "The Payment Link below .<p> <h6>" + window.location.hostname  + "/" + ( response?.data?.data?.custom_link || response?.data?.prefix ) + "</h6></p>";
+        let userGetInfoDataNew = userGetData();
+        let userGetInfoNew = []
+        userGetInfoDataNew?.userGet?.then(value => { (userGetInfoNew = value) });
 
         Swal.fire({
-          title: 'Payment Link Generated',
-          html: textStr.toString(),
-          icon: 'success',
+          title: 'Invite sent',
+          html: response.data.message.toString(),
+          // icon: 'success',
           allowOutsideClick: false,
           // allowEscapeKey: false,
           showCancelButton: false,
           confirmButtonColor: '#FF7643',
           // cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes, i have copied and saved the Payment Link!'
+          confirmButtonText: 'Ok'
         }).then((result) => {
-          // let keyCopyText = document.getElementById("api-key-copy")
-          // keyCopyText.select()
-          // keyCopyText.setSelectionRange(0, 99999)
-          // navigator.clipboard.writeText(keyCopyText.value)
-          // alert(keyCopyText.value)
-          // if (result.isConfirmed) {
-            // 
-            // console.log( "old ", paymentLinkInfo,  " new ", paymentLinkInfoNew)
-            paymentLinkInfo = paymentLinkInfoNew
+            userGetInfo = userGetInfoNew
             setModal1(false);
+            setModal2(false);
+            setModal3(false);
           // window.location.reload()
           // }
         });
         // setTimeout(() => {
-        //   let infoData = paymentLinkData();
+        //   let infoData = userGetData();
         //   let infoArray = [];
-        //   infoData?.paymentLink?.then(value => { 
+        //   infoData?.userGet?.then(value => { 
         //     infoArray = value;
         //     datatablaScript(value);
         //     apikeyDetails = value;
-        //     paymentLinkInfo = value
+        //     userGetInfo = value
 
         //   }); 
         //   }, 1000);
       }
       else {
         Swal.fire({
-          title: 'Payment Link Generation Failed!',
+          title: 'Failed!',
           text: response.data.message,
           icon: 'warning',
           showCancelButton: true,
@@ -610,7 +653,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
     }
     );
   }
-  function editPaymentLink(e) {
+  function edituserGet(e) {
     e.preventDefault();
     console.log("editFormData ", editFormData)
     let data = JSON.stringify({ 
@@ -646,9 +689,9 @@ const PaymentLinkDataTables = (apikeyDetails) => {
       console.log(response.data);
       if (response?.data?.status === true) { 
 
-        let paymentLinkInfoDataNew = paymentLinkData();
-        let paymentLinkInfoNew = []
-        paymentLinkInfoDataNew?.paymentLink?.then(value => { (paymentLinkInfoNew = value) });
+        let userGetInfoDataNew = userGetData();
+        let userGetInfoNew = []
+        userGetInfoDataNew?.userGet?.then(value => { (userGetInfoNew = value) });
 
         Swal.fire({
           title: 'Payment Link Edited',
@@ -660,7 +703,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
           // cancelButtonColor: '#d33',
           confirmButtonText: 'OK!'
         }).then((result) => {
-            paymentLinkInfo = paymentLinkInfoNew
+            userGetInfo = userGetInfoNew
             setModal2(false);
         });
       }
@@ -712,7 +755,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
     );
   }
   // delete
-  function deletePaymentLink(e) {
+  function deleteuserGet(e) {
     e.preventDefault();
     let data = {}
     let config = {
@@ -758,10 +801,10 @@ const PaymentLinkDataTables = (apikeyDetails) => {
     axios(config).then(response => {
       // console.log(response.data);
       if (response?.data?.status === true) { 
-        let paymentLinkInfoDataNew = paymentLinkData();
-        let paymentLinkInfoNew = []
-        paymentLinkInfoDataNew?.paymentLink?.then(value => { (paymentLinkInfoNew = value) });
-        // console.log("out ", paymentLinkInfoNew)
+        let userGetInfoDataNew = userGetData();
+        let userGetInfoNew = []
+        userGetInfoDataNew?.userGet?.then(value => { (userGetInfoNew = value) });
+        // console.log("out ", userGetInfoNew)
         Swal.fire({
           title: 'Payment Link Deleted',
           icon: 'success',
@@ -772,8 +815,8 @@ const PaymentLinkDataTables = (apikeyDetails) => {
           // cancelButtonColor: '#d33',
           confirmButtonText: 'OK!'
         }).then((result) => {
-            // console.log("in ", paymentLinkInfoNew)
-            paymentLinkInfo = paymentLinkInfoNew
+            // console.log("in ", userGetInfoNew)
+            userGetInfo = userGetInfoNew
             setActionDel(2)
             // setModal2(false);
         });
@@ -846,202 +889,69 @@ const PaymentLinkDataTables = (apikeyDetails) => {
     // console.log(`action: ${actionMeta.action}`);
     // console.groupEnd();
   };
-
+  // roleData?.all_roles?.permissions
+  function managePermissionList(permissionData, checkedStatus){
+    // console.log(permissionData)
+    if(checkedStatus){
+      // add new permission to list 
+      permissionList.push(permissionData.id)
+    }
+    else{  
+      // console.log(permissionList) 
+      // filter to remove permission from list
+      let array4 = permissionList?.filter((item, pos) => permissionList?.indexOf(permissionData.id) !== pos) 
+      permissionList = array4
+      // console.log(permissionList)
+    }
+  }
   return (
 
     <div>
-      {/* {// console.log("dateRange ", dateRange)} */}
-
-      {/* open modal for filter date range */}
-      {/* <CButton onClick={() => setModal1(!modal1)} icon={cilArrowRight} className="float-end" >Filter</CButton> */}
-      <div id="filterDropdown" className="dropdown-content mb-4" onClick={(e) => setDropValue(1)}>
-        <CCard sm={12} md={12} lg={12}>
-          <CCardHeader>
-            <CRow sm={12} md={12} lg={12}>
-              <CCol sm={12} md={12} lg={12} > <CBadge color='secondary' onClick={(e)=>resetFilter(e)}>Reset</CBadge> <CBadge color='primary' style={{ float: "right" }} onClick={(e)=>performFilter("filterByOptions", "none")}>Apply</CBadge> </CCol>
-            </CRow>
-          </CCardHeader>
-          <CCardBody>
-            <p>Search by:</p>
-            <div> 
-              <p className='des-filter-inputs'>paymentLinkInfo Reference</p>
-              <Box
-                // component="form"
-                // sx={{
-                //   '& > :not(style)': { m: 1, width: '25ch' },
-                // }}
-                noValidate
-                autoComplete="off"
-                sx={{ minWidth: 30 }} 
-                className='filters-d'
-                >
-                <TextField 
-                  id='filters-d'
-                  value={referanceId}
-                  onChange={(e) => setReferanceId(e.target.value)} 
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end" >
-                        <CIcon icon={cilSearch} className="me-2" />
-                      </InputAdornment>
-                    ),
-                  }}
-                  // label="Filter"
-                  placeholder="eg. WP55467987765"
-                  // multiline
-                  />
-              </Box>
-            </div>
-            <div>
-              
-              <p className='des-filter-inputs'>Product ID </p>
-              <Box
-                // component="form"
-                // sx={{
-                //   '& > :not(style)': { m: 1, width: '25ch' },
-                // }}
-                noValidate
-                autoComplete="off"
-                sx={{ minWidth: 30 }} 
-                className='filters-d'
-                >
-                <TextField 
-                  id='filters-d'
-                  value={paymentLinkInfoId}
-                  onChange={(e) => setpaymentLinkInfoId(e.target.value)} 
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="start" >
-                        <CIcon icon={cilSearch} className="me-2" />
-                      </InputAdornment>
-                    ),
-                  }}
-                  // label="Filter"
-                  placeholder="Product ID"
-                  // multiline
-                  />
-              </Box>
-            </div>
-            <div style={{width: "220px"}}>
-              
-              <p className='des-filter-inputs'>Filter by amount: </p>
-              
-              <Box
-                // component="form"
-                // sx={{
-                //   '& > :not(style)': { m: 1, width: '25ch' },
-                // }}
-                noValidate
-                autoComplete="off"
-                sx={{ minWidth: 30 }} 
-                className='filters-d'
-                >
-                {/* <TextField 
-                  id='filters-d'
-                  sx={{ minWidth: 5 }} 
-                  // onClick={(e) => toggleFilter(e, "filter")} 
-                  // onChange={(e) => setReferanceId(e.target.value)} 
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="start" >
-                        <CIcon icon={cilSearch} className="me-2" />
-                      </InputAdornment>
-                    ),
-                  }}
-                  // label="Filter"
-                  placeholder="eg. "
-                  /> */}
-  
-              </Box>
-              <Box
-                noValidate
-                autoComplete="off"
-                // sx={{ minWidth: 30 }} 
-                // className='filters-d'
-                >
-
-              <Row sm={12} md={12} lg={12}>
-                <Col sm={6} md={6} lg={6} > 
-                  <Label for="amount-less"> Less = </Label>
-                  <TextField
-                    id='amount-less'
-                    type="number"
-                    value={amountLess}
-                    variant="outlined"
-                    inputProps={{
-                      step: "0.01"
-                    }}
-                    onChange={(e) => setAmountLess(parseFloat(e.target.value).toFixed(2))} 
-                  />
-                </Col>
-                <Col sm={6} md={6} lg={6} > 
-                  <Label for="amount-great"> Greter = </Label>
-                  <TextField
-                    id='amount-great'
-                    type="number"
-                    value={amountGreat}
-                    variant="outlined"
-                    inputProps={{
-                      step: "0.01"
-                    }}
-                    onChange={(e) => setAmountGreat(parseFloat(e.target.value).toFixed(2))} 
-                  />
-                </Col>
-              </Row>
-              <Row sm={12} md={12} lg={12}>
-                  <Col sm={6} md={6} lg={6} >
-                    <Label for="amount-great"> Equal </Label>
-                    <TextField
-                      id='amount-equal'
-                      type="number"
-                      value={amountEqual}
-                      variant="outlined"
-                      inputProps={{
-                        step: "0.01"
-                      }}
-                      onChange={(e) => setAmountEqual(parseFloat(e.target.value).toFixed(2))}
-                    />
-                  </Col>
-              </Row>
-              </Box>
-            </div>
-
-          </CCardBody>
-
-        </CCard>
-      </div>
 
       <Row>
         <Col xs="12" sm="12" md={3} lg={3} >
-          {/* filter */}
+          {/* create */}
           <Box sx={{ minWidth: 140 }}>
             <FormControl fullWidth style={{marginTop: "8px"}}>
               <Button
                   type="submit"
                   fullWidth
-                  // variant="contained"
-                  // sx={{ mt: 0, mb: 20 }}
                   className='bg-text-wp-action'
                   style={{ height: '36px' }}
                   onClick={ (e) => setModal1(true)}
               >
-                  CEATE PAYMENT LINK
+                USER ROLES MANAGEMENT
               </Button>
             </FormControl>
           </Box>
-
         </Col>
         <Col xs="12" sm="12" md={3} lg={3} >
-          {/* paymentLinkInfo types */}
+          {/* create */}
+          <Box>
+            <FormControl fullWidth style={{marginTop: "8px"}}>
+              <Button
+                  type="submit"
+                  fullWidth
+                  className='bg-text-wp-action'
+                  style={{ height: '36px' }}
+                  onClick={ (e) => setModal3(true)}
+              >
+                  INVITE A TEAM MEMBER
+              </Button>
+            </FormControl>
+          </Box>
+        </Col>
+        <Col xs="12" sm="12" md={3} lg={3} >
+          {/* userGetInfo types */}
           {/* <Box sx={{ minWidth: 160 }}>
             <FormControl fullWidth style={{marginTop: "0px"}}>
-              <Label for="paymentLinkInfoStatus" className="label-dc"> </Label>
+              <Label for="userGetInfoStatus" className="label-dc"> </Label>
               <Select
                 placeholder={"Select status"}
                 options={optionsStatus}
-                id="paymentLinkInfoStatus"
+                id="userGetInfoStatus"
                 className='other-input-select d-filters'
-                onChange={(e) => handleChangepaymentLinkInfoStatus(e.value)}
+                onChange={(e) => handleChangeuserGetInfoStatus(e.value)}
               />
           
             </FormControl>
@@ -1050,83 +960,53 @@ const PaymentLinkDataTables = (apikeyDetails) => {
         {/* Date range */}
         <Col xs="12" sm="12" md={4} lg={4} >
           {/* date range */}
-          <FormControl fullWidth>
+          {/* <FormControl fullWidth>
             <Box
-              // component="form"
               id='dateRange-control'
-              // sx={{
-              //   '& > :not(style)': { m: 1, width: '25ch' },
-              // }}
               noValidate
               autoComplete="off"
               sx={{ minWidth: 170 }}
               
             >
-              
               <RSuitDateRangePicker 
                 appearance="default" 
                 placeholder={"Select date range"} 
                 size="lg"
                 style={{ width: 260, display: 'block', border: "10px solid #080808 !important"}} 
                 className="d-filters"
-                // open={openDateRange}
-                // toggle={toggle}
                 onChange={(range) => setDateRange(range || {})}
-                // ranges={dateRange}
-                // months={2}
                 id="datePicker-0"
               />
-              {/* <TextField 
-               id="dateRange" 
-              //  label="Date range"
-              //  onClick={(e)=>toggleFilter(e, "dateRange")} 
-              onClick={(e)=>setModal1(true) }
-              //  variant="outlined" 
-               placeholder=
-               {" " + moment(dateRange?.startDate).format("DD/MM/yyyy") + " - " + moment(dateRange?.endDate).format("DD/MM/yyyy")} 
-               InputProps={{
-                 startAdornment: (
-                   <InputAdornment position="end" > 
-                   <CIcon icon={cilCalendar} className="me-6" />
-                   </InputAdornment>
-                 ),
-               }}
-               
-               /> */}
             </Box>
-          </FormControl>
+          </FormControl> */}
         </Col>
         <Col xs="12" sm="12" md={2} lg={2} >
           {/* export */}
-          <Box sx={{ minWidth: 120 }}>
+          {/* <Box sx={{ minWidth: 120 }}>
             <FormControl fullWidth>
-              <Label for="paymentLinkInfoExport" className="label-dc"> </Label>
+              <Label for="userGetInfoExport" className="label-dc"> </Label>
               <Select
                 placeholder={"Select export"}
                 options={optionsExport}
-                id="paymentLinkInfoExport"
+                id="userGetInfoExport"
                 className='other-input-select d-filters mt-0'
-                // components={{ Option: paymentOption }}
                 onChange={(e) => handleChangeExport(e.value)}
               />
             </FormControl>
-          </Box>
+          </Box> */}
         </Col>
       </Row>
       
       {/* {dateTo.toString()}{" rrr "}{dateFrom.toString()} */}
       <br /><br />
-
       <table id="myTable" className="display" style={{ width: '100%' }}>
         <thead>
           <tr>
             <th>No.</th>
             <th>Name</th>
-            <th>Description</th>
-            <th>Recurring</th>
-            <th>Amount</th>
-            <th>Link</th>
-            <th>Expiration Date</th>
+            <th>Email</th>
+            <th>Invited By</th>
+            <th>Role Name</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -1135,13 +1015,15 @@ const PaymentLinkDataTables = (apikeyDetails) => {
             tableData?.map((post, id) =>
               <tr key={id}>
                 <td>{id + 1}</td>
-                <td>{post?.page_name}</td>
-                <td>{post?.description}</td>
-                <td>{post?.is_fixed ? "Yes" : "No" }</td>
-                <td>{post?.fixed_amount || "No" }</td>
-                <td><a href={ "/link/"+post?.custom_link} > { window.location.hostname + "/link/" + post?.custom_link} </a></td>   
-                <td>{moment(post?.expiration_date || Date() ).format('LLLL') }</td>            
-                <td><CBadge className='bg-text-wp' onClick={() => { setModal2(true); setEditFormData(post) }} > Edit </CBadge> <CBadge color='black' style={{marginRight: "5px"}} onClick={(e) => { setEditFormData(post); deletePaymentLink(e) }} > Delete </CBadge> </td>
+                <td>{post?.lastname}</td>
+                <td>{post?.email}</td>
+                <td>{post?.invited_by }</td> 
+                <td>{post?.role_name }</td> 
+                {/* <td>{moment(post?.expiration_date || Date() ).format('LLLL') }</td>             */}
+                <td>
+                  <CBadge className='bg-text-wp' onClick={() => { setEditFormData(post) }} > Edit </CBadge> 
+                  {/* <CBadge color='black' style={{marginRight: "5px"}} onClick={(e) => { setEditFormData(post); deleteuserGet(e) }} > Delete </CBadge>  */}
+                </td>
               </tr>
             )}
             
@@ -1155,25 +1037,25 @@ const PaymentLinkDataTables = (apikeyDetails) => {
       {/* modals */}
       {/* modal for create */}
       <CModal visible={modal1} alignment="center" onClose={() => setModal1(false)}>
-        <CModalHeader> <CModalTitle> Create a Payment Link </CModalTitle> </CModalHeader>
+        <CModalHeader> <CModalTitle> Roles </CModalTitle> </CModalHeader>
         <CModalBody> 
           {/* <Checkbox {...label} /> */}
           <Row style={{ marginRight: '1px' }}>
-            {/* name for payment link */}
-            <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
+            {/* name for user management  */}
+            <Col xs="12" sm="12" md={12} lg={12} className="mt-2" > 
             <div className='bulk-pay-name' >
               <Box 
                 component="form"
                 noValidate
                 autoComplete="off"
                 >
-                <Label for="payLinkName" className="f-w-label"> Page name </Label>
+                <Label for="name" className="f-w-label"> Name </Label>
                 <TextField
                   fullWidth
                   // error = {pageNameError} 
-                  id='payLinkName'
+                  id='name'
                   // value={pageName} 
-                  onChange={(e)=>setFormData({...formData, ...{"payLinkName": e.target.value}})}
+                  onChange={(e)=>setFormData({...formData, ...{"name": e.target.value}})}
                   // onChange={(e) => {(setPageName(e.target.value)); (setPageNameError(false))}}
                   // label="description"                      
                   />
@@ -1181,16 +1063,18 @@ const PaymentLinkDataTables = (apikeyDetails) => {
             </div>
             </Col>
             {/* description */}
-            <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
+            <Col xs="12" sm="12" md={12} lg={12} className="mt-3 mb-3" > 
             <div className='bulk-pay-name' >
               <Box 
                 component="form"
                 noValidate
                 autoComplete="off"
                 >
-                <Label for="description" className="f-w-label"> Description </Label>
-                <TextField
-                  fullWidth
+                <Label for="description" className="f-w-label mb-1"> Description </Label>
+                <TextareaAutosize
+                  style={{width: '100%' }}
+                  minRows={3}
+                  className="mt-0"
                   // error = {descriptionError} 
                   id='description'
                   onChange={(e)=>setFormData({...formData, ...{"description": e.target.value}})}
@@ -1201,308 +1085,103 @@ const PaymentLinkDataTables = (apikeyDetails) => {
               </Box>
             </div>
             </Col>
-
-            <Col xs="12" sm="12" md={6} lg={6} className="mt-2" >
-              {/*  */}
-              
-              {/* <FormControlLabel disabled control={<Checkbox />} label="Disabled" /> */}
-
-            </Col>
-            {/* collect fixed amount */}
-            <Col xs="12" sm="12" md={12} lg={12} className="mt-2" >
-              {/*  */}
-              <FormGroup>
-                {/* <FormControlLabel className="f-w-label" control={<Checkbox defaultChecked/>}  */}
-                <FormControlLabel className="f-w-label" control={<Checkbox />} label="I want to collect a fix amount on this page." 
-                  onClick={(e)=>setFormData({...formData, ...{"collectFixAmount": e.target.checked }})} />
-              </FormGroup>
-            </Col>
-            {/* collect phone */}
-            <Col xs="12" sm="12" md={12} lg={12} className="mt-0" >
-              {/*  */}
-              <FormGroup>
-                <FormControlLabel className="f-w-label" control={<Checkbox />} label="I want to collect phone number." 
-                  onClick={(e)=>setFormData({...formData, ...{"collectPhoneNumber": e.target.checked }})} />
-              </FormGroup>
-            </Col>
-            {/* set status to active */}
-            <Col xs="12" sm="12" md={12} lg={12} className="mt-0" >
-              {/*  */}
-              {/* <FormGroup> */}
-                <FormControlLabel className="f-w-label" control={<Checkbox />} label="I want to set the status to be active."
-                  onClick={(e)=>setFormData({...formData, ...{"setStatusToActive": e.target.checked }})} />
-              {/* </FormGroup> */}
-            </Col>
-            {/* recurring */}
-            <Col xs="12" sm="12" md={12} lg={12} className="mt-2" >
-              {/*  */}
-              <p>                
-                <FormControl>
-                    <p className="f-w-label mb-0" > 
-                      <Row className='mb-1' style={{ marginLeft: '0px'}}> Recurring Payment </Row >
-                      Select if the link is a recurring payment link or one time payment link.
-                    </p>
-                  <FormLabel id="demo-radio-buttons-group-label"> </FormLabel>
-                  <RadioGroup
-                    aria-labelledby="demo-radio-buttons-group-label"
-                    defaultValue="oneTime"
-                    name="radio-buttons-group"
-                    className='d-flex'
-
-                  > 
-                  {/* recurring onetime action */}
-                  <Row>
-                    <Col md={6} lg={6}>
-                      <FormControlLabel className='mt-0' value="oneTime" control={<Radio />} label="One time" onClick={(e)=>setFormData({...formData, ...{"oneTime": e.target.checked},  ...{"recurring": false} }) }  />
-                    </Col>
-                    <Col md={6} lg={6}>
-                      <FormControlLabel className='mt-0' value="recurring" control={<Radio />} label="Recurring" onClick={(e)=>setFormData({...formData, ...{"recurring": e.target.checked}, ...{"oneTime": false} })} md={6} lg={6} />
-                    </Col>
-                  </Row> 
-                  </RadioGroup>
-                </FormControl>
-              </p>
-            </Col>
-
-            {/* phone number*/}
             {
-              formData?.collectPhoneNumber ? 
-
-              <Col xs="12" sm="12" md={6} lg={6} className="mt-3" > 
-                <div className='bulk-pay-name' >
-                  <Box 
-                    component="form"
-                    noValidate
-                    autoComplete="off"
-                    >
-                    <Label for="phoneNumber" className="f-w-label"> Phone Number </Label>
-                    <TextField
-                      fullWidth
-                      // error = {phoneNumberError} 
-                      id='customLink'
-                      placeholder='eg. 0202538033'
-                      onChange={(e)=>setFormData({...formData, ...{"phoneNumber": e.target.value}})}                     
-                      />
-                  </Box>
+              [ 
+                // console.log("roleData permission_by_category", roleData),
+              roleData?.permission_by_category?.map((post, id) =>  
+              <Col xs="12" sm="12" md={12} lg={12} className="mt-0 " key={id}>
+                <p>{ post?.category?.toUpperCase() }</p>
+                <div className='v-flow'>
+                {
+                  post?.permissions?.map((post2, id_1) =>  
+                  <Col xs="12" sm="12" md={12} lg={12} className="mt-0" key={id_1}>
+                    <FormGroup style={{ fontSize: "0.8rem !important" }} className="perm" >
+                      <FormControlLabel className="f-w-label" control={<Checkbox  defaultChecked={editFormData?.is_fixed || false }/>} label={post2.name} 
+                        onClick={(e)=>{ (setEditFormData({...editFormData, ...{"is_fixed": e.target.checked }})) }} onChange={ (e)=> managePermissionList(post2, e.target.checked) }/>
+                    </FormGroup>
+                  </Col>)
+                }
                 </div>
-              </Col>
-              : ""
+              </Col>)
+              ]
             }
-
-            {/* amount */}
-            {
-              formData?.collectFixAmount ? 
-              <Col xs="12" sm="12" md={6} lg={6} className="mt-3" > 
-                <div className='bulk-pay-name' >
-                  <Box 
-                    component="form"
-                    noValidate
-                    autoComplete="off"
-                    >
-                    <Label for="amount" className="f-w-label"> Amount </Label>
-                    <TextField
-                      fullWidth
-                      type="number"
-                      inputProps={{ min: 0, step: 0.01 }}
-                      // error = {phoneNumberError} 
-                      id='amount'
-                      placeholder='eg. 2.00'
-                      onChange={(e)=>setFormData({...formData, ...{"amount": e.target.value}})}                     
-                      />
-                  </Box>
-                </div>
+            {/* <div className='v-flow'>
+              <Col xs="12" sm="12" md={12} lg={12} className="mt-2" >
+                <FormGroup>
+                  <FormControlLabel className="f-w-label" control={<Checkbox  defaultChecked={editFormData?.is_fixed || false }/>} label="I want to collect a fix amount on this page." 
+                    onClick={(e)=>setEditFormData({...editFormData, ...{"is_fixed": e.target.checked }})} />
+                </FormGroup>
               </Col>
-              : ""
-            }
-
-            {/* Additional Fields (optional) */}
-            { 
-              show ?
-              <>
-              <Row>
-                <Col xs="12" sm="12" md={12} lg={12} className="mt-2 d-flex" > 
-                <h6 style={{ marginRight: '4px'}} > Additional </h6>{" "}(optional) 
-                </Col>
-              </Row>
-              {/* set expiration date */}
-              <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
-                <div className='bulk-pay-name' width='100%' >
-                  <Box
-                    component="form"
-                    fullWidth
-                    noValidate
-                    autoComplete="off"
-                    >
-                    <Label for="expirationPeriod" className="f-w-label" xs="12" sm="12" md="12" lg="12"> Set expiration period </Label>
-                      {/* <TextField
-                      fullWidth
-                      error = {expirationPeriodError} 
-                      id='expirationPeriod'
-                      value={expirationPeriod}
-                      onChange={(e) => {(setExpirationPeriod(e.target.value)); (setExpirationPeriodError(false))}}
-                      label="expirationPeriod"                      
-                      /> */}
-                      <LocalizationProvider dateAdapter={AdapterDateFns}>
-                      <DateTimePicker
-                        sx={{ width: 720 }}
-                        id="expirationPeriod"
-                        inputFormat="dd/MM/yyyy hh:mm:ss"
-                        value={dateTo}
-                        onChange={handleChangeTo}
-                        renderInput={(params) => <TextField {...params} />}
-                      />
-                      </LocalizationProvider>
-                  </Box>
-                </div>
-              </Col>
-              {/* custom payment link */}
-              <Col xs="12" sm="12" md={6} lg={6} className="mt-3" > 
-                <div className='bulk-pay-name' >
-                  <Box 
-                    component="form"
-                    noValidate
-                    autoComplete="off"
-                    >
-                    <Label for="customLink" className="f-w-label"> Custom Payment Link </Label>
-                    <TextField
-                      fullWidth
-                      // error = {customLinkError} 
-                      id='customLink'
-                      placeholder='eg. myPage'
-                      onChange={(e)=>setFormData({...formData, ...{"customLink": e.target.value}})}
-                      // value={amount}
-                      // onChange={(e) => {(setCustomLink(e.target.value)); (setCustomLinkError(false))}}
-                      // label="description"                      
-                      />
-                  </Box>
-                </div>
-              </Col>
-              {/* success message */}
-              <Col xs="12" sm="12" md={6} lg={6} className="mt-3" > 
-              <div className='bulk-pay-name' >
-                <Box 
-                  component="form"
-                  noValidate
-                  autoComplete="off"
-                  >
-                  <Label for="successMessage" className="f-w-label"> Success Message </Label>
-                  <TextField
-                    fullWidth
-                    // error = {successMessageError} 
-                    id='successMessage'
-                    onChange={(e)=>setFormData({...formData, ...{"successMessage": e.target.value}})}
-                    // value={amount}
-                    // onChange={(e) => {(setSuccessMessage(e.target.value)); (setSuccessMessageError(false))}}
-                    // label="description"                      
-                    />
-                </Box>
-              </div>
-              </Col>
-              {/* split payment */}
-              <Col xs="12" sm="12" md={6} lg={6} className="mt-3" > 
-              <div className='bulk-pay-name' >
-                <Box 
-                  component="form"
-                  noValidate
-                  autoComplete="off"
-                  >
-                  <Label for="splitPayment" className="f-w-label"> Split Payment </Label>
-                  <TextField
-                    fullWidth
-                    // error = {splitPaymentError} 
-                    id='splitPayment'
-                    onChange={(e)=>setFormData({...formData, ...{"splitPayment": e.target.value}})}
-                    // value={amount}
-                    // onChange={(e) => {(setSplitPayment(e.target.value)); (setSplitPaymentError(false))}}
-                    // label="description"                      
-                    />
-                </Box>
-              </div>
-              </Col>
-              {/* redirect url */}
-              <Col xs="12" sm="12" md={12} lg={12} className="mt-3" > 
-                <div className='bulk-pay-name' >
-                  <Box 
-                    component="form"
-                    noValidate
-                    autoComplete="off"
-                    >
-                    <Label for="redirectUrl" className="f-w-label"> Redirect URL </Label>
-                    <TextField
-                      fullWidth
-                      // error = {redirectUrlError} 
-                      placeholder='eg. wingipay.com/buy'
-                      id='redirectUrl'
-                      onChange={(e)=>setFormData({...formData, ...{"redirectUrl": e.target.value}})}
-                      // value={amount}
-                      // onChange={(e) => {(setRedirectUrl(e.target.value)); (setRedirectUrlError(false))}}
-                      // label="description"                      
-                      />
-                  </Box>
-                </div>
-              </Col>
-
-            {/* email */}
-            {
-              formData?.collectFixAmount ? 
-              <Col xs="12" sm="12" md={12} lg={12} className="mt-3" > 
-                <div className='bulk-pay-name' >
-                  <Box 
-                    component="form"
-                    noValidate
-                    autoComplete="off"
-                    >
-                    <Label for="email" className="f-w-label"> Email </Label>
-                    <TextField
-                      fullWidth
-                      // error = {phoneNumberError} 
-                      id='email'
-                      placeholder='eg. test@gmail.com'
-                      onChange={(e)=>setFormData({...formData, ...{"email": e.target.value}})}                     
-                      />
-                  </Box>
-                </div>
-              </Col>
-              : ""
-            }
-              {/* Custom Field */}
-              <Col xs="12" sm="12" md={12} lg={12} className="mt-3" >
-                {/*  */}
-                <Label for="customField" className="f-w-label"> Custom Field(s) </Label>
-                <CreatableSelect
-                  isMulti
-                  placeholder="Type to create custom field(s)"
-                  // onChange={handleChange}
-                  onChange={(e)=>handleInputChange(e)}
-                  options={[]}
-                />
-              </Col>
-
-            </>
-            : "" 
-            }
-
+            </div> */}
           </Row>
-          <p style={{ textAlign: 'center' }} className='mt-4' >
-            { 
-              show ? <a href='#' onClick={ (e)=>setShow(false) }> Show less </a> :
-              <a href='#' onClick={ (e)=>setShow(true) }> Show more </a>
-            }
-          </p>
-          
           
         </CModalBody>
         <CModalFooter>
           <CButton color="secondary" className='text-white' onClick={(e) => setModal1(false)}> 
             Cancel
           </CButton>
-          <CButton color="" className='text-white bg-text-wp' onClick={(e) => generateLinkkey(e)}> 
+          <CButton color="" className='text-white bg-text-wp' onClick={(e) => sendAction(e)}> 
             Create
           </CButton>
         </CModalFooter>
       </CModal>
 
-      {/* modal for edit */}
+      {/* invite modal for  */}
+      <CModal visible={modal3} alignment="center" onClose={() => setModal3(false)}>
+        <CModalHeader> <CModalTitle> Invite </CModalTitle> </CModalHeader>
+        <CModalBody> 
+          {/* <Checkbox {...label} /> */}
+          <Row style={{ marginRight: '1px' }}>
+            {/* description */}
+            <Col xs="12" sm="12" md={12} lg={12} className="mt-3" > 
+              <div className='bulk-pay-name' >
+                <Box 
+                  component="form"
+                  noValidate
+                  autoComplete="off"
+                  >
+                  <Label for="email" className="f-w-label mb-2"> Email </Label>
+                  <TextField
+                    style={{width: '100%' }}
+                    className="mt-0"
+                    // error = {emailError} 
+                    id='email'
+                    onChange={(e)=>setFormInviteData({...formInviteData, ...{"email": e.target.value}})}
+                    // value={amount}
+                    // onChange={(e) => {(setDescription(e.target.value)); (setDescriptionError(false))}}
+                    // label="description"                      
+                    />
+                </Box>
+              </div>
+            </Col>
+            <Col xs="12" sm="12" md={12} lg={12} className="mt-3" >
+              {/*  */}
+              <Label for="customField" className="f-w-label mb-0"> Roles </Label>
+              <Select
+                // isMulti
+                // defaultValue={editFormData?.additional_fields?.address}
+                className='mt-1'
+                placeholder="Select a role for the user..."
+                // onChange={handleChange}
+                onChange={(e)=>setFormInviteData({...formInviteData, ...{"role": e}})}
+                options={optionRoles}
+              />
+            </Col>
+          </Row>
+          
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" className='text-white' onClick={(e) => setModal3(false)}> 
+            Cancel
+          </CButton>
+          <CButton color="" className='text-white bg-text-wp' onClick={(e) => sendAction(e, "invite")}> 
+            Invite
+          </CButton>
+        </CModalFooter>
+      </CModal>
+
+
+      {/* modal for edit item*/}
       <CModal visible={modal2} scrollable backdrop="static" onClose={() => setModal2(false)}>
         <CModalHeader>
           <CModalTitle> Edit Payment Link </CModalTitle>
@@ -1510,7 +1189,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
         <CModalBody> 
           {/* <Checkbox {...label} /> */}
           <Row style={{ marginRight: '1px' }}>
-            {/* name for payment link */}
+            {/* name for user management  */}
             <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
             <div className='bulk-pay-name' >
               <Box 
@@ -1524,7 +1203,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
                   // error = {pageNameError} 
                   id='payLinkName'
                   value={editFormData?.page_name} 
-                  onChange={(e)=>setEditFormData({...editFormData, ...{"page_name": e.target.value}})}
+                  onChange={(e)=>setEditFormData({...editFormData, ...{"payLinkName": e.target.value}})}
                   // onChange={(e) => {(setPageName(e.target.value)); (setPageNameError(false))}}
                   // label="description"                      
                   />
@@ -1592,7 +1271,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
                 <FormControl>
                     <p className="f-w-label mb-0" > 
                       <Row className='mb-1' style={{ marginLeft: '0px'}}> Recurring Payment </Row >
-                      Select if the link is a recurring payment link or one time payment link.
+                      Select if the link is a recurring user management  or one time user management .
                     </p>
                   <FormLabel id="demo-radio-buttons-group-label"> </FormLabel>
                   <RadioGroup
@@ -1707,7 +1386,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
                 </Box>
               </div>
             </Col>
-            {/* custom payment link */}
+            {/* custom user management  */}
             <Col xs="12" sm="12" md={6} lg={6} className="mt-3" > 
               <div className='bulk-pay-name' >
                 <Box 
@@ -1850,7 +1529,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
           <CButton color="secondary" className='text-white' onClick={(e) => setModal2(false)}> 
             Cancel
           </CButton>
-          <CButton color="" className='text-white bg-text-wp' onClick={(e) => editPaymentLink(e)}> 
+          <CButton color="" className='text-white bg-text-wp' onClick={(e) => edituserGet(e)}> 
             Create
           </CButton>
         </CModalFooter>
@@ -1859,4 +1538,4 @@ const PaymentLinkDataTables = (apikeyDetails) => {
   )
 }
 
-export default PaymentLinkDataTables;
+export default UserManagementDataTables;

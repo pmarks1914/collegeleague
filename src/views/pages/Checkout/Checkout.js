@@ -510,7 +510,10 @@ export default function Checkout() {
                     setSessionData(response?.data)
                     // setAccountNumber(response?.data?.data?.phone)
                     // setPhoneNumber(response?.data?.data?.phone)
-                    // setAmount(response?.data?.data?.amount)
+                    if(response?.data?.data?.is_fixed){
+                        setAmount(response?.data?.data?.fixed_amount)
+                        setAmountError(false)
+                    }
                     // setFee(response?.data?.data?.fee || "0.00")
                     setPrefix(response?.data?.prefix)
                     setDefaulName(response?.data?.business_name)
@@ -609,7 +612,7 @@ export default function Checkout() {
         // // console.log("window.location pathname ", window.location.pathname.split("/")[1])
         let expPhone = /(020|023|024|025|026|027|028|050|054|055|059|233)[\s.-]?(\d{7}|\d{8})$/;
         // expPhone.test(phoneNumber.replace(/\s+/g, ''))  
-        // // console.log("amountError ", formType, expPhone.test(phoneNumber.replace(/\s+/g, '')), (Number(amount) ? true : false), admissionId.length)
+        // console.log("amountError ", formType, expPhone.test(phoneNumber.replace(/\s+/g, '')), (Number(amount) ? true : false), admissionId.length)
             // console.log("inner >> ", sessionData?.data?.additional_fields?.address.length, Object.keys(additionalField).length)
             // sessionData?.data?.additional_fields?.address
             if( Object.keys(additionalField).length > 0 ){
@@ -628,10 +631,10 @@ export default function Checkout() {
             // for initial form fields 
             let obj = Object.fromEntries(Object.entries(additionalField).filter(([_, v]) => v != ''));
             // console.log("obj ", obj)
-            if (!fullNameError && fullName.length < 4) {
+            if ( fullName.length < 4) {
                 setFullNameError(true)
             }
-            else if (!phoneNumberError && phoneNumber.length < 10 && !(expPhone.test(phoneNumber))) {
+            else if ( !(expPhone.test(phoneNumber)) ) {
                 setPhoneNumberError(true)
             }
             else if (!amountError && (amount.length < 1) || !(Number(amount) ? true : false)) {
@@ -650,7 +653,8 @@ export default function Checkout() {
             }
             else{
                 // for payment method which is selected from modal
-                setModal1(true)
+                // setModal1(true)
+                setPagePaymentMethod(true)
                 setSourceMetadata(
                     {
                     "full_name": fullName,
@@ -1771,18 +1775,18 @@ export default function Checkout() {
                                         fullWidth
                                         required
                                         InputProps={{
-                                        endAdornment: (
-                                            <InputAdornment position="end" >
-                                                <CTooltip
-                                                    content="This field is required, provide a valid phone number in the form eg. 0xx xxxx xxx"
-                                                    placement="top"
-                                                >
-                                                <CIcon icon={cilInfo} className="me-2" />
-                                                </CTooltip>
-                                            </InputAdornment>
-                                        ),
+                                            endAdornment: (
+                                                <InputAdornment position="end" >
+                                                    <CTooltip
+                                                        content="This field is required, provide a valid phone number in the form eg. 0xx xxxx xxx"
+                                                        placement="top"
+                                                    >
+                                                    <CIcon icon={cilInfo} className="me-2" />
+                                                    </CTooltip>
+                                                </InputAdornment>
+                                            ),
                                         }}
-                                    />
+                                    />  
 
                                     <TextField
                                         error={amountError}
@@ -1796,11 +1800,12 @@ export default function Checkout() {
                                         type="text"
                                         fullWidth
                                         required
+                                        disabled={sessionData?.data?.is_fixed ? true : false}
                                         InputProps={{
                                         endAdornment: (
                                             <InputAdornment position="end" >
                                                 <CTooltip
-                                                    content="This field is required."
+                                                    content={ !sessionData?.data?.is_fixed ? "This field is required." : "" }
                                                     placement="top"
                                                 >
                                                 <CIcon icon={cilInfo} className="me-2" />
@@ -1810,7 +1815,7 @@ export default function Checkout() {
                                         }}
                                     />
                                     {
-                                       ( sessionData?.data?.additional_fields?.address )?.map((post, id) => 
+                                      sessionData?.data?.additional_fields?.address?.length > 0 ? ( sessionData?.data?.additional_fields?.address )?.map((post, id) => 
                                         //
 
                                     <TextField
@@ -1842,7 +1847,7 @@ export default function Checkout() {
                                         ),
                                         }}
                                     />
-                                        )
+                                        ) : ""
                                     }
 
                                     <Row>

@@ -65,9 +65,9 @@ const Login = () => {
       axios(config).then(response => {
         setLoader("<a></a>")
         setLogin("Login")
-        console.log(response.status);
+        // console.log(response.status);
         if (response?.data?.status) { 
-          console.log(response?.data)
+          // console.log(response?.data)
           let counter = 700000;
 
           const userData = {
@@ -266,6 +266,15 @@ const Login = () => {
                 </CCardBody>
               </CCard> */}
             </CCardGroup>
+            <Box >
+              <p className='mt-10 text-center'> 
+                <br />
+                By clicking {'"'}{login}{'"'}, I agree to the Service Agreement, <a href='https://wingipay.com/terms/'> Terms </a> of service and <a href='https://wingipay.com/privacy/'>  Privacy </a> Policy. 
+                <br />
+                Don{"'"}t have an account? <a href='/signup'> Sign Up </a>
+              </p>
+
+            </Box>
           </CCol>
         </CRow>
 
