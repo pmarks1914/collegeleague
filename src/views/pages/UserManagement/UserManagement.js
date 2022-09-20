@@ -29,7 +29,7 @@ const UserManagement = () => {
         // apikey_data?.apikey?.then(value => { setApikeyDetails(value) });
 
         let userGetInfoData = userGetData();
-        userGetInfoData?.userGet?.then(value => { setDataDetails(value) });
+        userGetInfoData?.userGetData?.then(value => { setDataDetails(value) });
 
         // console.log("currentUser ", currentUser)
         // let data = '';

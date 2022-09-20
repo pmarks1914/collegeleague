@@ -455,7 +455,7 @@ export function userGetData(){
     let data = '';
     let config_transaction = {
         method: 'get',
-        url: process.env.REACT_APP_BASE_API + "/team/account/" + userData?.account + "/",
+        url: process.env.REACT_APP_BASE_API + "/team/" + userData?.account + "/",
         headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + userData?.access
@@ -466,15 +466,15 @@ export function userGetData(){
     function userGetDataDetails(){
         <a dangerouslySetInnerHTML={{ __html: loader }}></a>
         return axios(config_transaction).then(response => {
-            // console.log("data ==", response?.data?.data);
-            if (response.data.data) {
+            // console.log("data ==", response?.data?.members);
+            // if (response.data.data) {
                 // 
                 if(response?.data){loader = "<a></>";}
                 
                 <a dangerouslySetInnerHTML={{ __html: loader }}></a>;
-                return response.data.members;
-            }
-            return
+                return response?.data?.members;
+            // }
+            // return
 
         }).catch(function (error) {
             loader = "<a></>";

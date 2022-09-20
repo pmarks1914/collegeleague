@@ -43,7 +43,7 @@ import {
   CCollapse,
   CCardHeader,
   CCol,
-  CLink,
+  CUser,
   CModal,
   CModalBody,
   CModalFooter,
@@ -80,7 +80,7 @@ import './user.css'
 let currentUser = JSON.parse(localStorage.getItem("userDataStore")); 
 let userGetInfoData = userGetData();
 let userGetInfo = []
-userGetInfoData?.userGet?.then(value => { (userGetInfo = value) });
+userGetInfoData?.userGetData?.then(value => { (userGetInfo = value) });
 
 let permissionList = [];
 
@@ -125,7 +125,7 @@ const UserManagementDataTables = (props) => {
   const [referanceId, setReferanceId] = useState("");
   const [userGetInfoExport, setuserGetInfoExport] = useState({});
   const [dateFilterData, setDateFilterData] = useState({});
-  const [amountLess, setAmountLess] = useState(0.00);
+  const [roleAdded, setRoleAdded] = useState(false);
   const [amountGreat, setAmountGreat] = useState(0.00);
   const [amountEqual, setAmountEqual] = useState(0.00);
 
@@ -136,6 +136,7 @@ const UserManagementDataTables = (props) => {
   const toggle = () => setOpenDateRange(!openDateRange);
 
   useEffect(() => {
+    // console.log("info ", userGetInfo )
 
     if(dateRange.length > 0 && monitorState === 1){
       setMonitorState(2)
@@ -223,7 +224,7 @@ const UserManagementDataTables = (props) => {
 
         }
     });
-  }, [dateRange, userGetInfo, actionDel])
+  }, [dateRange, userGetInfo, actionDel, roleAdded])
 
   // perform filter 
   function datatablaScript(tdata) {
@@ -466,15 +467,7 @@ const UserManagementDataTables = (props) => {
     }
     
   }
-  function resetFilter(e){
-    e.preventDefault()
-    setAmountEqual(0)
-    setAmountGreat(0)
-    setAmountLess(0)
-    setReferanceId("")
-    setuserGetInfoId("")
-    datatablaScript(userGetInfo)
-  }
+ 
   function convertArrayOfObjectsToCSV(array) {
     let result;
     const columnDelimiter = ',';
@@ -499,7 +492,7 @@ const UserManagementDataTables = (props) => {
   }
 
   function downloadCSV(array) {
-    const link = document.createElement('a');
+    const User = document.createElement('a');
     // // console.log("exp downloadCSV==>", array  );
     let csv = convertArrayOfObjectsToCSV(array);
     // console.log("csv", csv);
@@ -511,9 +504,9 @@ const UserManagementDataTables = (props) => {
       csv = `data:text/csv;charset=utf-8,${csv}`;
     }
   
-    link.setAttribute('href', encodeURI(csv));
-    link.setAttribute('download', filename);
-    link.click();
+    User.setAttribute('href', encodeURI(csv));
+    User.setAttribute('download', filename);
+    User.click();
   }
   const downloadExcel = (data) => {
     // console.log(data);
@@ -547,10 +540,11 @@ const UserManagementDataTables = (props) => {
     e.preventDefault();
     // console.log("setFormData ", formData)
     let data = {};
-
     let config = {};
+    let titleMsg = ""
     if(type === "invite"){
       //  
+      titleMsg = 'Invite sent'
       data = JSON.stringify({ 
       // collectFixAmount: true 
       "invitee_email": formInviteData?.email,
@@ -568,16 +562,35 @@ const UserManagementDataTables = (props) => {
       data: data
     };
     }
+    else if(type === "newRole"){
+      //  roleAdded
+      titleMsg = "New role added!"
+      data = JSON.stringify({
+        "name": formData?.name,
+        "description": formData?.description,
+        "permission": permissionList
+    });
+      config = {
+      method: 'post',
+      url: process.env.REACT_APP_BASE_API + "/team/role/create/" + currentUser?.account + "/",
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + currentUser?.access
+      },
+      data: data
+    };
+    }
+    // 
     axios(config).then(response => {
       // console.log(response.data);
       if (response?.data?.status === true) { 
 
         let userGetInfoDataNew = userGetData();
         let userGetInfoNew = []
-        userGetInfoDataNew?.userGet?.then(value => { (userGetInfoNew = value) });
+        userGetInfoDataNew?.userGetData?.then(value => { (userGetInfoNew = value) });
 
         Swal.fire({
-          title: 'Invite sent',
+          title: titleMsg,
           html: response.data.message.toString(),
           // icon: 'success',
           allowOutsideClick: false,
@@ -587,24 +600,21 @@ const UserManagementDataTables = (props) => {
           // cancelButtonColor: '#d33',
           confirmButtonText: 'Ok'
         }).then((result) => {
-            userGetInfo = userGetInfoNew
+          // window.location.reload()
+          // }  
+          if(type === "newRole"){
+            setRoleAdded(true)
             setModal1(false);
+            permissionList = []
+          }
+          else{
+            // 
             setModal2(false);
             setModal3(false);
-          // window.location.reload()
-          // }
-        });
-        // setTimeout(() => {
-        //   let infoData = userGetData();
-        //   let infoArray = [];
-        //   infoData?.userGet?.then(value => { 
-        //     infoArray = value;
-        //     datatablaScript(value);
-        //     apikeyDetails = value;
-        //     userGetInfo = value
+            userGetInfo = userGetInfoNew
+          }
 
-        //   }); 
-        //   }, 1000);
+        });
       }
       else {
         Swal.fire({
@@ -622,7 +632,7 @@ const UserManagementDataTables = (props) => {
     }).catch(function (error) {
       if(error){
         Swal.fire({
-          title: 'Payment Link Generation Failed!',
+          title: 'Failed!',
           text: "Try again!",
           icon: 'warning',
           showCancelButton: true,
@@ -658,27 +668,12 @@ const UserManagementDataTables = (props) => {
     console.log("editFormData ", editFormData)
     let data = JSON.stringify({ 
       // collectFixAmount: true 
-      "type": editFormData?.type,
-      "custom_link": editFormData?.custom_link,
-      "page_name": editFormData?.page_name, 
-      "description": editFormData?.description,
-      "is_fixed": editFormData?.is_fixed,
-      "is_recurring": editFormData?.recurring === true ? true : false,
-      "phone_required": editFormData?.phone_required,
-      "phone_number": editFormData?.phone_number,
-      "fixed_amount": editFormData?.fixed_amount,
-      "custom_success_message": editFormData?.custom_success_message, 
-      "notify_email": editFormData?.notify_email,
-      "expiration_date": editFormData?.expiration_date,
-      "split_payment": editFormData?.split_payment,
-      "additional_fields": editFormData?.additional_fields,
-      "callback_url": editFormData?.callback_url, 
-      "redirect_url": editFormData?.redirect_url
+      "role_id": formInviteData?.role_id?.value
     });
 
     let config = {
       method: 'patch',
-      url: process.env.REACT_APP_BASE_API + "/payment/link/update/" + editFormData.id + "/",
+      url: process.env.REACT_APP_BASE_API + "/teams/member/role_update/" + editFormData.id + "/",
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + currentUser?.access
@@ -686,15 +681,15 @@ const UserManagementDataTables = (props) => {
       data: data
     };
     axios(config).then(response => {
-      console.log(response.data);
+      // console.log(response.data);
       if (response?.data?.status === true) { 
 
         let userGetInfoDataNew = userGetData();
         let userGetInfoNew = []
-        userGetInfoDataNew?.userGet?.then(value => { (userGetInfoNew = value) });
+        userGetInfoDataNew?.userGetData?.then(value => { (userGetInfoNew = value) });
 
         Swal.fire({
-          title: 'Payment Link Edited',
+          title: 'User Edited',
           icon: 'success',
           allowOutsideClick: false,
           // allowEscapeKey: false,
@@ -703,13 +698,16 @@ const UserManagementDataTables = (props) => {
           // cancelButtonColor: '#d33',
           confirmButtonText: 'OK!'
         }).then((result) => {
+          setTimeout(()=>{
             userGetInfo = userGetInfoNew
+            setModal1(false);
             setModal2(false);
+          }, 2000)
         });
       }
       else {
         Swal.fire({
-          title: 'Failed To Edit Payment Link!',
+          title: 'Failed To Edit User!',
           text: response.data.message,
           icon: 'warning',
           showCancelButton: true,
@@ -723,7 +721,7 @@ const UserManagementDataTables = (props) => {
     }).catch(function (error) {
       if(error){
         Swal.fire({
-          title: 'Failed To Edit Payment Link!',
+          title: 'Failed To Edit User!',
           text: "Try again!",
           icon: 'warning',
           showCancelButton: true,
@@ -755,12 +753,13 @@ const UserManagementDataTables = (props) => {
     );
   }
   // delete
-  function deleteuserGet(e) {
+  function deleteuserGet(e, memberData) {
     e.preventDefault();
+    // console.log(" ", editFormData)
     let data = {}
     let config = {
       method: 'delete',
-      url: process.env.REACT_APP_BASE_API + "/payment/link/delete/" + editFormData.id + "/",
+      url: process.env.REACT_APP_BASE_API + "/teams/member/remove/" + memberData.id + "/",
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + currentUser?.access
@@ -770,7 +769,7 @@ const UserManagementDataTables = (props) => {
 
     Swal.fire({
       icon: 'info',
-      title: 'Do you want to delete the item?',
+      title: 'Do you want to remove the member?',
       allowOutsideClick: false,
       // allowEscapeKey: false,
       showCancelButton: true,
@@ -787,7 +786,7 @@ const UserManagementDataTables = (props) => {
         // console.log( "old ", bulkPayInfo,  " new ", bulkPayInfoNew)
         if (result.isConfirmed) {
           // 
-          passConfigDeleteLink(config)
+          passConfigDeleteUser(config)
         }
         else{
           // 
@@ -796,17 +795,17 @@ const UserManagementDataTables = (props) => {
     });
   }
   // get delete config for delete action 
-  function passConfigDeleteLink(config){
+  function passConfigDeleteUser(config){
     // 
     axios(config).then(response => {
       // console.log(response.data);
       if (response?.data?.status === true) { 
         let userGetInfoDataNew = userGetData();
         let userGetInfoNew = []
-        userGetInfoDataNew?.userGet?.then(value => { (userGetInfoNew = value) });
+        userGetInfoDataNew?.userGetData?.then(value => { (userGetInfoNew = value) });
         // console.log("out ", userGetInfoNew)
         Swal.fire({
-          title: 'Payment Link Deleted',
+          title: 'Member removed',
           icon: 'success',
           allowOutsideClick: false,
           // allowEscapeKey: false,
@@ -816,14 +815,16 @@ const UserManagementDataTables = (props) => {
           confirmButtonText: 'OK!'
         }).then((result) => {
             // console.log("in ", userGetInfoNew)
-            userGetInfo = userGetInfoNew
-            setActionDel(2)
+            setTimeout(()=>{
+              userGetInfo = userGetInfoNew
+              setActionDel(2)
+            }, 2000)
             // setModal2(false);
         });
       }
       else {
         Swal.fire({
-          title: 'Failed To Delete Payment Link!',
+          title: 'Failed To Remove User!',
           text: response.data.message,
           icon: 'warning',
           showCancelButton: true,
@@ -837,7 +838,7 @@ const UserManagementDataTables = (props) => {
     }).catch(function (error) {
       if(error){
         Swal.fire({
-          title: 'Failed To Delete Payment Link!',
+          title: 'Failed To Delete User!',
           text: "Try again!",
           icon: 'warning',
           showCancelButton: true,
@@ -1015,14 +1016,14 @@ const UserManagementDataTables = (props) => {
             tableData?.map((post, id) =>
               <tr key={id}>
                 <td>{id + 1}</td>
-                <td>{post?.lastname}</td>
+                <td>{ (post?.firstname || "") + " " + (post?.lastname || "")}</td>
                 <td>{post?.email}</td>
                 <td>{post?.invited_by }</td> 
-                <td>{post?.role_name }</td> 
+                <td>{post?.role_name?.toUpperCase() }</td> 
                 {/* <td>{moment(post?.expiration_date || Date() ).format('LLLL') }</td>             */}
                 <td>
-                  <CBadge className='bg-text-wp' onClick={() => { setEditFormData(post) }} > Edit </CBadge> 
-                  {/* <CBadge color='black' style={{marginRight: "5px"}} onClick={(e) => { setEditFormData(post); deleteuserGet(e) }} > Delete </CBadge>  */}
+                  <CBadge className='bg-text-wp' onClick={() => { setEditFormData(post); setModal2(true); setFormInviteData({...formInviteData, ...{"role": post?.role_name}}) }} > Edit </CBadge> 
+                  <CBadge color='black' style={{marginLeft: "5px"}} onClick={(e) => { setEditFormData(post); deleteuserGet(e, post) }} > Remove </CBadge> 
                 </td>
               </tr>
             )}
@@ -1036,8 +1037,8 @@ const UserManagementDataTables = (props) => {
 
       {/* modals */}
       {/* modal for create */}
-      <CModal visible={modal1} alignment="center" onClose={() => setModal1(false)}>
-        <CModalHeader> <CModalTitle> Roles </CModalTitle> </CModalHeader>
+      <CModal fullscreen="lg" visible={modal1} alignment="center" onClose={() => setModal1(false)}>
+        <CModalHeader> <CModalTitle> Create Custom Role </CModalTitle> </CModalHeader>
         <CModalBody> 
           {/* <Checkbox {...label} /> */}
           <Row style={{ marginRight: '1px' }}>
@@ -1096,7 +1097,7 @@ const UserManagementDataTables = (props) => {
                   post?.permissions?.map((post2, id_1) =>  
                   <Col xs="12" sm="12" md={12} lg={12} className="mt-0" key={id_1}>
                     <FormGroup style={{ fontSize: "0.8rem !important" }} className="perm" >
-                      <FormControlLabel className="f-w-label" control={<Checkbox  defaultChecked={editFormData?.is_fixed || false }/>} label={post2.name} 
+                      <FormControlLabel className="f-w-label" control={<Checkbox />} label={post2.name} 
                         onClick={(e)=>{ (setEditFormData({...editFormData, ...{"is_fixed": e.target.checked }})) }} onChange={ (e)=> managePermissionList(post2, e.target.checked) }/>
                     </FormGroup>
                   </Col>)
@@ -1120,7 +1121,7 @@ const UserManagementDataTables = (props) => {
           <CButton color="secondary" className='text-white' onClick={(e) => setModal1(false)}> 
             Cancel
           </CButton>
-          <CButton color="" className='text-white bg-text-wp' onClick={(e) => sendAction(e)}> 
+          <CButton color="" className='text-white bg-text-wp' onClick={(e) => sendAction(e, "newRole")}> 
             Create
           </CButton>
         </CModalFooter>
@@ -1159,7 +1160,6 @@ const UserManagementDataTables = (props) => {
               <Label for="customField" className="f-w-label mb-0"> Roles </Label>
               <Select
                 // isMulti
-                // defaultValue={editFormData?.additional_fields?.address}
                 className='mt-1'
                 placeholder="Select a role for the user..."
                 // onChange={handleChange}
@@ -1182,348 +1182,23 @@ const UserManagementDataTables = (props) => {
 
 
       {/* modal for edit item*/}
-      <CModal visible={modal2} scrollable backdrop="static" onClose={() => setModal2(false)}>
+      <CModal visible={modal2} alignment="center" onClose={() => setModal2(false)}>
         <CModalHeader>
-          <CModalTitle> Edit Payment Link </CModalTitle>
+          <CModalTitle> Edit User </CModalTitle>
         </CModalHeader>
         <CModalBody> 
           {/* <Checkbox {...label} /> */}
           <Row style={{ marginRight: '1px' }}>
-            {/* name for user management  */}
-            <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
-            <div className='bulk-pay-name' >
-              <Box 
-                component="form"
-                noValidate
-                autoComplete="off"
-                >
-                <Label for="payLinkName" className="f-w-label"> Page name </Label>
-                <TextField
-                  fullWidth
-                  // error = {pageNameError} 
-                  id='payLinkName'
-                  value={editFormData?.page_name} 
-                  onChange={(e)=>setEditFormData({...editFormData, ...{"payLinkName": e.target.value}})}
-                  // onChange={(e) => {(setPageName(e.target.value)); (setPageNameError(false))}}
-                  // label="description"                      
-                  />
-              </Box>
-            </div>
-            </Col>
-            {/* description */}
-            <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
-            <div className='bulk-pay-name' >
-              <Box 
-                component="form"
-                noValidate
-                autoComplete="off"
-                >
-                <Label for="description" className="f-w-label"> Description </Label>
-                <TextField
-                  fullWidth
-                  // error = {descriptionError} 
-                  id='description'
-                  value={editFormData?.description} 
-                  onChange={(e)=>setEditFormData({...editFormData, ...{"description": e.target.value}})}
-                  // value={amount}
-                  // onChange={(e) => {(setDescription(e.target.value)); (setDescriptionError(false))}}
-                  // label="description"                      
-                  />
-              </Box>
-            </div>
-            </Col>
-
-            <Col xs="12" sm="12" md={6} lg={6} className="mt-2" >
-              {/*  */}
-              
-              {/* <FormControlLabel disabled control={<Checkbox />} label="Disabled" /> */}
-
-            </Col>
-            {/* collect fixed amount */}
-            <Col xs="12" sm="12" md={12} lg={12} className="mt-2" >
-              {/*  */}
-              <FormGroup>
-                {/* <FormControlLabel className="f-w-label" control={<Checkbox defaultChecked/>}  */}
-                <FormControlLabel className="f-w-label" control={<Checkbox  defaultChecked={editFormData?.is_fixed || false }/>} label="I want to collect a fix amount on this page." 
-                  onClick={(e)=>setEditFormData({...editFormData, ...{"is_fixed": e.target.checked }})} />
-              </FormGroup>
-            </Col>
-            {/* collect phone */}
-            <Col xs="12" sm="12" md={12} lg={12} className="mt-0" >
-              {/*  */}
-              <FormGroup>
-                <FormControlLabel className="f-w-label" control={<Checkbox defaultChecked={editFormData?.phone_number || false } />} label="I want to collect phone number." 
-                  onClick={(e)=>setEditFormData({...editFormData, ...{"phone_number": e.target.checked }})} />
-              </FormGroup>
-            </Col>
-            {/* set status to active */}
-            <Col xs="12" sm="12" md={12} lg={12} className="mt-0" >
-              {/*  */}
-              {/* <FormGroup> */}
-                <FormControlLabel className="f-w-label" control={<Checkbox defaultChecked={editFormData?.setStatusToActive || false } />} label="I want to set the status to be active."
-                  onClick={(e)=>setEditFormData({...editFormData, ...{"setStatusToActive": e.target.checked }})} />
-              {/* </FormGroup> */}
-            </Col>
-            {/* recurring */}
-            <Col xs="12" sm="12" md={12} lg={12} className="mt-2" >
-              {/*  */}
-              <p>                
-                <FormControl>
-                    <p className="f-w-label mb-0" > 
-                      <Row className='mb-1' style={{ marginLeft: '0px'}}> Recurring Payment </Row >
-                      Select if the link is a recurring user management  or one time user management .
-                    </p>
-                  <FormLabel id="demo-radio-buttons-group-label"> </FormLabel>
-                  <RadioGroup
-                    aria-labelledby="demo-radio-buttons-group-label"
-                    defaultValue= { editFormData?.is_recurring === true ? "recurring" : "oneTime"}
-                    name="radio-buttons-group"
-                    className='d-flex'
-
-                  > 
-                  {/* recurring onetime action */}
-                  <Row> 
-                    <Col md={6} lg={6}>
-                      <FormControlLabel className='mt-0' value="oneTime" control={<Radio />} label="One time" onClick={(e)=>setEditFormData({...editFormData, ...{"oneTime": e.target.checked},  ...{"recurring": false} }) }  />
-                    </Col>
-                    <Col md={6} lg={6}>
-                      <FormControlLabel className='mt-0' value="recurring" control={<Radio />} label="Recurring" onClick={(e)=>setEditFormData({...editFormData, ...{"recurring": e.target.checked}, ...{"oneTime": false} })} md={6} lg={6} />
-                    </Col>
-                  </Row> 
-                  </RadioGroup>
-                </FormControl>
-              </p>
-            </Col>
-
-            {/* phone number*/}
-            {
-              editFormData?.phone_number ? 
-
-              <Col xs="12" sm="12" md={6} lg={6} className="mt-3" > 
-                <div className='bulk-pay-name' >
-                  <Box 
-                    component="form"
-                    noValidate
-                    autoComplete="off"
-                    >
-                    <Label for="phoneNumber" className="f-w-label"> Phone Number </Label>
-                    <TextField
-                      fullWidth
-                      // error = {phoneNumberError} 
-                      value={editFormData?.phone_number} 
-                      id='customLink'
-                      placeholder='eg. 0202538033'
-                      onChange={(e)=>setEditFormData({...editFormData, ...{"phone_number": e.target.value}})}                     
-                      />
-                  </Box>
-                </div>
-              </Col>
-              : ""
-            }
-
-            {/* amount */}
-            {
-              editFormData?.is_fixed ? 
-              <Col xs="12" sm="12" md={6} lg={6} className="mt-3" > 
-                <div className='bulk-pay-name' >
-                  <Box 
-                    component="form"
-                    noValidate
-                    autoComplete="off"
-                    >
-                    <Label for="amount" className="f-w-label"> Amount </Label>
-                    <TextField
-                      fullWidth
-                      type="number"
-                      inputProps={{ min: 0, step: 0.01 }}
-                      // error = {phoneNumberError} 
-                      value={editFormData?.fixed_amount}
-                      id='amount'
-                      placeholder='eg. 2.00'
-                      onChange={(e)=>setEditFormData({...editFormData, ...{"fixed_amount": e.target.value}})}                     
-                      />
-                  </Box>
-                </div>
-              </Col>
-              : ""
-            }
-
-            {/* Additional Fields (optional) */}
-            <Row>
-              <Col xs="12" sm="12" md={12} lg={12} className="mt-2 d-flex" > 
-              <h6 style={{ marginRight: '4px'}} > Additional </h6>{" "}(optional) 
-              </Col>
-            </Row>
-            {/* set expiration date */}
-            <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
-              <div className='bulk-pay-name' width='100%' >
-                <Box
-                  component="form"
-                  fullWidth
-                  noValidate
-                  autoComplete="off"
-                  >
-                  <Label for="expirationPeriod" className="f-w-label" xs="12" sm="12" md="12" lg="12"> Set expiration period </Label>
-                    {/* <TextField
-                    fullWidth
-                    error = {expirationPeriodError} 
-                    id='expirationPeriod'
-                    value={expirationPeriod}
-                    onChange={(e) => {(setExpirationPeriod(e.target.value)); (setExpirationPeriodError(false))}}
-                    label="expirationPeriod"                      
-                    /> */}
-                    <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <DateTimePicker
-                      sx={{ width: 720 }}
-                      id="expirationPeriod"
-                      inputFormat="dd/MM/yyyy hh:mm:ss"
-                      // value={dateTo}
-                      value={editFormData?.expiration_date}
-                      onChange={handleEditChangeTo}
-                      renderInput={(params) => <TextField {...params} />}
-                    />
-                    </LocalizationProvider>
-                </Box>
-              </div>
-            </Col>
-            {/* custom user management  */}
-            <Col xs="12" sm="12" md={6} lg={6} className="mt-3" > 
-              <div className='bulk-pay-name' >
-                <Box 
-                  component="form"
-                  noValidate
-                  autoComplete="off"
-                  >
-                  <Label for="customLink" className="f-w-label"> Custom Payment Link </Label>
-                  <TextField
-                    fullWidth
-                    // error = {customLinkError} 
-                    value={editFormData?.custom_link}
-                    id='customLink'
-                    placeholder='eg. myPage'
-                    onChange={(e)=>setEditFormData({...editFormData, ...{"custom_link": e.target.value}})}
-                    // value={amount}
-                    // onChange={(e) => {(setCustomLink(e.target.value)); (setCustomLinkError(false))}}
-                    // label="description"                      
-                    />
-                </Box>
-              </div>
-            </Col>
-            {/* success message */}
-            <Col xs="12" sm="12" md={6} lg={6} className="mt-3" > 
-            <div className='bulk-pay-name' >
-              <Box 
-                component="form"
-                noValidate
-                autoComplete="off"
-                >
-                <Label for="successMessage" className="f-w-label"> Success Message </Label>
-                <TextField
-                  fullWidth
-                  // error = {successMessageError} 
-                  value={editFormData?.custom_success_message}
-                  id='successMessage'
-                  onChange={(e)=>setEditFormData({...editFormData, ...{"custom_success_message": e.target.value}})}
-                  // value={amount}
-                  // onChange={(e) => {(setSuccessMessage(e.target.value)); (setSuccessMessageError(false))}}
-                  // label="description"                      
-                  />
-              </Box>
-            </div>
-            </Col>
-            {/* split payment */}
-            <Col xs="12" sm="12" md={6} lg={6} className="mt-3" > 
-            <div className='bulk-pay-name' >
-              <Box 
-                component="form"
-                noValidate
-                autoComplete="off"
-                >
-                <Label for="splitPayment" className="f-w-label"> Split Payment </Label>
-                <TextField
-                  fullWidth
-                  // error = {splitPaymentError} 
-                  id='splitPayment'
-                  value={editFormData?.split_payment}
-                  onChange={(e)=>setEditFormData({...editFormData, ...{"split_payment": e.target.value}})}
-                  // value={amount}
-                  // onChange={(e) => {(setSplitPayment(e.target.value)); (setSplitPaymentError(false))}}
-                  // label="description"                      
-                  />
-              </Box>
-            </div>
-            </Col>
-            {/* redirect url */}
-            <Col xs="12" sm="12" md={12} lg={12} className="mt-3" > 
-              <div className='bulk-pay-name' >
-                <Box 
-                  component="form"
-                  noValidate
-                  autoComplete="off"
-                  >
-                  <Label for="redirectUrl" className="f-w-label"> Redirect URL </Label>
-                  <TextField
-                    fullWidth
-                    // error = {redirectUrlError} 
-                    placeholder='eg. wingipay.com/buy'
-                    id='redirectUrl'
-                    value={editFormData?.redirect_url}
-                    onChange={(e)=>setEditFormData({...editFormData, ...{"redirect_url": e.target.value}})}
-                    // value={amount}
-                    // onChange={(e) => {(setRedirectUrl(e.target.value)); (setRedirectUrlError(false))}}
-                    // label="description"                      
-                    />
-                </Box>
-              </div>
-            </Col>
-
-            {/* email */}
-            {
-              editFormData?.collectFixAmount ? 
-              <Col xs="12" sm="12" md={12} lg={12} className="mt-3" > 
-                <div className='bulk-pay-name' >
-                  <Box 
-                    component="form"
-                    noValidate
-                    autoComplete="off"
-                    >
-                    <Label for="email" className="f-w-label"> Email </Label>
-                    <TextField
-                      fullWidth
-                      value={editFormData?.email}
-                      // error = {phoneNumberError} 
-                      id='email'
-                      placeholder='eg. test@gmail.com'
-                      onChange={(e)=>setEditFormData({...editFormData, ...{"email": e.target.value}})}                     
-                      />
-                  </Box>
-                </div>
-              </Col>
-              : ""
-            }
-            {/* Custom Field */}
             <Col xs="12" sm="12" md={12} lg={12} className="mt-3" >
-              {/*  */}
-              <Label for="customField" className="f-w-label"> Custom Field(s) </Label>
-              <CreatableSelect
-                isMulti
-                defaultValue={editFormData?.additional_fields?.address}
-                placeholder="Type to create custom field(s)"
-                // onChange={handleChange}
-                onChange={(e)=>handleInputEditChange(e)}
-                // options={editFormData?.additional_fields?.address}
+              <Label for="customField" className="f-w-label mb-0"> Roles </Label>
+              <Select
+                className='mt-1'
+                placeholder={ editFormData?.role_name?.toUpperCase() }
+                onChange={(e)=> setFormInviteData({...formInviteData, ...{"role_id": e}}) }
+                options={optionRoles}
               />
-            </Col>
-
-            
-          </Row>
-          {/* <p style={{ textAlign: 'center' }} className='mt-4' >
-            { 
-              show ? <a href='#' onClick={ (e)=>setShow(false) }> Show less </a> :
-              <a href='#' onClick={ (e)=>setShow(true) }> Show more </a>
-            }
-          </p> */}
-                  
+            </Col>            
+          </Row>     
         </CModalBody>
         <CModalFooter>
           <CButton color="secondary" className='text-white' onClick={(e) => setModal2(false)}> 
