@@ -35,6 +35,7 @@ const JoinTeam = () => {
   const [passwordVar, setPasswordVar] = useState("")
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
+  const [phone, setPhone] = useState("")
   const [loader, setLoader] = useState("<div></div")
   const [login, setLogin] = useState("Login")
   const [loginError, setLoginError] = useState("")
@@ -62,6 +63,9 @@ const JoinTeam = () => {
             // console.log("g>>>", response?.data?.data?.inviteData)
             if(response?.data?.data){
                 setInviteData(response?.data?.data)
+                if(response?.data?.account_exist){
+                  window.location.href = '/login'
+                }
             }
 
         }
@@ -122,13 +126,17 @@ const JoinTeam = () => {
     e.preventDefault();
 
     // console.log("fff", process.env.REACT_APP_BASE_API, passwordVar, usernameVar)
-
+    let expPhone = /(020|023|024|025|026|027|028|050|054|055|059|233)[\s.-]?(\d{7}|\d{8})$/;
+    // expPhone.test(phone.replace(/\s+/g, ''))  
    
     if (firstName === "") {
       setError({...error, ...{"firstNameError": true}})
     }
     else if (lastName === "") {
       setError({...error, ...{"lastNameError": true}})
+    } 
+    else if ( !expPhone.test(phone.replace(/\s+/g, '')) ) {
+      setError({...error, ...{"phoneError": true}})
     }  
     else if (password1Var === "") {
       setError({...error, ...{"password1Error": true}})
@@ -144,6 +152,7 @@ const JoinTeam = () => {
           "firstname": firstName,
           "lastname": lastName,
           "email": inviteData.email,
+          "phone": phone,
           "password": password1Var
       });
 
@@ -289,6 +298,19 @@ const JoinTeam = () => {
                     fullWidth
                     required
                     onChange={(e) => { (setLastName(e.target.value)); (setError( {...error, ...{"lastNameError": false} }) ) }} 
+                    />
+
+                    <TextField 
+                    error={ error?.phoneError }
+                    id="phone"
+                    name = "phone"
+                    label="Phone"
+                    variant="standard"
+                    margin = "normal" 
+                    type="tel"
+                    fullWidth
+                    required
+                    onChange={(e) => { (setPhone( (e.target.value).replace(/\s+/g, '') )); (setError( {...error, ...{"phoneError": false} }) ) }} 
                     />
 
                     <TextField

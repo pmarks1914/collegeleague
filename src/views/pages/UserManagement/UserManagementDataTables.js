@@ -1090,9 +1090,9 @@ const UserManagementDataTables = (props) => {
               [ 
                 // console.log("roleData permission_by_category", roleData),
               roleData?.permission_by_category?.map((post, id) =>  
-              <Col xs="12" sm="12" md={12} lg={12} className="mt-0 " key={id}>
+              <Col xs="12" sm="12" md={12} lg={12} className="mt-2 " key={id}>
                 <p>{ post?.category?.toUpperCase() }</p>
-                <div className='v-flow'>
+                <div className='v-flow0'>
                 {
                   post?.permissions?.map((post2, id_1) =>  
                   <Col xs="12" sm="12" md={12} lg={12} className="mt-0" key={id_1}>
