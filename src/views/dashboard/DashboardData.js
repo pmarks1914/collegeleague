@@ -10,7 +10,7 @@ export function getTransactionData(){
     let data = '';
     let config_transaction = {
         method: 'get',
-        url: process.env.REACT_APP_BASE_API + "/transaction/historyByBusiness/",
+        url: process.env.REACT_APP_BASE_API + "/transaction/historyByBusiness/" + userData?.account + "/",
         headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + userData?.access
@@ -55,7 +55,7 @@ export function getTransactionData(){
 
     let config_transaction_summary_client = {
         method: 'get',
-        url: process.env.REACT_APP_BASE_API + "/transactions/collections/stats/",
+        url: process.env.REACT_APP_BASE_API + "/transactions/collections/stats/" + userData?.account + "/",
         headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + userData?.access

@@ -818,7 +818,7 @@ const BulkpayDataTables = (apikeyDetails) => {
 
     let config = {
       method: 'post',
-      url: process.env.REACT_APP_BASE_API + "/batch/bulk/create/",
+      url: process.env.REACT_APP_BASE_API + "/batch/bulk/create/" + currentUser?.account + "/",
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + currentUser?.access

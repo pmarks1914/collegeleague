@@ -511,7 +511,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
 
     let config = {
       method: 'post',
-      url: process.env.REACT_APP_BASE_API + "/payment/link/create/",
+      url: process.env.REACT_APP_BASE_API + "/payment/link/create/" + currentUser?.account + "/",
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + currentUser?.access

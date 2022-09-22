@@ -19,6 +19,8 @@ import navigation from '../account_nav'
 
 
 import logo from '../assets/brand/logo.png'
+import SwitchAccount from './SwitchAccount'
+import { cilSearch } from '@coreui/icons'
 
 const AppSidebar = () => {
   const dispatch = useDispatch()
@@ -38,6 +40,9 @@ const AppSidebar = () => {
         {/* <CIcon className="sidebar-brand-full" icon={logoNegative} height={35} /> */}
         <img src={logo} alt="wingipay logo"/>
         {/* <CIcon className="sidebar-brand-narrow" icon={sygnet} height={35} /> */}
+      </CSidebarBrand>
+      <CSidebarBrand className="d-flex rounded-0" to="/">
+        <SwitchAccount  />                 
       </CSidebarBrand>
       <CSidebarNav>
         <SimpleBar>

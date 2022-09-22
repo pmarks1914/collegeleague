@@ -1022,8 +1022,8 @@ const UserManagementDataTables = (props) => {
                 <td>{post?.role_name?.toUpperCase() }</td> 
                 {/* <td>{moment(post?.expiration_date || Date() ).format('LLLL') }</td>             */}
                 <td>
-                  <CBadge className='bg-text-wp' onClick={() => { setEditFormData(post); setModal2(true); setFormInviteData({...formInviteData, ...{"role": post?.role_name}}) }} > Edit </CBadge> 
-                  <CBadge color='black' style={{marginLeft: "5px"}} onClick={(e) => { setEditFormData(post); deleteuserGet(e, post) }} > Remove </CBadge> 
+                  <CBadge color='danger' className='text-white' onClick={() => { setEditFormData(post); setModal2(true); setFormInviteData({...formInviteData, ...{"role": post?.role_name}}) }} > Update </CBadge> <br />
+                  <CBadge color='black' className='text-white' style={{marginLeft: "0px"}} onClick={(e) => { setEditFormData(post); deleteuserGet(e, post) }} > Remove </CBadge> 
                 </td>
               </tr>
             )}

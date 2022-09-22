@@ -87,12 +87,12 @@ const Login = () => {
             photo: response?.data?.photo,
             photo150: response?.data?.photo150x150,
             photo50: response?.data?.photo50x50,
-            wallet: response?.data?.wallet,
+            wallet: response?.data?.team_list,
             role: response?.data?.role || "none",
             timeLogout: new Date(new Date().getTime() + counter),
             counter: counter,
             business_email: response?.data?.kyc?.business_email, 
-            business_name: response?.data?.kyc?.business_name, 
+            business_name: response?.data?.business_name || response?.data?.kyc?.business_name || ( response?.data?.firstname?.toString() ), 
             gps: response?.data?.kyc?.gps,
             business_TIN: response?.data?.kyc?.business_TIN,
             postal_address: response?.data?.kyc?.postal_address,
@@ -104,6 +104,7 @@ const Login = () => {
             email: response?.data?.email,
             business_registration_docs: response?.data?.business_registration_docs,
             business_address: response?.data?.kyc?.business_address,
+            team_list: response?.data?.team_list,
 
           };
 

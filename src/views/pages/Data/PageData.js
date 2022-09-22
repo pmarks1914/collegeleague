@@ -11,7 +11,7 @@ export function getTransactionData(){
     let data = '';
     let config_transaction = {
         method: 'get',
-        url: process.env.REACT_APP_BASE_API + "/transaction/historyByBusiness/",
+        url: process.env.REACT_APP_BASE_API + "/transaction/historyByBusiness/" + userData?.account + "/",
         headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + userData?.access
@@ -65,7 +65,7 @@ export function refundData(){
     let data = '';
     let config_transaction = {
         method: 'get',
-        url: process.env.REACT_APP_BASE_API + "/transactions/refunds/",
+        url: process.env.REACT_APP_BASE_API + "/transactions/refunds/" + userData?.account + "/",
         headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + userData?.access
@@ -119,7 +119,7 @@ export function apikeyData(){
     let data = '';
     let config_transaction = {
         method: 'get',
-        url: process.env.REACT_APP_BASE_API + "/account/apikeys/",
+        url: process.env.REACT_APP_BASE_API + "/account/apikeys/" + userData?.account + "/",
         headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + userData?.access
@@ -175,7 +175,7 @@ export function payoutData(){
     let data = '';
     let config_transaction = {
         method: 'get',
-        url: process.env.REACT_APP_BASE_API + "/transactions/payouts/",
+        url: process.env.REACT_APP_BASE_API + "/transactions/payouts/" + userData?.account + "/",
         headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + userData?.access
@@ -282,7 +282,7 @@ export function bulkPayData(){
     let data = '';
     let config_transaction = {
         method: 'get',
-        url: process.env.REACT_APP_BASE_API + "/batch/list/",
+        url: process.env.REACT_APP_BASE_API + "/batch/list/" + userData?.account + "/",
         headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + userData?.access
@@ -400,7 +400,7 @@ export function paymentLinkData(){
     let data = '';
     let config_transaction = {
         method: 'get',
-        url: process.env.REACT_APP_BASE_API + "/payment/links/",
+        url: process.env.REACT_APP_BASE_API + "/payment/links/" + userData?.account + "/",
         headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + userData?.access

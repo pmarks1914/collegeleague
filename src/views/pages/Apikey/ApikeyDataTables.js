@@ -484,7 +484,7 @@ const ApikeyDataTables = (apikeyDetails) => {
 
     let config = {
       method: 'post',
-      url: process.env.REACT_APP_BASE_API + "/account/apikey/generate/",
+      url: process.env.REACT_APP_BASE_API + "/account/apikey/generate/" + currentUser?.account + "/",
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + currentUser?.access

@@ -62,7 +62,7 @@ export default function Compliance() {
         console.log(payload)
             let config = {
             method: 'patch',
-            url: process.env.REACT_APP_BASE_API + '/account/update/',
+            url: process.env.REACT_APP_BASE_API + '/account/update/' + userData?.account + "/",
             
             headers: {
                 'Content-Type': 'application/json',
@@ -106,7 +106,7 @@ export default function Compliance() {
         }
         let config = {
         method: 'patch',
-        url: process.env.REACT_APP_BASE_API + '/account/update/',
+        url: process.env.REACT_APP_BASE_API + '/account/update/' + userData?.account + "/",
         
         headers: {
             'Content-Type': 'application/json',
@@ -147,7 +147,7 @@ export default function Compliance() {
         console.log(payload)
             let config = {
             method: 'patch',
-            url: process.env.REACT_APP_BASE_API + '/account/update/',
+            url: process.env.REACT_APP_BASE_API + '/account/update/' + userData?.account + "/",
             
             headers: {
                 'Content-Type': 'application/json',
