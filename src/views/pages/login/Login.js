@@ -92,7 +92,7 @@ const Login = () => {
             timeLogout: new Date(new Date().getTime() + counter),
             counter: counter,
             business_email: response?.data?.kyc?.business_email, 
-            business_name: response?.data?.business_name || response?.data?.kyc?.business_name || ( response?.data?.firstname?.toString() ), 
+            business_name: response?.data?.business_name || response?.data?.kyc?.business_name || ( (response?.data?.firstname + " " + response?.data?.lastname)?.toString() ), 
             gps: response?.data?.kyc?.gps,
             business_TIN: response?.data?.kyc?.business_TIN,
             postal_address: response?.data?.kyc?.postal_address,
@@ -110,7 +110,7 @@ const Login = () => {
 
           localStorage.setItem("userDataStore", JSON.stringify(userData));
 
-          window.location.href = "/dashboard";
+          window.location.href = "/dashboard"; 
 
         }
         else {

@@ -107,15 +107,15 @@ export default function SwitchAccount() {
                 userData?.team_list?.length > 0 ?
                 (
                     userData?.team_list?.length > 1 ?
-                    userData?.team_list?.filter((fil)=> fil.business_name?.toUpperCase() != businessName ).map((post, id) => 
+                    userData?.team_list?.filter((fil)=> fil.business_name?.toUpperCase() != businessName?.toUpperCase() ).map((post, id) => 
                         <Stack spacing={2} key={id} style={{marginBottom: "10px"}} onClick={(e)=>switchActionAccount(e, post)}>
-                            <Item > {post?.business_name} </Item>
+                            <Item > {post?.business_name?.toUpperCase()} </Item>
 
                         </Stack>
                     )
                     :  
                     <Stack spacing={2}>
-                        <Item> {userData?.firstname + " " + userData?.lastname} </Item>
+                        <Item> {(userData?.firstname + " " + userData?.lastname)?.toUpperCase() } </Item>
             
                     </Stack>
                 ) : ""
