@@ -63,7 +63,8 @@ class App extends Component {
               userData?.access ?
               <Route path="*" name="Home" element={<DefaultLayout />} />
               :
-              ""
+              <Route exact path="*" name="Page 404" element={<Page404 />} />
+
             }
             {/* <Route exact path="/compliance" name="Compliance" element={<Compliance />} /> */}
 
