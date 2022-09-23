@@ -47,11 +47,12 @@ export default function SwitchAccount() {
           ...{
               "business_name": dataAccount.business_name, 
               "account": dataAccount?.team_account_id, 
-              "role_id": dataAccount?.role_id 
+              "role_id": dataAccount?.role_id,
+              "permission_list": dataAccount?.permission_list || dataAccount?.permisision_list
             }
         };
 
-    console.log( "team list",  dataAccount, userData, resetUserData)
+    // console.log( "perm list",  dataAccount)
     setBusinessName(dataAccount?.business_name?.toUpperCase() )
 
     localStorage.setItem("userDataStore", JSON.stringify(resetUserData));
@@ -109,7 +110,7 @@ export default function SwitchAccount() {
                     userData?.team_list?.length > 1 ?
                     userData?.team_list?.filter((fil)=> fil.business_name?.toUpperCase() != businessName?.toUpperCase() ).map((post, id) => 
                         <Stack spacing={2} key={id} style={{marginBottom: "10px"}} onClick={(e)=>switchActionAccount(e, post)}>
-                            <Item > {post?.business_name?.toUpperCase()} </Item>
+                            <Item > <a href='#'>{post?.business_name?.toUpperCase()}</a> </Item>
 
                         </Stack>
                     )

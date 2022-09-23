@@ -910,38 +910,46 @@ const UserManagementDataTables = (props) => {
     <div>
 
       <Row>
-        <Col xs="12" sm="12" md={3} lg={3} >
-          {/* create */}
-          <Box sx={{ minWidth: 140 }}>
-            <FormControl fullWidth style={{marginTop: "8px"}}>
-              <Button
-                  type="submit"
-                  fullWidth
-                  className='bg-text-wp-action'
-                  style={{ height: '36px' }}
-                  onClick={ (e) => setModal1(true)}
-              >
-                USER ROLES MANAGEMENT
-              </Button>
-            </FormControl>
-          </Box>
-        </Col>
-        <Col xs="12" sm="12" md={3} lg={3} >
-          {/* create */}
-          <Box>
-            <FormControl fullWidth style={{marginTop: "8px"}}>
-              <Button
-                  type="submit"
-                  fullWidth
-                  className='bg-text-wp-action'
-                  style={{ height: '36px' }}
-                  onClick={ (e) => setModal3(true)}
-              >
-                  INVITE A TEAM MEMBER
-              </Button>
-            </FormControl>
-          </Box>
-        </Col>
+        {
+          currentUser?.permission_list?.includes("can_create_new_customers") ?
+          <Col xs="12" sm="12" md={3} lg={3} >
+            {/* create */}
+            <Box sx={{ minWidth: 140 }}>
+              <FormControl fullWidth style={{marginTop: "8px"}}>
+                <Button
+                    type="submit"
+                    fullWidth
+                    className='bg-text-wp-action'
+                    style={{ height: '36px' }}
+                    onClick={ (e) => setModal1(true)}
+                >
+                  USER ROLES MANAGEMENT
+                </Button>
+              </FormControl>
+            </Box>
+          </Col>
+          : ""
+        }
+        {
+          currentUser?.permission_list?.includes("can_manage_and_invite_users") ? 
+          <Col xs="12" sm="12" md={3} lg={3} >
+            {/* create */}
+            <Box>
+              <FormControl fullWidth style={{marginTop: "8px"}}>
+                <Button
+                    type="submit"
+                    fullWidth
+                    className='bg-text-wp-action'
+                    style={{ height: '36px' }}
+                    onClick={ (e) => setModal3(true)}
+                >
+                    INVITE A TEAM MEMBER
+                </Button>
+              </FormControl>
+            </Box>
+          </Col>
+          : ""
+        }
         <Col xs="12" sm="12" md={3} lg={3} >
           {/* userGetInfo types */}
           {/* <Box sx={{ minWidth: 160 }}>
@@ -1022,8 +1030,15 @@ const UserManagementDataTables = (props) => {
                 <td>{post?.role_name?.toUpperCase() }</td> 
                 {/* <td>{moment(post?.expiration_date || Date() ).format('LLLL') }</td>             */}
                 <td>
-                  <CBadge color='danger' className='text-white' onClick={() => { setEditFormData(post); setModal2(true); setFormInviteData({...formInviteData, ...{"role": post?.role_name}}) }} > Update </CBadge> <br />
-                  <CBadge color='black' className='text-white' style={{marginLeft: "0px"}} onClick={(e) => { setEditFormData(post); deleteuserGet(e, post) }} > Remove </CBadge> 
+                  {
+                    currentUser?.permission_list?.includes("can_manage_&_update_customers") ?
+                    ([
+                      <CBadge color='danger' className='text-white' onClick={() => { setEditFormData(post); setModal2(true); setFormInviteData({...formInviteData, ...{"role": post?.role_name}}) }} key={id}> Update </CBadge>,
+                      <br key={id}/>,
+                      <CBadge color='black' className='text-white' style={{marginLeft: "0px"}} onClick={(e) => { setEditFormData(post); deleteuserGet(e, post) }} key={id}> Remove </CBadge>
+                    ])
+                    : "N/A"
+                  }
                 </td>
               </tr>
             )}
