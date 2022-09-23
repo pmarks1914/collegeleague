@@ -21,9 +21,7 @@ import Button from '@mui/material/Button';
 import { Col, Row } from 'reactstrap'
 import Box from '@mui/material/Box';
 
-// import swal from 'sweetalert2'
-
-const swal = require("sweetalert2");
+const inviteData = JSON.parse(localStorage.getItem("inviteData"));
 let permList = [
   "can_view_business_performance_metrics",
   "can_view_transactions",
@@ -105,12 +103,12 @@ const Login = () => {
         if (response?.data?.status) { 
           // console.log(response?.data)
           let counter = 700000;
-
+          
           const userData = {
             status: response.data.status,
             access: response?.data?.access,
             refresh: response?.data?.refresh,
-            account: response?.data?.account,
+            account: inviteData?.account_invited_to,
             availableBalance: response?.data?.availableBalance,
             currency: response?.data?.currency,
             firstname: response?.data?.firstname,
@@ -128,7 +126,7 @@ const Login = () => {
             timeLogout: new Date(new Date().getTime() + counter),
             counter: counter,
             business_email: response?.data?.kyc?.business_email, 
-            business_name: response?.data?.business_name || response?.data?.kyc?.business_name || ( (response?.data?.firstname + " " + response?.data?.lastname)?.toString() ), 
+            business_name: inviteData?.business_name?.toString(), 
             gps: response?.data?.kyc?.gps,
             business_TIN: response?.data?.kyc?.business_TIN,
             postal_address: response?.data?.kyc?.postal_address,
@@ -140,7 +138,7 @@ const Login = () => {
             email: response?.data?.email,
             business_registration_docs: response?.data?.business_registration_docs,
             business_address: response?.data?.kyc?.business_address,
-            permission_list: permList,
+            permission_list: inviteData?.permissions_list,
             team_list: response?.data?.team_list, 
 
           };

@@ -24,6 +24,7 @@ const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'))
 // Pages
 const Login = React.lazy(() => import('./views/pages/login/Login'))
 const JoinTeam = React.lazy(() => import('./views/pages/JoinTeam/JoinTeam'))
+const TeamLogin = React.lazy(() => import('./views/pages/JoinTeam/TeamLogin'))
 const Signin = React.lazy(() => import('./views/pages/login/signin'))
 const Signup = React.lazy(() => import('./views/pages/register/signup'))
 const Page404 = React.lazy(() => import('./views/pages/page404/Page404'))
@@ -41,7 +42,9 @@ class App extends Component {
       {/* {userData?.access} */}
         <Suspense fallback={loading}>
           <Routes>
+            <Route exact path="/" name="Login Page" element={<Login />} />
             <Route exact path="/login" name="Login Page" element={<Login />} />
+            <Route exact path="/team-login" name="Team Login Page" element={<TeamLogin />} />
             <Route exact path="/join-team/:id" name="Join Team" element={<JoinTeam />} />
             <Route exact path="/signin" name="Signin Page" element={<Signin />} />
             {/* <Route exact path="/register" name="Register Page" element={<Register />} /> */}

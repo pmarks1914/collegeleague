@@ -101,7 +101,7 @@ const Login = () => {
       axios(config).then(response => {
         setLoader("<a></a>")
         setLogin("Login")
-        // console.log(response.status);
+        console.log(response.status);
         if (response?.data?.status) { 
           // console.log(response?.data)
           let counter = 700000;
@@ -140,7 +140,7 @@ const Login = () => {
             email: response?.data?.email,
             business_registration_docs: response?.data?.business_registration_docs,
             business_address: response?.data?.kyc?.business_address,
-            permission_list: permList,
+            permission_list: response?.data?.default_permissions_list,
             team_list: response?.data?.team_list, 
 
           };

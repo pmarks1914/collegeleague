@@ -133,10 +133,7 @@ export default function SwitchAccount() {
   );
 }
 
-
 function logoutUser(){
     window.location.href="/login";
-    localStorage.removeItem("userDataStore");
-    localStorage.removeItem("signupInfo");
- 
-  }
+    localStorage.clear();
+}

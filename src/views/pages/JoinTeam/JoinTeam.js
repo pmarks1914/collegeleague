@@ -58,7 +58,7 @@ const JoinTeam = () => {
         data: data
     };
     axios(config_invite).then(response => {
-        console.log("data checkout 1 ==", response?.data);
+        // console.log("data checkout 1 ==", response?.data);
         if (response?.data?.status === true) {
             // console.log("g>>>", response?.data?.data?.inviteData)
             if(response?.data?.data){
@@ -167,9 +167,10 @@ const JoinTeam = () => {
       axios(config).then(response => {
         setLoader("<a></a>")
         setLogin("Login")
-        console.log(response.status);
+        // console.log(response.status);
         if (response?.data?.status) { 
-          console.log(response?.data)
+          // console.log(response?.data)
+          localStorage.setItem("inviteData", JSON.stringify(inviteData));
           Swal.fire({
             title: response?.data?.message,
             icon: 'success',
@@ -180,7 +181,7 @@ const JoinTeam = () => {
             // cancelButtonColor: '#d33',
             confirmButtonText: 'OK!'
           }).then((result) => {
-            window.location.href = "/login";
+            window.location.href = "/team-login";
             
           });
 
