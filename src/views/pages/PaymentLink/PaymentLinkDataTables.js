@@ -1851,7 +1851,7 @@ const PaymentLinkDataTables = (apikeyDetails) => {
             Cancel
           </CButton>
           <CButton color="" className='text-white bg-text-wp' onClick={(e) => editPaymentLink(e)}> 
-            Create
+            Update
           </CButton>
         </CModalFooter>
       </CModal>

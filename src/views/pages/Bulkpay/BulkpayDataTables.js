@@ -547,48 +547,39 @@ const BulkpayDataTables = (apikeyDetails) => {
   const getExcelTemplate = (type) => {
     // console.log(data);
     // e.preventDefault();
-    let data = [];
-    if( type === "bank" ){
-      data = [
-        {
-          "account_number": "",
-          "bank_code": "",
-          "destination_bank_name": "",
-          "account_holder_name": "",
-          "amount": "",
-          "email": "",
-          "note": ""
-        }
-      ]
-    }
-    else{
-      data = [
-        {
-          "account_number": "",
-          "network_name": "",
-          "network_code": "",
-          "account_holder_name": "",
-          "amount": "",
-          "email": "",
-          "note": ""
-        }
-      ]
-    }
+    let data = [
+      {
+        "account_number": "",
+        "bank_code_or_network_code": "",
+        "destination_bank_name_or_network_name": "",
+        "account_holder_name": "",
+        "amount": "",
+        "payment_method": "",
+        "email": "",
+        "note": ""
+      }
+    ];
+   
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "WPexport");
+    let listServices = [];
     /* generate XLSX file and send to client */
     if( type === "bank" ){
       // do for sheet two
-      const ws2 = XLSX.utils.json_to_sheet(banktelcosListInfo?.bank_list);
-      XLSX.utils.book_append_sheet(wb, ws2, "codeListBank");
-      XLSX.writeFile(wb, "WPexportBank.xlsx");
+      listServices = (banktelcosListInfo?.bank_list).concat((banktelcosListInfo?.telcos_list).filter((item) => (banktelcosListInfo?.bank_list).indexOf(item) < 0))
+      // console.log("mergedList", listServices)
+      const ws2 = XLSX.utils.json_to_sheet(listServices);
+      XLSX.utils.book_append_sheet(wb, ws2, "codeList");
+      XLSX.writeFile(wb, "WPexportBankAndNetWork.xlsx");
     }
     else{
       // do for sheet two
-      const ws2 = XLSX.utils.json_to_sheet(banktelcosListInfo?.telcos_list);
-      XLSX.utils.book_append_sheet(wb, ws2, "codeListMobileMoney");
-      XLSX.writeFile(wb, "WPexportMobileMoney.xlsx");
+      listServices = (banktelcosListInfo?.telcos_list).concat((banktelcosListInfo?.bank_list).filter((item) => (banktelcosListInfo?.telcos_list).indexOf(item) < 0))
+      // console.log("mergedList", listServices)
+      const ws2 = XLSX.utils.json_to_sheet(listServices);
+      XLSX.utils.book_append_sheet(wb, ws2, "codeList");
+      XLSX.writeFile(wb, "WPexportMobileMoneyAndBank.xlsx");
     }
   };
   function readExcelFile(){
@@ -771,8 +762,8 @@ const BulkpayDataTables = (apikeyDetails) => {
         // console.log(" post current ", arrayData[id])
         return { 
             "account_number": arrayData[id].account_number || "",
-            "bank_code": arrayData[id]?.code || arrayData[id]?.network_code || arrayData[id]?.bank_code || "",
-            "destination_bank_name": arrayData[id].network_name || arrayData[id].destination_bank_name || arrayData[id].network_name_or_destination_bank_name  || "",
+            "bank_code": arrayData[id]?.bank_code_or_network_code || arrayData[id]?.code || arrayData[id]?.network_code || arrayData[id]?.bank_code || "",
+            "destination_bank_name": arrayData[id].destination_bank_name_or_network_name || arrayData[id].network_name || arrayData[id].destination_bank_name || arrayData[id].network_name_or_destination_bank_name  || "",
             "account_holder_name": arrayData[id].account_holder_name || "",
             "currency": "GHS",
             "amount": arrayData[id].amount || "",
@@ -1022,7 +1013,7 @@ const BulkpayDataTables = (apikeyDetails) => {
       // 
       config = {
         method: 'post',
-        url: process.env.REACT_APP_BASE_API + "/batch/pay/" + postData?.id + "/",
+        url: process.env.REACT_APP_BASE_API + "/batch/pay/"+ currentUser?.account + "/" + postData?.id + "/",
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + currentUser?.access
@@ -1034,7 +1025,7 @@ const BulkpayDataTables = (apikeyDetails) => {
       // 
       config = {
         method: 'post',
-        url: process.env.REACT_APP_BASE_API + "/batch/pay/" + postData?.id + "/",
+        url: process.env.REACT_APP_BASE_API + "/batch/pay/"+ currentUser?.account + "/"  + postData?.id + "/",
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + currentUser?.access
@@ -1133,18 +1124,19 @@ const BulkpayDataTables = (apikeyDetails) => {
 
       {/* open modal for filter date range */}
       {/* <CButton onClick={() => setModal1(!modal1)} icon={cilArrowRight} className="float-end" >Filter</CButton> */}
-      <Row className='mt-0' onClick={ (e)=> getExcelTemplate("bank") } >
-        <a href='' className='d-flex'>
-          <Col xs="6" sm="6" md={6} lg={6}> Download template for bank account bulk payments. </Col>
+      <Row className='mt-0 mb-3' onClick={ (e)=> getExcelTemplate("none") } >
+        <a href='#' className='d-flex'>
+          <Col xs="6" sm="6" md={6} lg={6}> Download template for bulk payments. </Col>
           <Col xs="6" sm="6" md={6} lg={6} >  <CIcon icon={cilFile}  style={{float: "right"}} />  </Col>
         </a>
       </Row>
-      <Row className='mt-3' onClick={ (e)=> getExcelTemplate("mobile") } >
-        <a href='' className='d-flex'>
+      {/* <Row className='mt-3' onClick={ (e)=> getExcelTemplate("mobile") } >
+        <a href='#' className='d-flex'>
           <Col xs="6" sm="6" md={6} lg={6}> Download template for mobile money bulk payments. </Col>
           <Col xs="6" sm="6" md={6} lg={6} >  <CIcon icon={cilFile}  style={{float: "right"}} />  </Col>
         </a>
-      </Row> <br />
+      </Row>  */}
+      <br />
 
       <div id="filterDropdown" className="dropdown-content mb-4" onClick={(e) => setDropValue(1)}>
         <CCard sm={12} md={12} lg={12}>
@@ -1520,7 +1512,7 @@ const BulkpayDataTables = (apikeyDetails) => {
         <CModalBody> 
           {/*  */}
           <Row className='m-3'>
-          <Col xs="12" sm="12" md={6} lg={6} className="mt-0" > 
+          <Col xs="12" sm="12" md={12} lg={12} className="mt-0" > 
             <div className='bulk-pay-name'  >
               <Box 
                 component="form"
@@ -1541,7 +1533,7 @@ const BulkpayDataTables = (apikeyDetails) => {
               </Box>
               </div>
           </Col>
-          <Col xs="12" sm="12" md={5} lg={5} className="mt-0" >
+          {/* <Col xs="12" sm="12" md={5} lg={5} className="mt-0" >
             <Label for="bulkPayInfoStatus" className="label-dc mb-1"> Payment method </Label>
             <Select
               error = {paymentMethodInfoStatusInModalError}
@@ -1551,7 +1543,7 @@ const BulkpayDataTables = (apikeyDetails) => {
               className='other-input-select'
               onChange={(e) => handleChangeInfoAccTypeInModal(e.value)}
             />
-          </Col>
+          </Col> */}
 
           </Row>
           <Row className='m-3' style={{"border-style": "dotted", height: "90px", textAlign: "center", padding: "30px" }}>

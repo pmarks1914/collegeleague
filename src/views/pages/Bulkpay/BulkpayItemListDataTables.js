@@ -82,7 +82,7 @@ import { Button } from '@chakra-ui/react';
 import 'antd/dist/antd.css';
 import { message, Upload } from 'antd';
 import { ArrowUpIcon } from '@chakra-ui/icons';
-import { getbanksandtelcos, bulkPayItemData } from "../Data/PageData";
+import { getbanksandtelcos, getbanksandtelcosV2, bulkPayItemData } from "../Data/PageData";
 
 
 const userData = JSON.parse(localStorage.getItem('userDataStore'));
@@ -98,7 +98,12 @@ bulkPayInfoData?.bulkPayItems?.then(value => { (paymentBatchData = value?.batch)
 let banktelcosList = getbanksandtelcos();
 let banktelcosListInfo = []
 banktelcosList.list.then(value => banktelcosListInfo = value)
-// console.log("getbanksandtelcos ", banktelcosListInfo )
+// all banks and telcos 
+let banktelcosListAll = getbanksandtelcosV2();
+let banktelcosListInfoAll = []
+banktelcosListAll.list.then(value => banktelcosListInfoAll = value)
+
+// console.log("getbanksandtelcos ", banktelcosListInfoAll )
 // console.log("bulkPayItemData ", bulkPayItemData(window.location.pathname.split("/")[3]) )
 // console.log("bulkPayItemData ", bulkPayItemData("97273dc9-388f-4c8f-a054-8ac92e594656") )
 
@@ -108,6 +113,8 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
   const [noData, setNoData] = useState("")
   const [monitorState, setMonitorState] = useState(1);
   const [dropValue, setDropValue] = useState(0);
+
+  const [batchTotal, setBatchTotal] = useState(0)
 
   // date time
   const [dateTo, setDateTo] = useState(new Date('2014-08-18T21:11:54'));
@@ -437,6 +444,13 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
     {value: "bank", label: "BANK" },
   ];
   
+  const optionBankListAll = Object.keys(banktelcosListInfoAll?.services || []).map((post, id) => {
+    return {
+      "value": banktelcosListInfoAll?.services[id].BankSortCode,
+      "label": banktelcosListInfoAll?.services[id].BankName,
+      "method": banktelcosListInfoAll?.services[id].Payment_method
+  }});
+  
   const optionBankList = Object.keys(banktelcosListInfo?.bank_list || []).map((post, id) => {
     return {
       "value": banktelcosListInfo?.bank_list[id].BankSortCode,
@@ -666,8 +680,8 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
     excelFileList,
   };
 
-  const handleChangeBankListInModal = (valSelected, nameSelected) => {
-    setBankDropdownInModal({"code": valSelected, "name": nameSelected});
+  const handleChangeBankListInModal = (valSelected, nameSelected, method) => {
+    setBankDropdownInModal({"code": valSelected, "name": nameSelected, "method": method});
   };
 
   function handleSubmit(event) {
@@ -739,6 +753,7 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
     let c_note = '';
     let e_mail = '';
     let batch_id = window.location.pathname.split("/")[3];
+    let payment_method = "NONE";
 
     if(paymentBatchData?.payment_method === "BANK"){
       // 
@@ -751,6 +766,7 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
       val_amount = amount || "";
       c_note = note || "";
       e_mail = email || "";
+      payment_method = bankDropdownInModal.method || "NONE"
     }
     else if(paymentBatchData?.payment_method === "MOBILEMONEY"){
       // 
@@ -763,17 +779,18 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
       val_amount = telcoAmount;
       c_note = telcoNote;
       e_mail = telcoEmail;
+      payment_method = networkName.method || "NONE";
     }
 
 
     if(type === "bulkFromExcel"){
       // bulk payload setting
       let destructureData = Object.keys(arrayData).map((post, id) => {
-        // console.log(" post current ", arrayData[id])
+        // console.log(" post current ", arrayData)
         return { 
             "account_number": arrayData[id].account_number || "",
-            "bank_code": arrayData[id]?.code || arrayData[id]?.network_code || arrayData[id]?.bank_code || "",
-            "destination_bank_name": arrayData[id].network_name || arrayData[id].destination_bank_name || arrayData[id].network_name_or_destination_bank_name  || "",
+            "bank_code": arrayData[id]?.bank_code_or_network_code || arrayData[id]?.code || arrayData[id]?.network_code || arrayData[id]?.bank_code || "",
+            "destination_bank_name": arrayData[id].destination_bank_name_or_network_name || arrayData[id].network_name || arrayData[id].destination_bank_name || arrayData[id].network_name_or_destination_bank_name  || "",
             "account_holder_name": arrayData[id].account_holder_name || "",
             "currency": "GHS",
             "amount": arrayData[id].amount || "",
@@ -823,6 +840,7 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
             "bank_code": bank_code,
             "destination_bank_name": destination_bank_name,
             "account_holder_name": account_holder_name,
+            // "payment_method": payment_method,
             "currency": currency,
             "amount": val_amount,
             "note": c_note,
@@ -1042,13 +1060,17 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
   }
   // execute pay queue for batch list
   function payExecute(type, postData){
+    let getTotalBatch = 0
+    tableData?.map((post, id)=> {
+      getTotalBatch = getTotalBatch + parseFloat(post.amount)
+    } )
     let config = {};
     let data = {};
     if(type === "batch"){
       // 
       config = {
         method: 'post',
-        url: process.env.REACT_APP_BASE_API + "/batch/pay/" + window.location.pathname.split("/")[3] + "/",
+        url: process.env.REACT_APP_BASE_API + "/batch/pay/" + currentUser?.account + "/" + window.location.pathname.split("/")[3] + "/",
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + currentUser?.access
@@ -1068,10 +1090,42 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
         data: data
       };
     }
+
+    let txtString = `<table id="table" width="90%" border=0>
+    <thead>
+        <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr width="100%" class="ml-3">
+            <td style="float: left">Name :</td>
+            <td style="float: right; margin-right: -40px">${ paymentBatchData?.name || 'N/A' } </td>
+        </tr>
+        <tr width="100%" class="ml-3">
+            <td style="float: left">Number of Recipients :</td>
+            <td style="float: right; margin-right: -40px">${  tableData?.length || 0 } </td>
+        </tr>
+        <tr width="100%" class="ml-3">
+            <td style="float: left">Currency :</td>
+            <td style="float: right; margin-right: -40px">${ "GHS" } </td>
+        </tr>
+        <tr width="100%" class="ml-3">
+            <td style="float: left">Total Amount :</td>
+            <td style="float: right; margin-right: -40px">${ ( getTotalBatch || 0)?.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,').toString() } </td>
+        </tr>
+    </tbody>
+    </table>`
+
     Swal.fire({
       icon: 'info',
       title: 'Proceed to make payment for!',
-      text: postData?.account_holder_name || postData?.name,
+      html: txtString,
+      // text: postData?.account_holder_name || postData?.name,
       allowOutsideClick: false,
       // allowEscapeKey: false,
       showCancelButton: true,
@@ -1131,8 +1185,8 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
     setAccountNumber(itemData?.account_number)
     setPhoneNumber(itemData?.account_number)
     
-    setBankDropdownInModal({"code": itemData?.bank_code, "name": itemData?.destination_bank_name});
-    setNetworkName({"code": itemData?.bank_code, "name": itemData?.destination_bank_name});
+    setBankDropdownInModal({"code": itemData?.bank_code, "name": itemData?.destination_bank_name, "method": itemData?.payment_method});
+    setNetworkName({"code": itemData?.bank_code, "name": itemData?.destination_bank_name, "method": itemData?.payment_method});
 
     // setTimeout(()=>{
     // }, 2000)
@@ -1239,15 +1293,15 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
         
     });
   }
+  
   let addVal = 0
     // compute array data
   function arraySum(accumulator, a){
-    // console.log(accumulator, a)
-    addVal = addVal + parseFloat(a.amount);
-      return addVal
+    addVal = addVal + parseFloat(a.amount || 0);
+    return addVal
   }
-  return (
 
+  return (
     <div>
       <Row style={{ marginBottom: '25px', fontSize: '15px' }} >
         <h5>Batch Overview</h5>
@@ -1522,11 +1576,11 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
                 error = {bankDropdownInModalError}
                 maxWidth
                 placeholder={"Select bank"}
-                options={optionBankList}
+                options={optionBankListAll}
                 id="bulkPayInfoStatus"
                 className='other-input-select'
                 // components={{ Option: paymentOption }}
-                onChange={(e) => handleChangeBankListInModal(e.value, e.label)}
+                onChange={(e) => handleChangeBankListInModal(e.value, e.label, e.method)}
               />
               </Col>
               
@@ -1667,7 +1721,7 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
                 error = {networkNameError}
                 maxWidth
                 placeholder={"Select network"}
-                options={optionMobileMoneyList}
+                options={optionBankListAll}
                 id="bulkPayInfoStatus"
                 className='other-input-select'
                 // components={{ Option: paymentOption }}
@@ -1787,7 +1841,7 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
           className='text-white bg-text-wp'
           onClick={(e)=>handleSubmit(e)}
           >
-            Create
+            Add
           </CButton>
 
         </CModalFooter>
@@ -1835,11 +1889,11 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
                 maxWidth
                 // placeholder={"Select bank"}
                 defaultInputValue={currentPostItemSelected?.destination_bank_name }
-                options={optionBankList}
+                options={optionBankListAll}
                 id="bulkPayInfoStatus"
                 className='other-input-select'
                 // components={{ Option: paymentOption }}
-                onChange={(e) => handleChangeBankListInModal(e.value, e.label)}
+                onChange={(e) => handleChangeBankListInModal(e.value, e.label, e.method)}
               />
               </Col>
               
@@ -1980,7 +2034,7 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
                 maxWidth
                 defaultInputValue={currentPostItemSelected?.destination_bank_name }
                 // placeholder={"Select network"}
-                options={optionMobileMoneyList}
+                options={optionBankListAll}
                 id="bulkPayInfoStatus"
                 className='other-input-select'
                 // components={{ Option: paymentOption }}

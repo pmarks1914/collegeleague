@@ -148,9 +148,15 @@ const UserManagementDataTables = (props) => {
     else if (userGetInfo?.length > 0 && monitorState === 1) {
       // setMonitorState(2)
       // console.log("info ", userGetInfo )
-      datatablaScript(userGetInfo);
-
-      setLoader('<a></a>')
+        let userGetInfoData_1 = userGetData();
+        let userGetInfo_1 = []
+        userGetInfoData_1?.userGetData?.then(value => { (userGetInfo_1 = value) });
+        setTimeout(()=>{
+          // console.log("userGetInfo_1 ", userGetInfo_1)
+          userGetInfo = userGetInfo_1;
+        },2000)
+        datatablaScript(userGetInfo);
+        setLoader('<a></a>')
     }
     else if(dateRange && monitorState === 2){
       performFilter("filterByDate", "none")
@@ -163,11 +169,8 @@ const UserManagementDataTables = (props) => {
         // setTimeout(()=>{
         //     setNoData("dd")
         // }, 200)
-    }
-    
+    } 
     // console.log("props ", dateRange, userGetInfo, userGetInfoStatus, monitorState)
-
-
     let data = '';
     let config_roles = {
         method: 'get',                    
@@ -186,8 +189,6 @@ const UserManagementDataTables = (props) => {
             setRoleData(response?.data)
 
         }
-        
-
     }).catch(function (error) {
         // 
         if(error){
@@ -1032,11 +1033,11 @@ const UserManagementDataTables = (props) => {
                 <td>
                   {
                     currentUser?.permission_list?.includes("can_manage_&_update_customers") ?
-                    ([
-                      <CBadge color='danger' className='text-white' onClick={() => { setEditFormData(post); setModal2(true); setFormInviteData({...formInviteData, ...{"role": post?.role_name}}) }} key={id}> Update </CBadge>,
-                      <br key={id}/>,
-                      <CBadge color='black' className='text-white' style={{marginLeft: "0px"}} onClick={(e) => { setEditFormData(post); deleteuserGet(e, post) }} key={id}> Remove </CBadge>
-                    ])
+                    <p>
+                      <CBadge color='danger' className='text-white' onClick={() => { setEditFormData(post); setModal2(true); setFormInviteData({...formInviteData, ...{"role": post?.role_name}}) }} > Update </CBadge>
+                      <br />
+                      <CBadge color='black' className='text-white' style={{marginLeft: "0px"}} onClick={(e) => { setEditFormData(post); deleteuserGet(e, post) }} > Remove </CBadge>
+                    </p>
                     : "N/A"
                   }
                 </td>
@@ -1220,7 +1221,7 @@ const UserManagementDataTables = (props) => {
             Cancel
           </CButton>
           <CButton color="" className='text-white bg-text-wp' onClick={(e) => edituserGet(e)}> 
-            Create
+            Update
           </CButton>
         </CModalFooter>
       </CModal>

@@ -64,7 +64,8 @@ const JoinTeam = () => {
             if(response?.data?.data){
                 setInviteData(response?.data?.data)
                 if(response?.data?.account_exist){
-                  window.location.href = '/login'
+                  // window.location.href = '/login'
+                  window.location.href = "/team-login";
                 }
             }
 
