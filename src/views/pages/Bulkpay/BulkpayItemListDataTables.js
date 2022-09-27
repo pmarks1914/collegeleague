@@ -1066,32 +1066,10 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
     } )
     let config = {};
     let data = {};
+    let txtString = "";
     if(type === "batch"){
-      // 
-      config = {
-        method: 'post',
-        url: process.env.REACT_APP_BASE_API + "/batch/pay/" + currentUser?.account + "/" + window.location.pathname.split("/")[3] + "/",
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + currentUser?.access
-        },
-        data: data
-      };
-    }
-    else if( type === "item" ){
-      // 
-      config = {
-        method: 'post',
-        url: process.env.REACT_APP_BASE_API + "/batch/item/pay/" + postData?.id + "/",
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + currentUser?.access
-        },
-        data: data
-      };
-    }
-
-    let txtString = `<table id="table" width="90%" border=0>
+      //
+      txtString = `<table id="table" width="90%" border=0>
     <thead>
         <tr>
             <th></th>
@@ -1119,7 +1097,56 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
             <td style="float: right; margin-right: -40px">${ ( getTotalBatch || 0)?.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,').toString() } </td>
         </tr>
     </tbody>
-    </table>`
+        </table>`
+      config = {
+        method: 'post',
+        url: process.env.REACT_APP_BASE_API + "/batch/pay/" + currentUser?.account + "/" + window.location.pathname.split("/")[3] + "/",
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + currentUser?.access
+        },
+        data: data
+      };
+    }
+    else if( type === "item" ){
+      // 
+      txtString = `<p> ${postData?.account_holder_name || postData?.name} </p>`
+
+      txtString = `<table id="table" width="90%" border=0>
+    <thead>
+        <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr width="100%" class="ml-3">
+            <td style="float: left">Name :</td>
+            <td style="float: right; margin-right: -40px">${ postData?.account_holder_name || postData?.name || 'N/A' } </td>
+        </tr>
+        <tr width="100%" class="ml-3">
+            <td style="float: left">Currency :</td>
+            <td style="float: right; margin-right: -40px">${ "GHS" } </td>
+        </tr>
+        <tr width="100%" class="ml-3">
+            <td style="float: left">Total Amount :</td>
+            <td style="float: right; margin-right: -40px">${ parseFloat( postData?.amount || postData?.amount || 0)?.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,').toString() } </td>
+        </tr>
+    </tbody>
+        </table>`
+      config = {
+        method: 'post',
+        url: process.env.REACT_APP_BASE_API + "/batch/item/pay/" + currentUser?.account + "/" + postData?.id + "/",
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + currentUser?.access
+        },
+        data: data
+      };
+    }
 
     Swal.fire({
       icon: 'info',
@@ -1514,8 +1541,8 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
                 <td>
                   {/*  */}
                   {
-                    post?.status ?
-                  <CBadge className='bg-text-wp mr-5' style={{marginRight: "5px"}} onClick={ (e) => payExecute("batch", post) }  >Retry</CBadge> 
+                    post?.status_code === "Failed" ?
+                  <CBadge className='bg-text-wp mr-5' style={{marginRight: "5px"}} onClick={ (e) => payExecute("item", post) }  >Retry</CBadge> 
                   : ""
                   }
                   <CBadge color='black' style={{marginRight: "5px"}}  onClick={ (e) => deleteBatchOrItem("item", post) }  >Delete</CBadge> 
