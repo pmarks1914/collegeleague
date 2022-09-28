@@ -75,11 +75,11 @@ export default function SwitchAccount() {
     <div>
       <p aria-describedby={id} variant="contained" className='d-flex mb-0' onClick={handleClick} style={{ fontWeight: '200'}}>
         <Row>
-            <Col sm='1' md='1' lg='1' xl='1' ><CIcon icon={useIcon} className='mt-0' /> </Col>
-            <Col> { businessName || ""} </Col>
-            <Col sm='1' md='1' lg='1' xl='1'>
+            <Col sm='12' md='12' lg='12' xl='12' >
+                <CIcon icon={useIcon} className='mt-0' />
+                { businessName || ""} 
                 <CTooltip content="Click to view list(s) of Accounts(Businesses) and select one to switch between. This will allow you to view transaction(s) for the selected account." placement="top" >
-                    <CIcon icon={cilInfo} />
+                    <CIcon className='ml-2' icon={cilInfo} />
                 </CTooltip> 
             </Col>
         </Row>

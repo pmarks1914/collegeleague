@@ -754,6 +754,7 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
     let e_mail = '';
     let batch_id = window.location.pathname.split("/")[3];
     let payment_method = "NONE";
+    let config = {};
 
     if(paymentBatchData?.payment_method === "BANK"){
       // 
@@ -855,7 +856,20 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
       });
     }
 
-    let config = {
+    if(type === 'addToBatch'){
+      // 
+      config = {
+        method: 'patch',
+        url: process.env.REACT_APP_BASE_API + "/batch/item/add/" + batch_id + '/',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + currentUser?.access
+        },
+        data: data
+        };
+    }
+    else{
+      config = {
       method: 'patch',
       url: process.env.REACT_APP_BASE_API + "/batch/bulk/update/" + batch_id + '/',
       headers: {
@@ -863,7 +877,9 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
         'Authorization': 'Bearer ' + currentUser?.access
       },
       data: data
-    };
+      };
+    }
+
     axios(config).then(response => {
       // console.log(response.data);
       if (response?.data?.status === true) { 
@@ -1598,7 +1614,7 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
                 </div>
               </Col>
               <Col xs="12" sm="12" md={6} lg={6} className="mt-2" >
-              <Label for="bulkPayInfoStatus" className="label-dc mb-1"> Bank Name</Label>
+              <Label for="bulkPayInfoStatus" className="label-dc mb-1"> Bank/Network Name</Label>
               <Select
                 error = {bankDropdownInModalError}
                 maxWidth
@@ -1641,7 +1657,7 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
                   noValidate
                   autoComplete="off"
                   >
-                  <Label for="bulkPayInfoStatus" className="label-dc"> Bank Account Number </Label>
+                  <Label for="bulkPayInfoStatus" className="label-dc"> Bank/Network Account Number </Label>
                   <TextField 
                     error = {accountNumberError}
                     fullWidth
@@ -1742,7 +1758,7 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
               </Col>
 
               <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
-              <Label for="bulkPayInfoStatus" className="label-dc mb-1"> Network Name</Label>
+              <Label for="bulkPayInfoStatus" className="label-dc mb-1"> Bank/Network Name</Label>
               <Select
                 // value={networkName}
                 error = {networkNameError}
@@ -1910,7 +1926,7 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
                 </div>
               </Col>
               <Col xs="12" sm="12" md={6} lg={6} className="mt-2" >
-              <Label for="bulkPayInfoStatus" className="label-dc mb-1"> Bank Name</Label>
+              <Label for="bulkPayInfoStatus" className="label-dc mb-1"> Bank/Network Name</Label>
               <Select
                 error = {bankDropdownInModalError}
                 maxWidth
@@ -1954,7 +1970,7 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
                   noValidate
                   autoComplete="off"
                   >
-                  <Label for="bulkPayInfoStatus" className="label-dc"> Bank Account Number </Label>
+                  <Label for="bulkPayInfoStatus" className="label-dc"> Bank/Network Account Number </Label>
                   <TextField 
                     error = {accountNumberError}
                     fullWidth
@@ -2054,7 +2070,7 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
                 </div>
               </Col>
               <Col xs="12" sm="12" md={6} lg={6} className="mt-2" > 
-              <Label for="bulkPayInfoStatus" className="label-dc mb-1"> Network Name</Label>
+              <Label for="bulkPayInfoStatus" className="label-dc mb-1"> Bank/Network Name</Label>
               <Select
                 // value={networkName}
                 error = {networkNameError}
