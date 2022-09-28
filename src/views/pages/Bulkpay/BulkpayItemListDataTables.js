@@ -859,7 +859,7 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
     if(type === 'addToBatch'){
       // 
       config = {
-        method: 'patch',
+        method: 'post',
         url: process.env.REACT_APP_BASE_API + "/batch/item/add/" + batch_id + '/',
         headers: {
           'Content-Type': 'application/json',
