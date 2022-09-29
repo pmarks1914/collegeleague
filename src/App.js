@@ -23,6 +23,8 @@ const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'))
 
 // Pages
 const Login = React.lazy(() => import('./views/pages/login/Login'))
+const JoinTeam = React.lazy(() => import('./views/pages/JoinTeam/JoinTeam'))
+const TeamLogin = React.lazy(() => import('./views/pages/JoinTeam/TeamLogin'))
 const Signin = React.lazy(() => import('./views/pages/login/signin'))
 const Signup = React.lazy(() => import('./views/pages/register/signup'))
 const Page404 = React.lazy(() => import('./views/pages/page404/Page404'))
@@ -40,7 +42,10 @@ class App extends Component {
       {/* {userData?.access} */}
         <Suspense fallback={loading}>
           <Routes>
+            <Route exact path="/" name="Login Page" element={<Login />} />
             <Route exact path="/login" name="Login Page" element={<Login />} />
+            <Route exact path="/team-login" name="Team Login Page" element={<TeamLogin />} />
+            <Route exact path="/join-team/:id" name="Join Team" element={<JoinTeam />} />
             <Route exact path="/signin" name="Signin Page" element={<Signin />} />
             {/* <Route exact path="/register" name="Register Page" element={<Register />} /> */}
             <Route exact path="/signup" name="SignUp Page" element={<Signup />} />
@@ -51,13 +56,15 @@ class App extends Component {
             <Route exact path='/checkout' name="" element={<Checkout />} />
             <Route exact path='/pay/:id' name="" element={<Checkout />} />
             <Route exact path='/pay' name="" element={<Checkout />} />
+            <Route exact path='/link/:id' name="" element={<Checkout />} />
             <Route exact path="/otp" name="Otp Verification" element={<Otp />} />
             <Route exact path="/change-password" name="Change Password" element={<ChangePassword />} />
             {
               userData?.access ?
               <Route path="*" name="Home" element={<DefaultLayout />} />
               :
-              ""
+              <Route exact path="*" name="Page 404" element={<Page404 />} />
+
             }
             {/* <Route exact path="/compliance" name="Compliance" element={<Compliance />} /> */}
 

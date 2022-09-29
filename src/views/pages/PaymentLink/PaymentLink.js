@@ -18,12 +18,12 @@ import PaymentLinkDataTables from './PaymentLinkDataTables'
 // transactionData?.transaction?.then(value => { (transaction = value) });
 
 const PaymentLink = () => {
-    const [apikeyDetails, setApikeyDetails] = useState(null)
+    const [PaymentLinkDetails, setPaymentLinkDetails] = useState(null)
 
     useEffect(() => { 
         // 
         let apikey_data = apikeyData();
-        apikey_data?.apikey?.then(value => { setApikeyDetails(value) });
+        apikey_data?.apikey?.then(value => { setPaymentLinkDetails(value) });
 
     }, [])
 
@@ -33,7 +33,7 @@ const PaymentLink = () => {
             {/* open modal for filter date range */}
             {/* <CButton onClick={() => setModal1(!modal1)} icon={cilArrowRight} className="float-end" >Filter</CButton> */}
             <br /><br />
-            <PaymentLinkDataTables apikeyDetails={apikeyDetails} />
+            <PaymentLinkDataTables PaymentLinkDetails={PaymentLinkDetails} />
 
         </div>
     )

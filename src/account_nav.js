@@ -27,12 +27,13 @@ import {
   cilControl,
   cilMoodBad,
   cilDataTransferDown,
+  cilUserPlus,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
 
 
-if(["/", "/theme", "/dashboard", "/payment/transaction", "/payment/refunds", "/payment/payouts", "/compliance", "/api-keys", "/bulk-pay", `/bulk-pay/item/${window.location.pathname.split("/")[3]}`, `/bulk-pay/item/${window.location.pathname.split("/")[3]}/`, '/payment-link'].includes(window.location.pathname)){
+if(["/", "/theme", "/dashboard", "/payment/transaction", "/payment/refunds", "/payment/payouts", "/compliance", "/settings/api-keys", "/bulk-pay", `/bulk-pay/item/${window.location.pathname.split("/")[3]}`, `/bulk-pay/item/${window.location.pathname.split("/")[3]}/`, '/payment-link', '/settings', '/settings/user-management'].includes(window.location.pathname)){
   // 
 }
 else{
@@ -135,17 +136,35 @@ const account_nav = [
     to: '/compliance',
     icon: <CIcon icon={cilControl} customClassName="nav-icon" />,
   },
-  {
-    component: CNavItem,
-    name: 'Api keys',
-    to: '/api-keys',
-    icon: <CIcon icon={cilLibrary} customClassName="nav-icon" />,
-  },
+  // {
+  //   component: CNavItem,
+  //   name: 'Api keys',
+  //   to: '/api-keys',
+  //   icon: <CIcon icon={cilLibrary} customClassName="nav-icon" />,
+  // },
   {
     component: CNavItem,
     name: 'Bulk Pay',
     to: '/bulk-pay',
     icon: <CIcon icon={cilMoodBad} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavGroup,
+    name: 'Settings',
+    items: [
+      {
+        component: CNavItem,
+        name: 'User management',
+        to: '/settings/user-management',
+        icon: <CIcon icon={cilUserPlus} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Api keys',
+        to: '/settings/api-keys',
+        icon: <CIcon icon={cilLibrary} customClassName="nav-icon" />,
+      },
+    ],
   },
   
 ]

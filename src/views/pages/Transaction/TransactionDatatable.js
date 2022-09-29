@@ -111,6 +111,7 @@ let posts = [
   }
 ]
 
+let currentUser = JSON.parse(localStorage.getItem("userDataStore")); 
 let transactionData = getTransactionData();
 let transaction = []
 transactionData?.transaction?.then(value => { (transaction = value) });
@@ -818,22 +819,27 @@ const Transaction = (transactionDetails) => {
         </Col>
         <Col xs="12" sm="12" md={1} lg={1} >
         </Col>
-        <Col xs="12" sm="12" md={2} lg={2} >
-          {/* export */}
-          <Box sx={{ minWidth: 120 }}>
-            <FormControl fullWidth>
-              <Label for="transactionExport" className="label-dc"> </Label>
-              <Select
-                placeholder={"Select export"}
-                options={optionsExport}
-                id="transactionExport"
-                className='other-input-select d-filters float-item-media'
-                // components={{ Option: paymentOption }}
-                onChange={(e) => handleChangeExport(e.value)}
-              />
-            </FormControl>
-          </Box>
-        </Col>
+
+        {
+          currentUser?.permission_list?.includes("can_export_transactions") ? 
+          <Col xs="12" sm="12" md={2} lg={2} >
+            {/* export */}
+            <Box sx={{ minWidth: 120 }}>
+              <FormControl fullWidth>
+                <Label for="transactionExport" className="label-dc"> </Label>
+                <Select
+                  placeholder={"Select export"}
+                  options={optionsExport}
+                  id="transactionExport"
+                  className='other-input-select d-filters float-item-media'
+                  // components={{ Option: paymentOption }}
+                  onChange={(e) => handleChangeExport(e.value)}
+                />
+              </FormControl>
+            </Box>
+          </Col> 
+          : ""
+        }
       </Row>
       {/* </Container> */}
 

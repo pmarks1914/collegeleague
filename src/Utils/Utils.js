@@ -36,7 +36,8 @@ export function getSessionTimeout(){
                 window.location.href = "/login";
               }, 100);
             
-            localStorage.removeItem("userDataStore")
+            // localStorage.removeItem("userDataStore")
+            localStorage.clear()
             }
         }, 1000);
     }

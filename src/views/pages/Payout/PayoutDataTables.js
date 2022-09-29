@@ -78,6 +78,7 @@ import {Helmet} from "react-helmet";
 import Select from 'react-select';
 import * as XLSX from 'xlsx';
 
+const currentUser = JSON.parse(localStorage.getItem("userDataStore"));  
 let transactionData = payoutData();
 let transaction = []
 transactionData?.transaction?.then(value => { (transaction = value) });
@@ -773,22 +774,26 @@ const PayoutDataTables = (transactionDetails) => {
         </Col>
         <Col xs="12" sm="12" md={1} lg={1} >
         </Col>
-        <Col xs="12" sm="12" md={2} lg={2} >
-          {/* export */}
-          <Box sx={{ minWidth: 120 }}>
-            <FormControl fullWidth>
-              <Label for="transactionExport" className="label-dc"> </Label>
-              <Select
-                placeholder={"Select export"}
-                options={optionsExport}
-                id="transactionExport"
-                className='other-input-select d-filters float-item-media'
-                // components={{ Option: paymentOption }}
-                onChange={(e) => handleChangeExport(e.value)}
-              />
-            </FormControl>
-          </Box>
-        </Col>
+        {
+          currentUser?.permission_list?.includes("can_export_payouts") ? 
+          <Col xs="12" sm="12" md={2} lg={2} >
+            {/* export */}
+            <Box sx={{ minWidth: 120 }}>
+              <FormControl fullWidth>
+                <Label for="transactionExport" className="label-dc"> </Label>
+                <Select
+                  placeholder={"Select export"}
+                  options={optionsExport}
+                  id="transactionExport"
+                  className='other-input-select d-filters float-item-media'
+                  // components={{ Option: paymentOption }}
+                  onChange={(e) => handleChangeExport(e.value)}
+                />
+              </FormControl>
+            </Box>
+          </Col>
+          : ""
+        }
       </Row>
 
 

@@ -27,8 +27,9 @@ import avatar9 from './../../assets/brand/logo.png'
 const AppHeaderDropdown = (userData) => {
   function logoutUser(){
     window.location.href="/login";
-    localStorage.removeItem("userDataStore");
- 
+    // localStorage.removeItem("userDataStore");
+    // localStorage.removeItem("signupInfo");
+    localStorage.clear();
   }
 
 // $(document).ready(function () {
@@ -53,7 +54,7 @@ const AppHeaderDropdown = (userData) => {
         }
         <CDropdownItem>
           <CIcon icon={cilCreditCard} className="me-2" />
-          {userData?.userData?.firstname + " " + userData?.userData?.lastname}
+          {userData?.userData?.business_name?.toUpperCase()}
         </CDropdownItem>
         <CDropdownItem>
           <CIcon icon={cilUser} className="me-2" />
