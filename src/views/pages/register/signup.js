@@ -59,7 +59,6 @@ export default function SignUp() {
       const password = data.get('password')
       
       
-
       const payload = JSON.stringify({
         "firstname": firstname,
         "lastname": lastname,
@@ -89,11 +88,11 @@ export default function SignUp() {
                 position: toast.POSITION.TOP_RIGHT
             });
           }
-          // else if (phone.length < 10){
-          //   toast.error('Invalid phone number', {
-          //     position: toast.POSITION.TOP_RIGHT
-          // });
-          // }
+          if (phone.length != 10 || !phone.slice(0,3).includes("020","023","024","025","026","027","028","050","054","055","059")){
+            toast.error('Invalid phone number', {
+              position: toast.POSITION.TOP_RIGHT
+          });
+          }
           
           if (response["data"]["message"] === "Otp has been sent successfully." && response["data"]["status"] === true){
             localStorage.setItem("signupInfo", payload)
