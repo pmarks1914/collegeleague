@@ -88,6 +88,7 @@ export default function SignUp() {
                 position: toast.POSITION.TOP_RIGHT
             });
           }
+
           if (phone.length != 10 || !phone.slice(0,3).includes("020","023","024","025","026","027","028","050","054","055","059")){
             toast.error('Invalid phone number', {
               position: toast.POSITION.TOP_RIGHT
