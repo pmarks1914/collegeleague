@@ -43,6 +43,7 @@ let posts = [
     }
 ]
 
+let currentUser = JSON.parse(localStorage.getItem("userDataStore")); 
 // let transactionData = getTransactionData();
 // let transaction = []
 // transactionData?.transaction?.then(value => { (transaction = value) });
@@ -78,8 +79,11 @@ const Apikey = () => {
             {/* open modal for filter date range */}
             {/* <CButton onClick={() => setModal1(!modal1)} icon={cilArrowRight} className="float-end" >Filter</CButton> */}
             <br /><br />
-            <ApikeyDataTables apikeyDetails={apikeyDetails} />
-
+            {
+                currentUser?.permission_list?.includes("can_view_api_keys_&_webhooks") ?
+                <ApikeyDataTables apikeyDetails={apikeyDetails} />
+                : ""
+            }
         </div>
     )
 }

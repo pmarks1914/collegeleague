@@ -612,7 +612,7 @@ const UserManagementDataTables = (props) => {
             // 
             setModal2(false);
             setModal3(false);
-            userGetInfo = userGetInfoNew
+            // userGetInfo = userGetInfoNew
           }
 
         });

@@ -146,6 +146,7 @@ const Login = () => {
           };
 
           localStorage.setItem("userDataStore", JSON.stringify(userData));
+          document.cookie = "dataInCookies" + "=" + JSON.stringify({...userData, ...{"account": "", "wallet": ""}})
 
           window.location.href = "/dashboard"; 
 

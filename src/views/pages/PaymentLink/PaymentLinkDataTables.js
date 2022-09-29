@@ -1012,40 +1012,29 @@ const PaymentLinkDataTables = (apikeyDetails) => {
       </div>
 
       <Row>
+        {
+          currentUser?.permission_list?.includes("can_create_and_manage_payment_pages") ?
+          <Col xs="12" sm="12" md={3} lg={3} >
+            {/* filter */}
+            <Box sx={{ minWidth: 140 }}>
+              <FormControl fullWidth style={{marginTop: "8px"}}>
+                <Button
+                    type="submit"
+                    fullWidth
+                    // variant="contained"
+                    // sx={{ mt: 0, mb: 20 }}
+                    className='bg-text-wp-action'
+                    style={{ height: '36px' }}
+                    onClick={ (e) => setModal1(true)}
+                >
+                    CEATE PAYMENT LINK
+                </Button>
+              </FormControl>
+            </Box>
+          </Col>
+          : ""
+        }
         <Col xs="12" sm="12" md={3} lg={3} >
-          {/* filter */}
-          <Box sx={{ minWidth: 140 }}>
-            <FormControl fullWidth style={{marginTop: "8px"}}>
-              <Button
-                  type="submit"
-                  fullWidth
-                  // variant="contained"
-                  // sx={{ mt: 0, mb: 20 }}
-                  className='bg-text-wp-action'
-                  style={{ height: '36px' }}
-                  onClick={ (e) => setModal1(true)}
-              >
-                  CEATE PAYMENT LINK
-              </Button>
-            </FormControl>
-          </Box>
-
-        </Col>
-        <Col xs="12" sm="12" md={3} lg={3} >
-          {/* paymentLinkInfo types */}
-          {/* <Box sx={{ minWidth: 160 }}>
-            <FormControl fullWidth style={{marginTop: "0px"}}>
-              <Label for="paymentLinkInfoStatus" className="label-dc"> </Label>
-              <Select
-                placeholder={"Select status"}
-                options={optionsStatus}
-                id="paymentLinkInfoStatus"
-                className='other-input-select d-filters'
-                onChange={(e) => handleChangepaymentLinkInfoStatus(e.value)}
-              />
-          
-            </FormControl>
-          </Box> */}
         </Col>
         {/* Date range */}
         <Col xs="12" sm="12" md={4} lg={4} >
@@ -1095,23 +1084,28 @@ const PaymentLinkDataTables = (apikeyDetails) => {
                /> */}
             </Box>
           </FormControl>
-        </Col>
-        <Col xs="12" sm="12" md={2} lg={2} >
-          {/* export */}
-          <Box sx={{ minWidth: 120 }}>
-            <FormControl fullWidth>
-              <Label for="paymentLinkInfoExport" className="label-dc"> </Label>
-              <Select
-                placeholder={"Select export"}
-                options={optionsExport}
-                id="paymentLinkInfoExport"
-                className='other-input-select d-filters mt-0'
-                // components={{ Option: paymentOption }}
-                onChange={(e) => handleChangeExport(e.value)}
-              />
-            </FormControl>
-          </Box>
-        </Col>
+        </Col>            
+        {/* export */}
+        {
+          currentUser?.permission_list?.includes("can_create_and_manage_payment_pages") ?
+          <Col xs="12" sm="12" md={2} lg={2} >
+            {/* export */}
+            <Box sx={{ minWidth: 120 }}>
+              <FormControl fullWidth>
+                <Label for="paymentLinkInfoExport" className="label-dc"> </Label>
+                <Select
+                  placeholder={"Select export"}
+                  options={optionsExport}
+                  id="paymentLinkInfoExport"
+                  className='other-input-select d-filters mt-0'
+                  // components={{ Option: paymentOption }}
+                  onChange={(e) => handleChangeExport(e.value)}
+                />
+              </FormControl>
+            </Box>
+          </Col>
+          : ""
+        }
       </Row>
       
       {/* {dateTo.toString()}{" rrr "}{dateFrom.toString()} */}
@@ -1141,10 +1135,18 @@ const PaymentLinkDataTables = (apikeyDetails) => {
                 <td>{post?.fixed_amount || "No" }</td>
                 <td><a href={ "/link/"+post?.custom_link} > { window.location.hostname + "/link/" + post?.custom_link} </a></td>   
                 <td>{moment(post?.expiration_date || Date() ).format('LLLL') }</td>            
-                <td><CBadge className='bg-text-wp' onClick={() => { setModal2(true); setEditFormData(post) }} > Edit </CBadge> <CBadge color='black' style={{marginRight: "5px"}} onClick={(e) => { setEditFormData(post); deletePaymentLink(e) }} > Delete </CBadge> </td>
+                <td>
+                  {
+                    currentUser?.permission_list?.includes("can_create_and_manage_payment_pages") ?
+                    <p>
+                      <CBadge className='bg-text-wp' onClick={() => { setModal2(true); setEditFormData(post) }} > Edit </CBadge> 
+                      <CBadge color='black' style={{marginRight: "5px"}} onClick={(e) => { setEditFormData(post); deletePaymentLink(e) }} >   </CBadge> 
+                    </p>
+                    : "N/A"
+                  }
+                </td>
               </tr>
-            )}
-            
+            )}            
         </tbody>
       </table>
 

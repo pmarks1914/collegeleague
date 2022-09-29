@@ -1302,158 +1302,134 @@ const BulkpayDataTables = (apikeyDetails) => {
 
       {/* <Container> */}
       <Row>
-        <Col xs="12" sm="12" md={4} lg={4} >
-          {/* filter */}
-          <div className="dropdown filterDrop add-item">
+          {
+            currentUser?.permission_list?.includes("bulk_pay_add_edit_delete") ?
+            <Col xs="12" sm="12" md={4} lg={4} >
+              {/* create */}
+              <div className="dropdown filterDrop add-item">
+                  <Box
+                    component="form"
+                    noValidate
+                    autoComplete="off"
+                    >
+                    <TextField 
+                      fullWidth
+                      id="dropbtn" 
+                      className='d-filters'
+                      onClick={(e) => setModal2(true)} 
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start" >
+                            <CIcon icon={cilPlus} className="me-2" /> Create
+                          </InputAdornment>
+                        ),
+                      }}
+                      multiline
+                      />
+                  </Box>
+              </div>
+              {/* Upload */}
+              <div className="dropdown filterDrop ">
+                  <Box
+                    component="form"
+                    noValidate
+                    autoComplete="off"
+                    >
+                      <TextField 
+                        fullWidth
+                        id="dropbtn" 
+                        className='d-filters'
+                        onClick={(e) => setModal1(true)} 
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start" >
+                              <CIcon icon={cilPlus} className="me-2" /> Upload
+                            </InputAdornment>
+                          ),
+                        }}
+                        multiline
+                        />
+                  </Box>
+                {/* </FormControl> */}
+              </div>
+            </Col>
+              : ""
+          }
 
-            {/* <FormControl fullWidth > */}
-              <Box
-                component="form"
-                // sx={{
-                //   '& > :not(style)': { m: 1, width: '25ch' },
-                // }}
-                noValidate
-                autoComplete="off"
-                // sx={{ minWidth: 40 }} 
-                >
-                <TextField 
-                  fullWidth
-                  id="dropbtn" 
-                  className='d-filters'
-                  onClick={(e) => setModal2(true)} 
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start" >
-                        <CIcon icon={cilPlus} className="me-2" /> Create
-                      </InputAdornment>
-                    ),
-                  }}
-                  // label="Filter"
-                  // placeholder="Placeholder"
-                  multiline
-                  // variant="standard"
-                  // style={{height: "10px"}}
+          {
+            currentUser?.permission_list?.includes("bulk_pay_add_edit_delete") ?
+            <Col xs="12" sm="12" md={2} lg={2} >
+              {/* bulkPayInfo types */}
+              <Box sx={{ minWidth: 160 }}>
+                <FormControl style={{marginTop: "0px"}}>
+                  <Label for="bulkPayInfoStatus" className="label-dc"> </Label>
+                  <Select
+                    placeholder={"Select"}
+                    options={optionsStatus}
+                    id="bulkPayInfoStatus"
+                    className='other-input-select d-filters'
+                    // components={{ Option: paymentOption }}
+                    onChange={(e) => handleChangebulkPayInfoStatus(e.value)}
                   />
+              
+                </FormControl>
               </Box>
-            {/* </FormControl> */}
-          </div>
-          {/* filter */}
-          <div className="dropdown filterDrop ">
-
-            {/* <FormControl fullWidth > */}
+            </Col>
+            : ""
+          }
+          {/* Date range */}
+          <Col xs="12" sm="12" md={3} lg={3} >
+            {/* date range */}
+            {/* <FormControl fullWidth> */}
               <Box
-                component="form"
+                // component="form"
+                id='dateRange-control'
                 // sx={{
                 //   '& > :not(style)': { m: 1, width: '25ch' },
                 // }}
                 noValidate
                 autoComplete="off"
-                // sx={{ minWidth: 40 }} 
-                >
-                  <TextField 
-                    fullWidth
-                    id="dropbtn" 
-                    className='d-filters'
-                    onClick={(e) => setModal1(true)} 
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start" >
-                          <CIcon icon={cilPlus} className="me-2" /> Upload
-                        </InputAdornment>
-                      ),
-                    }}
-                    // label="Filter"
-                    // placeholder="Placeholder"
-                    multiline
-                    // variant="standard"
-                    // style={{height: "10px"}}
-                    />
+                sx={{ minWidth: 170 }}
+                
+              >
+                
+                <RSuitDateRangePicker 
+                  appearance="default" 
+                  placeholder={"Select date range"} 
+                  size="lg"
+                  style={{ width: 260, display: 'block', border: "10px solid #080808 !important"}} 
+                  className="d-filters"
+                  // open={openDateRange}
+                  // toggle={toggle}
+                  onChange={(range) => setDateRange(range || {})}
+                  // ranges={dateRange}
+                  // months={2}
+                  id="datePicker-0"
+                />
               </Box>
             {/* </FormControl> */}
-          </div>
-        </Col>
-        <Col xs="12" sm="12" md={2} lg={2} >
-          {/* bulkPayInfo types */}
-          <Box sx={{ minWidth: 160 }}>
-            <FormControl style={{marginTop: "0px"}}>
-              <Label for="bulkPayInfoStatus" className="label-dc"> </Label>
-              <Select
-                placeholder={"Select"}
-                options={optionsStatus}
-                id="bulkPayInfoStatus"
-                className='other-input-select d-filters'
-                // components={{ Option: paymentOption }}
-                onChange={(e) => handleChangebulkPayInfoStatus(e.value)}
-              />
-          
-            </FormControl>
-          </Box>
-        </Col>
-        {/* Date range */}
-        <Col xs="12" sm="12" md={3} lg={3} >
-          {/* date range */}
-          {/* <FormControl fullWidth> */}
-            <Box
-              // component="form"
-              id='dateRange-control'
-              // sx={{
-              //   '& > :not(style)': { m: 1, width: '25ch' },
-              // }}
-              noValidate
-              autoComplete="off"
-              sx={{ minWidth: 170 }}
-              
-            >
-              
-              <RSuitDateRangePicker 
-                appearance="default" 
-                placeholder={"Select date range"} 
-                size="lg"
-                style={{ width: 260, display: 'block', border: "10px solid #080808 !important"}} 
-                className="d-filters"
-                // open={openDateRange}
-                // toggle={toggle}
-                onChange={(range) => setDateRange(range || {})}
-                // ranges={dateRange}
-                // months={2}
-                id="datePicker-0"
-              />
-              {/* <TextField 
-               id="dateRange" 
-              //  label="Date range"
-              //  onClick={(e)=>toggleFilter(e, "dateRange")} 
-              onClick={(e)=>setModal1(true) }
-              //  variant="outlined" 
-               placeholder=
-               {" " + moment(dateRange?.startDate).format("DD/MM/yyyy") + " - " + moment(dateRange?.endDate).format("DD/MM/yyyy")} 
-               InputProps={{
-                 startAdornment: (
-                   <InputAdornment position="end" > 
-                   <CIcon icon={cilCalendar} className="me-6" />
-                   </InputAdornment>
-                 ),
-               }}
-               
-               /> */}
-            </Box>
-          {/* </FormControl> */}
-        </Col>
-        <Col xs="12" sm="12" md={3} lg={3} >
+          </Col>
           {/* export */}
-          <Box sx={{ minWidth: 120}}>
-            <FormControl fullWidth>
-              <Label for="bulkPayInfoExport" className="label-dc"> </Label>
-              <Select
-                placeholder={"Select export"}
-                options={optionsExport}
-                id="bulkPayInfoExport"
-                className='other-input-select d-filters float-item-media'
-                // components={{ Option: paymentOption }}
-                onChange={(e) => handleChangeExport(e.value)}
-              />
-            </FormControl>
-          </Box>
-        </Col>
+          {
+            currentUser?.permission_list?.includes("bulk_pay_add_edit_delete") ?
+            <Col xs="12" sm="12" md={3} lg={3} >
+              {/* export */}
+              <Box sx={{ minWidth: 120}}>
+                <FormControl fullWidth>
+                  <Label for="bulkPayInfoExport" className="label-dc"> </Label>
+                  <Select
+                    placeholder={"Select export"}
+                    options={optionsExport}
+                    id="bulkPayInfoExport"
+                    className='other-input-select d-filters float-item-media'
+                    // components={{ Option: paymentOption }}
+                    onChange={(e) => handleChangeExport(e.value)}
+                  />
+                </FormControl>
+              </Box>
+            </Col>
+            : ""
+          }
       </Row>
       {/* </Container> */}
 

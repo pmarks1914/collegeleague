@@ -47,9 +47,10 @@ export default function SignUp() {
   };
 
   const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    
+      event.preventDefault();
+      const data = new FormData(event.currentTarget);
+      let expPhone = /(020|023|024|025|026|027|028|050|054|055|059|233)[\s.-]?(\d{7}|\d{8})$/;
+
       const business_name = data.get('business_name')
       const firstname = data.get('firstname')
       const lastname = data.get('lastname')
@@ -71,7 +72,7 @@ export default function SignUp() {
         "password": password,
       })
 
-      console.log(payload)
+        // console.log(payload)
         let config = {
           method: 'post',
           url: process.env.REACT_APP_BASE_API + '/auth/validate_email/',
@@ -82,24 +83,38 @@ export default function SignUp() {
           data: payload
         };
         axios(config).then(function (response){
-          console.log(response["data"]["message"])
+          // console.log(response["data"]["message"])
+          if ( Number(firstname) || firstname.length < 2 ){
+            toast.error('First name', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+          }
+          if ( Number(lastname) || lastname.length < 2){
+            toast.error('Last name', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+          }
           if (response["data"]["message"] === "email already exist."){
             toast.error('Email already exists', {
                 position: toast.POSITION.TOP_RIGHT
             });
-          }
+          } 
 
-          if (phone.length != 10 || !phone.slice(0,3).includes("020","023","024","025","026","027","028","050","054","055","059")){
+          if ( !( expPhone.test(phone.replace(/\s+/g, '') ) ) ){
             toast.error('Invalid phone number', {
               position: toast.POSITION.TOP_RIGHT
           });
           }
+          else if (password === "" || password.length < 8 || Number(password) ) {
+            toast.error("Password strength! 8 Alphanumeric with a special characters, eg. Mymi%4536 ", {
+              position: toast.POSITION.TOP_RIGHT
+          });
+          }
           
-          if (response["data"]["message"] === "Otp has been sent successfully." && response["data"]["status"] === true){
+          if ( response["data"]["message"] === "Otp has been sent successfully." && response["data"]["status"] === true && expPhone.test(phone.replace(/\s+/g, '') ) && ( !Number(lastname) && lastname.length > 1 ) && ( !Number(firstname) && firstname.length > 1 ) && (password.length > 7 && !Number(password) ) ){
             localStorage.setItem("signupInfo", payload)
             navigate('/otp')
           }
-          
           else if (!response){
             <Box sx={{ display: 'flex' }}>
               <CircularProgress />

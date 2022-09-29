@@ -1367,19 +1367,23 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
       </Row>
       <Row style={{ marginBottom: '25px' }} >
         {/*  */}
-        <Col xs="12" sm="12" md={6} lg={6} >
-          <Button
-              type="submit"
-              // fullWidth
-              // variant="contained"
-              // sx={{ mt: 0, mb: 20 }}
-              className='bg-text-wp-action'
-              style={{ height: '35px', width: '150px'}}
-              onClick={ (e) => payExecute("batch", paymentBatchData) }
-          >
-              PROCESS PAYMENT
-        </Button>
-        </Col>
+        {
+          currentUser?.permission_list?.includes("process_bulk_transactions") ?
+          <Col xs="12" sm="12" md={6} lg={6} >
+            <Button
+                type="submit"
+                className='bg-text-wp-action'
+                style={{ height: '35px', width: '150px'}}
+                onClick={ (e) => payExecute("batch", paymentBatchData) }
+            >
+                PROCESS PAYMENT
+          </Button>
+          </Col>
+          : ""
+        }
+        
+        {
+          currentUser?.permission_list?.includes("bulk_pay_add_edit_delete") ?
         <Col xs="12" sm="12" md={3} lg={3} style={{ margin: '1px 0px'}} >
           <Button
               type="submit"
@@ -1398,61 +1402,57 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
               Re-Upload
         </Button>
         </Col>
-        <Col xs="12" sm="12" md={3} lg={3} >
-          <Button
-              type="submit"
-              // fullWidth
-              // variant="contained"
-              // sx={{ mt: 0, mb: 20 }}
-              className='bg-text-wp-action float-item-media'
-              style={{ height: '35px', width: '63%' }}
-              // onClick={(e) => {handleSubmit(e, 3)}}
-              onClick={ (e) => deleteBatchOrItem("batch", paymentBatchData)}
-          >
-              DELETE
-        </Button>
-        </Col>
+        : ""
+        }
+
+        {
+          currentUser?.permission_list?.includes("bulk_pay_add_edit_delete") ?
+          <Col xs="12" sm="12" md={3} lg={3} >
+            <Button
+                type="submit"
+                className='bg-text-wp-action float-item-media'
+                style={{ height: '35px', width: '63%' }}
+                onClick={ (e) => deleteBatchOrItem("batch", paymentBatchData)}
+            >
+                DELETE
+          </Button>
+          </Col>
+          : ""
+        }
 
       </Row>
       {/* <Container> */}
       <Row>
-        <Col xs="12" sm="12" md={6} lg={6} >
-          {/* filter */}
-          <div className="dropdown filterDrop add-item">
-
-            {/* <FormControl fullWidth > */}
-              <Box
-                component="form"
-                // sx={{
-                //   '& > :not(style)': { m: 1, width: '25ch' },
-                // }}
-                noValidate
-                autoComplete="off"
-                // sx={{ minWidth: 40 }} 
-                >
-                <TextField 
-                  fullWidth
-                  id="dropbtn" 
-                  className='d-filters'
-                  onClick={(e) => setModal2(true)} 
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start" >
-                        <CIcon icon={cilPlus} className="me-2" /> Add
-                      </InputAdornment>
-                    ),
-                  }}
-                  // label="Filter"
-                  // placeholder="Placeholder"
-                  multiline
-                  // variant="standard"
-                  // style={{height: "10px"}}
-                  />
-              </Box>
-            {/* </FormControl> */}
-          </div>
-          
-        </Col>
+        {
+          currentUser?.permission_list?.includes("bulk_pay_add_edit_delete") ?
+          <Col xs="12" sm="12" md={6} lg={6} >
+            {/* filter */}
+            <div className="dropdown filterDrop add-item">
+                <Box
+                  component="form"
+                  noValidate
+                  autoComplete="off"
+                  >
+                  <TextField 
+                    fullWidth
+                    id="dropbtn" 
+                    className='d-filters'
+                    onClick={(e) => setModal2(true)} 
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start" >
+                          <CIcon icon={cilPlus} className="me-2" /> Add
+                        </InputAdornment>
+                      ),
+                    }}
+                    multiline
+                    />
+                </Box>
+            </div>
+            
+          </Col>
+          : "" 
+        }
         {/* Date range */}
         <Col xs="12" sm="12" md={3} lg={3} style={{ margin: '1px 0px' }} >
           {/* date range */}
@@ -1503,22 +1503,26 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
           {/* </FormControl> */}
         </Col>
         <Col xs="0" sm="0" md={1} lg={1} > </Col>
-        <Col xs="12" sm="12" md={2} lg={2} >
-          {/* export */}
-          <Box sx={{ minWidth: 120}}>
-            <FormControl fullWidth>
-              <Label for="bulkPayInfoExport" className="label-dc"> </Label>
-              <Select
-                placeholder={"Select export"}
-                options={optionsExport}
-                id="bulkPayInfoExport"
-                className='other-input-select other-input-select'
-                // components={{ Option: paymentOption }}
-                onChange={(e) => handleChangeExport(e.value)}
-              />
-            </FormControl>
-          </Box>
-        </Col>
+
+        {
+          currentUser?.permission_list?.includes("bulk_pay_add_edit_delete") ?
+          <Col xs="12" sm="12" md={2} lg={2} >
+            {/* export */}
+            <Box sx={{ minWidth: 120}}>
+              <FormControl fullWidth>
+                <Label for="bulkPayInfoExport" className="label-dc"> </Label>
+                <Select
+                  placeholder={"Select export"}
+                  options={optionsExport}
+                  id="bulkPayInfoExport"
+                  className='other-input-select other-input-select'
+                  onChange={(e) => handleChangeExport(e.value)}
+                />
+              </FormControl>
+            </Box>
+          </Col>
+          : ""
+        }
       </Row>
       {/* </Container> */}
 
@@ -1555,14 +1559,31 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
                 <td>{ post?.status_code || "Created" }</td>
                 <td>{moment(post?.created).format('LLLL')}</td>
                 <td>
-                  {/*  */}
                   {
-                    post?.status_code === "Failed" ?
-                  <CBadge className='bg-text-wp mr-5' style={{marginRight: "5px"}} onClick={ (e) => payExecute("item", post) }  >Retry</CBadge> 
+                    currentUser?.permission_list?.includes("process_bulk_transactions") ? 
+                    (
+                      post?.status_code === "Failed" ?
+                      <CBadge className='bg-text-wp mr-5' style={{marginRight: "5px"}} onClick={ (e) => payExecute("item", post) }  >Retry</CBadge> 
+                      : ""
+                    ) : ""
+                  }
+
+                  {
+                    currentUser?.permission_list?.includes("bulk_pay_add_edit_delete") ?
+                    <p>
+                      <CBadge color='black' style={{marginRight: "5px"}}  onClick={ (e) => deleteBatchOrItem("item", post) }  >Delete</CBadge> 
+                      <CBadge className='bg-text-wp-action' onClick={ (e)=>{(openModalEdit(e, post)); (setCurrentPostItemSelected(post))} } > {" "}Edit</CBadge>
+                    </p>
                   : ""
                   }
-                  <CBadge color='black' style={{marginRight: "5px"}}  onClick={ (e) => deleteBatchOrItem("item", post) }  >Delete</CBadge> 
-                  <CBadge className='bg-text-wp-action' onClick={ (e)=>{(openModalEdit(e, post)); (setCurrentPostItemSelected(post))} } > {" "}Edit</CBadge>
+                  {
+                    currentUser?.permission_list?.includes("process_bulk_transactions") ? 
+                    "" : 
+                    (
+                      currentUser?.permission_list?.includes("bulk_pay_add_edit_delete") ?
+                      "" : "N/A"
+                    )
+                  }
             
                 </td>
                 {/* <td>{post?.amount}</td> */}

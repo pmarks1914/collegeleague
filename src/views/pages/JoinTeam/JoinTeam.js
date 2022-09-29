@@ -139,10 +139,10 @@ const JoinTeam = () => {
     else if ( !expPhone.test(phone.replace(/\s+/g, '')) ) {
       setError({...error, ...{"phoneError": true}})
     }  
-    else if (password1Var === "") {
+    else if (password1Var === "" || password1Var.length < 8 || Number(password1Var) ) {
       setError({...error, ...{"password1Error": true}})
     }
-    else if (passwordVar === "") {
+    else if (passwordVar === "" || passwordVar.length < 8 || Number(password1Var)) {
       setError({...error, ...{"passwordError": true}})
     } 
     else if( password1Var === passwordVar) {
@@ -189,7 +189,19 @@ const JoinTeam = () => {
         }
         else {
           // setLoginError("Wrong user credentials")
-          document.getElementById("wrongUser_id").style.display = "block";
+          Swal.fire({
+            text: response?.data?.message,
+            icon: 'info',
+            allowOutsideClick: false,
+            // allowEscapeKey: false,
+            showCancelButton: false,
+            confirmButtonColor: '#FF7643',
+            // cancelButtonColor: '#d33',
+            confirmButtonText: 'OK!'
+          }).then((result) => {
+            
+          });
+          
         }
 
       }).catch(function (error) {

@@ -20,7 +20,7 @@ let currentUser = JSON.parse(localStorage.getItem("userDataStore"));
 // transactionData?.transaction?.then(value => { (transaction = value) });
 
 const UserManagement = () => {
-    const [dataDetails, setDataDetails] = useState(null)
+    const [dataDetails, setDataDetails] = useState()
     const [roleData, setRoleData] = useState({})
 
     useEffect(() => { 
