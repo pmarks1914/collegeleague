@@ -184,47 +184,21 @@ import CircularProgress from '@mui/material/CircularProgress';
 export default function SignUp() {
   const navigate = useNavigate()
 
-  const [selectedValue, setSelectedValue] = React.useState('a');
-
-  const [country, setCountry] = React.useState('');
-  const [businessType, setBusinessType] = React.useState('');
-
-  const handleChange = (event) => {
-    setCountry(event.target.value);
-  };
-
-  const handleBusinessTypeChange = (event) => {
-    setBusinessType(event.target.value);
-  };
-
-  const handleRadioChange = (event) => {
-    setSelectedValue(event.target.value);
-  };
-
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     
-      const business_name = data.get('business_name')
-      const firstname = data.get('firstname')
-      const lastname = data.get('lastname')
-      const email = data.get('email')
-      const phone = data.get('phone')
-      const is_developer = data.get('is_developer')
-      const password = data.get('password')
-      
+      const oldPassword = data.get('oldPassword')
+      const newPassword = data.get('newPassword')
+      const newPassword2 = data.get('newPassword2')
+     
 
       const payload = JSON.stringify({
-        "firstname": firstname,
-        "lastname": lastname,
-        "email": email,
-        "phone": phone,
-        "country_of_origin": country,
-        "business_name": business_name,
-        "business_type": businessType,
-        "is_developer": is_developer,
-        "password": password,
+        "oldPassword": oldPassword,
+        "newPassword": newPassword,
+        "newPassword2": newPassword2,
       })
+      console.log(payload);
 
       console.log(payload)
         let config = {
@@ -265,33 +239,19 @@ export default function SignUp() {
             alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
-          </Avatar>
+          
           <Typography component="h1" variant="h5">
-            Sign Up
+            Change Password
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-          <FormControl fullWidth>
-          <InputLabel id="country">Country</InputLabel>
-          <Select
-            labelId="country"
-            id="country"
-            value={country}
-            label="Select Country"
-            onChange={handleChange}
-            variant = "standard"
-          >
-            <MenuItem value={"Ghana"}>Ghana</MenuItem>
-            
-            </Select>
-            </FormControl>
+          
+           
             <TextField
               margin="normal"
               required
               fullWidth
-              label="Business Name"
-              name="business_name"
+              label="old password"
+              name="oldPassword"
               autoFocus
               variant = "standard"
             />
@@ -299,76 +259,22 @@ export default function SignUp() {
               margin="normal"
               required
               fullWidth
-              label="First Name"
-              name="firstname"
+              label="new password"
+              name="newPassword"
               autoFocus
               variant = "standard"
             />
+
             <TextField
               margin="normal"
               required
               fullWidth
-              label="Last Name"
-              name="lastname"
-              autoFocus
-              variant = "standard"
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              label="Email"
-              name="email"
-              autoFocus
-              variant = "standard"
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              label="Phone Number"
-              name="phone"
+              label="confirm new password"
+              name="newPassword2"
               autoFocus
               variant = "standard"
             />
             
-            <FormControl fullWidth>
-            <InputLabel id="country-label">Business Type</InputLabel>
-            <Select
-              labelId="country-label"
-              id="country"
-              value={businessType}
-              label=" Business Type"
-              onChange={handleBusinessTypeChange}
-              variant = "standard"
-              >
-            <MenuItem value={"Sole Proprietor"}>Sole Proprietor</MenuItem>
-            <MenuItem value={"Limited Liability Company"}>Limited Liability Company</MenuItem>
-            </Select>
-            </FormControl>
-
-            <FormControl >
-              <FormLabel id="demo-row-radio-buttons-group-label">Are you a developer?</FormLabel>
-              <RadioGroup
-                row
-                aria-labelledby="demo-row-radio-buttons-group-label"
-                name="is_developer"
-              >
-              <FormControlLabel value="yes" control={<Radio />} label="Yes" onChange = {handleRadioChange}/>
-              <FormControlLabel value="no" control={<Radio />} label="No" onChange = {handleRadioChange}/>
-              </RadioGroup>
-            </FormControl>
-
-
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              variant = "standard"
-            />
           
             <Button
               type="submit"
@@ -377,7 +283,7 @@ export default function SignUp() {
               sx={{ mt: 3, mb: 2 }}
               style = {{color: "#fff"}}
             >
-              Sign Up
+              Change Password
             </Button>
             
           </Box>

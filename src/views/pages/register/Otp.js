@@ -51,7 +51,7 @@ export function Otp() {
                 position: toast.POSITION.TOP_RIGHT
               });
             }
-            console.log(response["data"]["message"]);
+            console.log(response["data"]);
             if (response["data"]["message"] === "OTP Matched. Please proceed to registration" && response["data"]["status"] === true){
               const RegisterPayload = {   
                 "firstname": signup.firstname,
