@@ -11,7 +11,7 @@ export function getTransactionData(){
     let data = '';
     let config_transaction = {
         method: 'get',
-        url: process.env.REACT_APP_BASE_API + "/transaction/historyByBusiness/",
+        url: process.env.REACT_APP_BASE_API + "/transaction/historyByBusiness/" + userData?.account + "/",
         headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + userData?.access
@@ -65,7 +65,7 @@ export function refundData(){
     let data = '';
     let config_transaction = {
         method: 'get',
-        url: process.env.REACT_APP_BASE_API + "/transactions/refunds/",
+        url: process.env.REACT_APP_BASE_API + "/transactions/refunds/" + userData?.account + "/",
         headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + userData?.access
@@ -119,7 +119,7 @@ export function apikeyData(){
     let data = '';
     let config_transaction = {
         method: 'get',
-        url: process.env.REACT_APP_BASE_API + "/account/apikeys/",
+        url: process.env.REACT_APP_BASE_API + "/account/apikeys/" + userData?.account + "/",
         headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + userData?.access
@@ -175,7 +175,7 @@ export function payoutData(){
     let data = '';
     let config_transaction = {
         method: 'get',
-        url: process.env.REACT_APP_BASE_API + "/transactions/payouts/",
+        url: process.env.REACT_APP_BASE_API + "/transactions/payouts/" + userData?.account + "/",
         headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + userData?.access
@@ -274,6 +274,59 @@ export function getbanksandtelcos(){
         "list": dataSource
     }
 }
+export function getbanksandtelcosV2(){
+
+    // /939e8b7b-ce5c-421f-b635-a88dc14fcb32/
+    let data = '';
+    let config_transaction = {
+        method: 'get',
+        url: process.env.REACT_APP_BASE_API + "/service/list/v1/",
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + userData?.access
+        },
+        data: data
+    };
+
+    let dataSource = axios(config_transaction).then(response => {
+        // console.log("data ==", response?.data);
+        <a dangerouslySetInnerHTML={{ __html: loader }}></a>
+        if (response.status === 200) {
+            // 
+            if(response?.data){loader = "<a></>";}
+                
+            <a dangerouslySetInnerHTML={{ __html: loader }}></a>;
+            return response.data;
+        }
+        return
+
+    }).catch(function (error) {
+
+        if (error.response) {
+            // // console.log("==");
+            /*
+            * The request was made and the server responded with a
+            * status code that falls out of the range of 2xx
+            */
+
+        } else if (error.request) {
+            /*
+            * The request was made but no response was received, `error.request`
+            * is an instance of XMLHttpRequest in the browser and an instance
+            * of http.ClientRequest in Node.js
+            */
+
+        } else {
+            // Something happened in setting up the request and triggered an Error
+
+        }
+    }
+    );
+    
+    return {
+        "list": dataSource
+    }
+}
 
 export function bulkPayData(){
 
@@ -282,7 +335,7 @@ export function bulkPayData(){
     let data = '';
     let config_transaction = {
         method: 'get',
-        url: process.env.REACT_APP_BASE_API + "/batch/list/",
+        url: process.env.REACT_APP_BASE_API + "/batch/list/" + userData?.account + "/",
         headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + userData?.access
@@ -392,5 +445,116 @@ export function bulkPayItemData(id){
     
     return {
         "bulkPayItems": bulkPayItemDetails()
+    }
+}
+
+
+export function paymentLinkData(){
+    let data = '';
+    let config_transaction = {
+        method: 'get',
+        url: process.env.REACT_APP_BASE_API + "/payment/links/" + userData?.account + "/",
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + userData?.access
+        },
+        data: data
+    };
+
+    function paymentLinkDetails(){
+        <a dangerouslySetInnerHTML={{ __html: loader }}></a>
+        return axios(config_transaction).then(response => {
+            // console.log("data ==", response?.data?.data);
+            if (response.data.data) {
+                // 
+                if(response?.data){loader = "<a></>";}
+                
+                <a dangerouslySetInnerHTML={{ __html: loader }}></a>;
+                return response.data.data;
+            }
+            return
+
+        }).catch(function (error) {
+            loader = "<a></>";
+            <a dangerouslySetInnerHTML={{ __html: loader }}></a>;
+            if (error.response) {
+                // // console.log("==");
+                /*
+                * The request was made and the server responded with a
+                * status code that falls out of the range of 2xx
+                */
+            } else if (error.request) {
+                /*
+                * The request was made but no response was received, `error.request`
+                * is an instance of XMLHttpRequest in the browser and an instance
+                * of http.ClientRequest in Node.js
+                */
+
+            } else {
+                // Something happened in setting up the request and triggered an Error
+
+            }
+        }
+        );
+
+    }
+    
+    return {
+        "paymentLink": paymentLinkDetails()
+    }
+}
+
+export function userGetData(){
+    let data = '';
+    let config_transaction = {
+        method: 'get',
+        url: process.env.REACT_APP_BASE_API + "/team/" + userData?.account + "/",
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + userData?.access
+        },
+        data: data
+    };
+
+    function userGetDataDetails(){
+        <a dangerouslySetInnerHTML={{ __html: loader }}></a>
+        return axios(config_transaction).then(response => {
+            // console.log("data ==", response?.data?.members);
+            // if (response.data.data) {
+                // 
+                if(response?.data){loader = "<a></>";}
+                
+                <a dangerouslySetInnerHTML={{ __html: loader }}></a>;
+                return response?.data?.members;
+            // }
+            // return
+
+        }).catch(function (error) {
+            loader = "<a></>";
+            <a dangerouslySetInnerHTML={{ __html: loader }}></a>;
+            if (error.response) {
+                // // console.log("==");
+                /*
+                * The request was made and the server responded with a
+                * status code that falls out of the range of 2xx
+                */
+            } else if (error.request) {
+                /*
+                * The request was made but no response was received, `error.request`
+                * is an instance of XMLHttpRequest in the browser and an instance
+                * of http.ClientRequest in Node.js
+                */
+
+            } else {
+                // Something happened in setting up the request and triggered an Error
+
+            }
+        }
+        );
+
+    }
+    
+    return {
+        "userGetData": userGetDataDetails()
     }
 }

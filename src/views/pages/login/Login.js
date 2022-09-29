@@ -24,7 +24,43 @@ import Box from '@mui/material/Box';
 // import swal from 'sweetalert2'
 
 const swal = require("sweetalert2");
-
+let permList = [
+  "can_view_business_performance_metrics",
+  "can_view_transactions",
+  "can_export_transactions",
+  "can_manage_refunds_&_disputes",
+  "can_view_customers",
+  "can_create_new_customers",
+  "can_manage_&_update_customers",
+  "can_view_customer_insights",
+  "can_view_payouts",
+  "can_export_payouts",
+  "can_view_transfers",
+  "can_export_transfers",
+  "can_create_and_manage_transfers",
+  "can_view_balance_history",
+  "can_export_balance_history",
+  "can_view_payment_pages",
+  "can_create_and_manage_payment_pages",
+  "can_view_products",
+  "can_create_and_manage_products",
+  "can_view_invoices",
+  "can_create_and_manage_invoices",
+  "can_view_subaccounts_&_splits",
+  "can_create_and_manage_subaccounts_&_splits",
+  "can_view_plans_&_subscriptions",
+  "can_create_and_manage_plans_&_subscriptions",
+  "can_view_business_settings_&_preferences",
+  "can_edit_business_settings_&_preferences",
+  "can_view_api_keys_&_webhooks",
+  "can_manage_api_keys_&_webhooks",
+  "can_view_users",
+  "can_manage_and_invite_users",
+  "can_view_bank_accounts_settings",
+  "can_manage_bank_accounts_settings",
+  "can_create_and_manage_charges",
+  "can_pay_with_transfer_for_failed_refund"
+];
 const Login = () => {
 
   const [usernameVar, setUsernameVar] = useState("")
@@ -67,7 +103,7 @@ const Login = () => {
         setLogin("Login")
         console.log(response.status);
         if (response?.data?.status) { 
-          console.log(response?.data)
+          // console.log(response?.data)
           let counter = 700000;
 
           const userData = {
@@ -87,12 +123,12 @@ const Login = () => {
             photo: response?.data?.photo,
             photo150: response?.data?.photo150x150,
             photo50: response?.data?.photo50x50,
-            wallet: response?.data?.wallet,
+            wallet: response?.data?.team_list,
             role: response?.data?.role || "none",
             timeLogout: new Date(new Date().getTime() + counter),
             counter: counter,
             business_email: response?.data?.kyc?.business_email, 
-            business_name: response?.data?.kyc?.business_name, 
+            business_name: response?.data?.business_name || response?.data?.kyc?.business_name || ( (response?.data?.firstname + " " + response?.data?.lastname)?.toString() ), 
             gps: response?.data?.kyc?.gps,
             business_TIN: response?.data?.kyc?.business_TIN,
             postal_address: response?.data?.kyc?.postal_address,
@@ -104,12 +140,14 @@ const Login = () => {
             email: response?.data?.email,
             business_registration_docs: response?.data?.business_registration_docs,
             business_address: response?.data?.kyc?.business_address,
+            permission_list: response?.data?.default_permissions_list,
+            team_list: response?.data?.team_list, 
 
           };
 
           localStorage.setItem("userDataStore", JSON.stringify(userData));
 
-          window.location.href = "/dashboard";
+          window.location.href = "/dashboard"; 
 
         }
         else {
@@ -266,6 +304,15 @@ const Login = () => {
                 </CCardBody>
               </CCard> */}
             </CCardGroup>
+            <Box >
+              <p className='mt-10 text-center'> 
+                <br />
+                By clicking {'"'}{login}{'"'}, I agree to the Service Agreement, <a href='https://wingipay.com/terms/'> Terms </a> of service and <a href='https://wingipay.com/privacy/'>  Privacy </a> Policy. 
+                <br />
+                Don{"'"}t have an account? <a href='/signup'> Sign Up </a>
+              </p>
+
+            </Box>
           </CCol>
         </CRow>
 

@@ -94,6 +94,10 @@ const theme = createTheme();
 
 export default function Checkout() {
 
+    //  
+    const [additionalField, setAdditionalField] = useState({})
+    const [additionalFieldError, setAdditionalFieldError] = useState({})
+
     // for checkout page 
     const [isCheckout, setIsCheckout] = useState(false)
     // for custom checkout page
@@ -135,6 +139,9 @@ export default function Checkout() {
     const [feeTypeError, setFeeTypeError] = useState(false)
     const [admissionIdError, setAdmissionIdError] = useState(false)
     const [emailError, setEmailError] = useState(false)
+
+    const [defaulName, setDefaulName] = useState("")
+    const [wingiLogo, setDefaultWingiLogo] = useState("")
     
     // data
     const [payeeData, setPayeeData] = useState({})
@@ -146,11 +153,12 @@ export default function Checkout() {
     const [modal2, setModal2] = useState(false)
 
     useEffect(()=>{
+        // console.log("additionalField ", additionalField )
         // condition for only normal checkout 
         if(window.location.pathname.split("/")[1] === "checkout"){
             // 
             let checkoutId = window.location.pathname.split("/")[2]
-            console.log("window", checkoutId)
+            // console.log("window", checkoutId)
             setIsCheckout(true)
             if(checkoutId){
                 setMerchantId(checkoutId);
@@ -165,7 +173,7 @@ export default function Checkout() {
                 };
             
                 axios(config_ch).then(response => {
-                    console.log("data checkout 1 ==", response?.data);
+                    // console.log("data checkout 1 ==", response?.data);
                     if (response?.data?.status === true) {
                         // 
                         // // console.log("g>>>") sessionData?.merchant_id
@@ -388,24 +396,213 @@ export default function Checkout() {
 
             }
         }
-        console.log("fff", accountType, methodOfPayment)
-        if(accountType === 1){
+        if(window.location.pathname.split("/")[1] === "merchant"){
             // 
-            setAccountName(methodOfPayment[0].name)
+            let checkoutId = window.location.pathname.split("/")[3]
+            // console.log("window", checkoutId)
+            // setIsCheckout(true)
+            setMerchantId(checkoutId);
+            let data = '';
+            let config_ch = {
+                method: 'get',
+                url: process.env.REACT_APP_BASE_API + "/checkout/" + checkoutId + "/",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                data: data
+            };
+        
+            axios(config_ch).then(response => {
+                // console.log("data checkout 1 ==", response?.data);
+                if (response?.data?.status === true) {
+                    // 
+                    // console.log("g>>>") sessionData?.merchant_id)
+                    sessionStorage.setItem("sessionData", JSON.stringify(response?.data))
+                    
+                    // setSessionData(response?.data)
+                    // setAccountNumber(response?.data?.data?.phone)
+                    // setPhoneNumber(response?.data?.data?.phone)
+                    // setAmount(response?.data?.data?.amount)
+                    // setFee(response?.data?.data?.fee || "0.00")
+                    setPrefix(response?.data?.prefix)
+                    setDefaulName(response?.data?.merchant_name)
+                    
+                    // setSourceMetadata(response?.data?.data)
+
+                    // window.history.pushState("", "", '/checkout')
+
+                }
+                else{
+                    Swal.fire({
+                        title: 'Oops',
+                        html: "<div class='pb-0 pt-0'> Invalid Session</div>",
+                        icon: 'error',
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        allowOutsideClick: false,
+                    }).then((result) => {
+                        // 
+                    })
+                }
+                
+
+            }).catch(function (error) {
+                // 
+                if(error){
+                    Swal.fire({
+                        title: 'Application Error',
+                        title: 'Oops',
+                        html: "<div class='pb-0 pt-0'> Try again later </div>",
+                        icon: 'warning',
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        allowOutsideClick: false,
+                        // cancelButtonColor: '#d33',
+                        // timer: 4000
+                    }).then((result) => {
+                        // 
+                    })
+                }
+                if (error.response) {
+                    // // console.log("==");
+                    /*
+                    * The request was made and the server responded with a
+                    * status code that falls out of the range of 2xx
+                    */
+
+                } else if (error.request) {
+                    /*
+                    * The request was made but no response was received, `error.request`
+                    * is an instance of XMLHttpRequest in the browser and an instance
+                    * of http.ClientRequest in Node.js
+                    */
+
+                } else {
+                    // Something happened in setting up the request and triggered an Error
+
+                }
+            });
+            
         }
-        else if(accountType === 5){
+        else if(window.location.pathname.split("/")[1] === "link"){
+            // for custom checkout
+            // setIsCheckout(true)
+            let checkoutId = window.location.pathname.split("/")[2]
+            console.log("window", checkoutId)
+            setMerchantId(checkoutId);
+            let data = '';
+            let config_ch = {
+                method: 'get',                    
+                url: process.env.REACT_APP_BASE_API + "/verify/paymentlink/" + checkoutId + "/",
+                // url: process.env.REACT_APP_BASE_API + "/checkout/" + checkoutId + "/",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                data: data
+            };
+            axios(config_ch).then(response => {
+                // console.log("data checkout 1 ==", response?.data);
+                if (response?.data?.status === true) {
+                    // 
+                    // console.log("g>>>") sessionData?.merchant_id)
+                    sessionStorage.setItem("sessionData", JSON.stringify(response?.data))
+                    
+                    setSessionData(response?.data)
+                    // setAccountNumber(response?.data?.data?.phone)
+                    // setPhoneNumber(response?.data?.data?.phone)
+                    if(response?.data?.data?.is_fixed){
+                        setAmount(response?.data?.data?.fixed_amount)
+                        setAmountError(false)
+                    }
+                    // setFee(response?.data?.data?.fee || "0.00")
+                    setPrefix(response?.data?.prefix)
+                    setDefaulName(response?.data?.business_name)
+                    
+                    // setSourceMetadata(response?.data?.data)
+
+                    // window.history.pushState("", "", '/checkout')
+
+                }
+                else{
+                    Swal.fire({
+                        title: 'Oops',
+                        html: "<div class='pb-0 pt-0'> Invalid Session</div>",
+                        icon: 'error',
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        allowOutsideClick: false,
+                    }).then((result) => {
+                        // 
+                    })
+                }
+                
+
+            }).catch(function (error) {
+                // 
+                if(error){
+                    Swal.fire({
+                        title: 'Application Error',
+                        title: 'Oops',
+                        html: "<div class='pb-0 pt-0'> Try again later </div>",
+                        icon: 'warning',
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        allowOutsideClick: false,
+                        // cancelButtonColor: '#d33',
+                        // timer: 4000
+                    }).then((result) => {
+                        // 
+                    })
+                }
+                if (error.response) {
+                    // // console.log("==");
+                    /*
+                    * The request was made and the server responded with a
+                    * status code that falls out of the range of 2xx
+                    */
+
+                } else if (error.request) {
+                    /*
+                    * The request was made but no response was received, `error.request`
+                    * is an instance of XMLHttpRequest in the browser and an instance
+                    * of http.ClientRequest in Node.js
+                    */
+
+                } else {
+                    // Something happened in setting up the request and triggered an Error
+
+                }
+            });
+            
+        }
+        else{
             // 
-            setAccountName(methodOfPayment[1].name)
+            setDefaulName("WingiPay Transaction")
+            
         }
-        else if(accountType === 6){
+        setTimeout(()=>{
             // 
-            setAccountName(methodOfPayment[2].name)
-        }
-        else if(accountType === 7){
-            // 
-            // console.log(">>> ", methodOfPayment)
-            setAccountName(methodOfPayment[3].name)
-        }
+            setDefaultWingiLogo("https://wingipay.com/static/wingipay/logo/wingipay-2.4086593aa042.png")
+        }, 3000)
+        // console.log("fff", accountType, methodOfPayment?.filter((post) => {return post?.id === accountType } )[0]?.name )
+        setAccountName( methodOfPayment?.filter((post) => {return post.id === accountType } )[0]?.name )
+        // if(accountType === 1){
+        //     // 
+        //     setAccountName(methodOfPayment[0].name)
+        // }
+        // else if(accountType === 5){
+        //     // 
+        //     setAccountName(methodOfPayment[1].name)
+        // }
+        // else if(accountType === 6){
+        //     // 
+        //     setAccountName(methodOfPayment[2].name)
+        // }
+        // else if(accountType === 7){
+        //     // 
+        //     // console.log(">>> ", methodOfPayment)
+        //     setAccountName(methodOfPayment[3].name)
+        // }
     }, [accountType])
     const handleDropdownChange = (event) => {
         // setbusinessType(event.target.value);
@@ -415,22 +612,49 @@ export default function Checkout() {
         // // console.log("window.location pathname ", window.location.pathname.split("/")[1])
         let expPhone = /(020|023|024|025|026|027|028|050|054|055|059|233)[\s.-]?(\d{7}|\d{8})$/;
         // expPhone.test(phoneNumber.replace(/\s+/g, ''))  
-        // // console.log("amountError ", formType, expPhone.test(phoneNumber.replace(/\s+/g, '')), (Number(amount) ? true : false), admissionId.length)
+        // console.log("amountError ", formType, expPhone.test(phoneNumber.replace(/\s+/g, '')), (Number(amount) ? true : false), admissionId.length)
+            // console.log("inner >> ", sessionData?.data?.additional_fields?.address.length, Object.keys(additionalField).length)
+            // sessionData?.data?.additional_fields?.address
+            if( Object.keys(additionalField).length > 0 ){
+                let i=0;
+                for(i; i<additionalField.length; i++){
+                    // 
+                    // console.log("inner ", additionalField[i])
+                    if(additionalField[i]){
+                        // setAdditionalFieldError[i](true)
+                    }
+                }
+
+                // console.log("inner >", additionalFieldError )
+            }
         if (formType === 1) {
             // for initial form fields 
-            if (!fullNameError && fullName.length < 4) {
+            let obj = Object.fromEntries(Object.entries(additionalField).filter(([_, v]) => v != ''));
+            // console.log("obj ", obj)
+            if ( fullName.length < 4) {
                 setFullNameError(true)
             }
-            else if (!phoneNumberError && phoneNumber.length < 10 && !(expPhone.test(phoneNumber))) {
+            else if ( !(expPhone.test(phoneNumber)) ) {
                 setPhoneNumberError(true)
             }
             else if (!amountError && (amount.length < 1) || !(Number(amount) ? true : false)) {
                 // // console.log("amount ", amount)
                 setAmountError(true)
             }
+            else if(sessionData?.data?.additional_fields?.address.length > 0  && !( sessionData?.data?.additional_fields?.address.length === Object.keys(obj).length ) ){
+                let i=0;
+                for(i; i<sessionData?.data?.additional_fields?.address.length; i++){
+                    // 
+                    // console.log("inner ", additionalField)
+                    if( !additionalField[i] || ""){
+                        setAdditionalFieldError({...additionalFieldError , ...{[i]: true}})
+                    }
+                }
+            }
             else{
                 // for payment method which is selected from modal
-                setModal1(true)
+                // setModal1(true)
+                setPagePaymentMethod(true)
                 setSourceMetadata(
                     {
                     "full_name": fullName,
@@ -765,7 +989,7 @@ export default function Checkout() {
                 "currency": "GHS",
                 "note": "Merchant pay of GHS" + amount.toString() + " from " + fullName,
                 "prefix": prefix,
-                "source_metadata":  {...sourceMetadata, ...sessionData?.data, ...payeeData, ...{"feeType": feeType}, ...{"fee": fee}, ...{"email": email}, ...{"accountNumber": accountNumber}} 
+                "source_metadata":  {...sourceMetadata, ...sessionData?.data, ...payeeData, ...{"feeType": feeType}, ...{"fee": fee}, ...{"email": email}, ...{"accountNumber": accountNumber}, ...{"additional_field_input_data": additionalField}} 
             }
         }
         
@@ -773,7 +997,7 @@ export default function Checkout() {
             method: 'post',
             url: process.env.REACT_APP_BASE_API + "/transactions/transfers/",
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json', 
                 // 'Authorization': 'Bearer ' + userData?.access
             },
             data: data
@@ -1003,7 +1227,6 @@ export default function Checkout() {
         }
     }
     // fee types orga
-
     function getFeeType(){
         let data = {}
 
@@ -1067,7 +1290,7 @@ export default function Checkout() {
                     ccount = 0;
                     sessionStorage.setItem("trackTransaction", true)
                     
-                    let textStr = "<p>Payment of GHS" + amount.toString() + " to " + (sessionData?.merchant_name?.toString() || sessionData?.merchant_id || '') + " </p> <p>Reference : " + " " + response?.data?.reference_id + "</p>";
+                    let textStr = "<p>Payment of GHS" + amount.toString() + " to " + (sessionData?.merchant_name?.toString() || sessionData?.merchant_id || defaulName) + " </p> <p>Reference : " + " " + response?.data?.reference_id + "</p>";
 
                     Swal.fire({
                     title: 'Successful',
@@ -1187,11 +1410,14 @@ export default function Checkout() {
             
         }
     }
+    function createField(e){
+        
+    }
     return (
         <ThemeProvider theme={theme}>
             <Container component="main" maxWidth="xs"
                 style={{
-                    paddingTop: 80,
+                    paddingTop: 30,
                 }}
                 className="checkout-0"
             >
@@ -1202,11 +1428,20 @@ export default function Checkout() {
                         alignItems: 'center',
                     }}
                 >
-                    <img src="https://wingipay.com/static/wingipay/logo/wingipay-2.4086593aa042.png" className='mb-3' />
 
-                    <Typography component="h1" variant="h5" className='mb-5 checkout-0'>
-                        { sessionData?.merchant_id || sessionData?.merchant_name || "WingiPay Transaction" }
+                    <img src={  sessionData['photo50x50'] 
+                    ? ("https://test.wingipay.com" + (sessionData['photo50x50'])) : wingiLogo} className='mb-2' />
+
+                    <Typography component="h6" variant="h6" className='mb-0 checkout-0'>
+                        { sessionData?.data?.page_name || "" }
                     </Typography>
+                    <Typography className='mb-2 checkout-description-0'>
+                        { "BY " + (sessionData?.merchant_id || sessionData?.merchant_name || defaulName)?.toUpperCase() }
+                    </Typography>
+                    <Typography className='mb-3 checkout-description-1'>
+                        { sessionData?.data?.description }
+                    </Typography>
+                    
                 </Box>
 
                 <CssBaseline />
@@ -1496,9 +1731,8 @@ export default function Checkout() {
                                 {/* <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
                                     <LockOutlinedIcon />
                                 </Avatar> */}
-                                {/* {fullName}{" "}{fullNameError.toString()} */}
 
-                                {/* basic user form fields */}
+                                {/* basic user form fields/ payment link forms */}
                                 <Box noValidate sx={{ m: 2 }} id="form-1">
 
                                     <TextField
@@ -1541,18 +1775,18 @@ export default function Checkout() {
                                         fullWidth
                                         required
                                         InputProps={{
-                                        endAdornment: (
-                                            <InputAdornment position="end" >
-                                                <CTooltip
-                                                    content="This field is required, provide a valid phone number in the form eg. 0xx xxxx xxx"
-                                                    placement="top"
-                                                >
-                                                <CIcon icon={cilInfo} className="me-2" />
-                                                </CTooltip>
-                                            </InputAdornment>
-                                        ),
+                                            endAdornment: (
+                                                <InputAdornment position="end" >
+                                                    <CTooltip
+                                                        content="This field is required, provide a valid phone number in the form eg. 0xx xxxx xxx"
+                                                        placement="top"
+                                                    >
+                                                    <CIcon icon={cilInfo} className="me-2" />
+                                                    </CTooltip>
+                                                </InputAdornment>
+                                            ),
                                         }}
-                                    />
+                                    />  
 
                                     <TextField
                                         error={amountError}
@@ -1561,6 +1795,40 @@ export default function Checkout() {
                                         id="amount"
                                         name="amount"
                                         label="Amount"
+                                        variant="standard"
+                                        margin="normal"
+                                        type="text"
+                                        fullWidth
+                                        required
+                                        disabled={sessionData?.data?.is_fixed ? true : false}
+                                        InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position="end" >
+                                                <CTooltip
+                                                    content={ !sessionData?.data?.is_fixed ? "This field is required." : "" }
+                                                    placement="top"
+                                                >
+                                                <CIcon icon={cilInfo} className="me-2" />
+                                                </CTooltip>
+                                            </InputAdornment>
+                                        ),
+                                        }}
+                                    />
+                                    {
+                                      sessionData?.data?.additional_fields?.address?.length > 0 ? ( sessionData?.data?.additional_fields?.address )?.map((post, id) => 
+                                        //
+
+                                    <TextField
+                                        key={id}
+                                        error={additionalFieldError[id]}
+                                        // value={amount}                  
+                                        onChange={(e) => { (setAdditionalField({
+                                            ...additionalField,
+                                            [id]: e.target.value
+                                        } )); (setAdditionalFieldError( { ...additionalFieldError, ...{[id] : false} } )) }}
+                                        id={post.label.toString()}
+                                        name={post.label.toString()}
+                                        label={post.label.toString()}
                                         variant="standard"
                                         margin="normal"
                                         type="text"
@@ -1579,6 +1847,8 @@ export default function Checkout() {
                                         ),
                                         }}
                                     />
+                                        ) : ""
+                                    }
 
                                     <Row>
                                         <Col xs="5" sm="5" lg="5"></Col>
