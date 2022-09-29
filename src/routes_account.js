@@ -108,7 +108,7 @@ const routes = [
   // { path: '/widgets', name: 'Widgets', element: Widgets },
   
   // below main pages views 
-  { path: '/dashboard', exact: true, name: 'Dashboard' },
+  { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
   { path: '/payment/refunds', name: 'Refund', element: Refund },
   { path: '/payment/transaction', name: 'Transaction', element: Transaction },
