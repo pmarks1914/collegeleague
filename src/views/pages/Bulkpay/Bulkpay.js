@@ -16,6 +16,8 @@ import BulkpayDataTables from './BulkpayDataTables'
 // let transaction = []
 // transactionData?.transaction?.then(value => { (transaction = value) });
 
+let currentUser = JSON.parse(localStorage.getItem("userDataStore")); 
+
 const Bulkpay = () => {
     const [loader, setLoader] = useState('<div class="spinner-border dashboard-loader" style="color: #e0922f;"></div>')
     const [tableData, setTableData] = useState([]);
@@ -36,7 +38,11 @@ const Bulkpay = () => {
             {/* open modal for filter date range */}
             {/* <CButton onClick={() => setModal1(!modal1)} icon={cilArrowRight} className="float-end" >Filter</CButton> */}
             <br /><br />
-            <BulkpayDataTables apikeyDetails={apikeyDetails} />
+            {
+                currentUser?.permission_list?.includes("can_view_bulk_pay") ?
+                <BulkpayDataTables apikeyDetails={apikeyDetails} />
+                : ""
+            }
 
         </div>
     )

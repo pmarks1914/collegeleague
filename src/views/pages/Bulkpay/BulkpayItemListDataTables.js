@@ -1166,7 +1166,7 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
 
     Swal.fire({
       icon: 'info',
-      title: 'Proceed to make payment for!',
+      title: 'Proceed to make payment for:',
       html: txtString,
       // text: postData?.account_holder_name || postData?.name,
       allowOutsideClick: false,
@@ -1557,7 +1557,7 @@ const BulkpayItemListDataTables = (apikeyDetails) => {
                 <td>{ post?.note }</td>
                 <td>{ post?.email }</td>
                 <td>{ post?.status_code || "Created" }</td>
-                <td>{moment(post?.created).format('LLLL')}</td>
+                <td>{moment(post?.updated_at).format('LLLL')}</td>
                 <td>
                   {
                     currentUser?.permission_list?.includes("process_bulk_transactions") ? 

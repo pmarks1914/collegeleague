@@ -128,7 +128,35 @@ const JoinTeam = () => {
 
     // console.log("fff", process.env.REACT_APP_BASE_API, passwordVar, usernameVar)
     let expPhone = /(020|023|024|025|026|027|028|050|054|055|059|233)[\s.-]?(\d{7}|\d{8})$/;
-    // expPhone.test(phone.replace(/\s+/g, ''))  
+    // expPhone.test(phone.replace(/\s+/g, ''))
+    let mainCharacter = "()[]{}|\`~!@#$%^&*_-+=;:,<>./?'" + '"';
+    let alphabet ="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    let arrayAlphabet = Array.from( alphabet)
+    let arrayMainCharacter = Array.from( mainCharacter)
+    // let isPassewordValid1 = false;
+    // let isPassewordValid2 = false;
+    let [isPassewordValid1, isPassewordValid2, isAlphabetPass1, isAlphabetPass2] = [false, false, false, false]
+
+    for(let i=0; i<arrayMainCharacter.length; i++){
+      if( (Array.from(password1Var)).includes(arrayMainCharacter[i]) ){
+        isPassewordValid1 = true
+      }
+      if( (Array.from(passwordVar)).includes(arrayMainCharacter[i]) ){
+        isPassewordValid2 = true
+      }
+    }
+
+    for(let i=0; i<arrayAlphabet.length; i++){
+      if( (Array.from(password1Var)).includes(arrayAlphabet[i]) ){
+        isAlphabetPass1 = true
+      }
+      if( (Array.from(passwordVar)).includes(arrayAlphabet[i]) ){
+        isAlphabetPass2 = true
+      }
+    }
+    // console.log(isPassewordValid1, isPassewordValid2)
+    // console.log(multipleExist)
+    // console.log( (Array.from(mainCharacter)).includes([",", "."]), Array.from(password1Var), [".", ","] ) 
    
     if (firstName === "") {
       setError({...error, ...{"firstNameError": true}})
@@ -139,12 +167,15 @@ const JoinTeam = () => {
     else if ( !expPhone.test(phone.replace(/\s+/g, '')) ) {
       setError({...error, ...{"phoneError": true}})
     }  
-    else if (password1Var === "" || password1Var.length < 8 || Number(password1Var) ) {
+    else if (password1Var === "" || password1Var.length < 8 || Number(password1Var) || !isPassewordValid1 || !isAlphabetPass1 ) {
       setError({...error, ...{"password1Error": true}})
     }
-    else if (passwordVar === "" || passwordVar.length < 8 || Number(password1Var)) {
-      setError({...error, ...{"passwordError": true}})
+    else if (passwordVar === "" || passwordVar.length < 8 || Number(password1Var) || !isPassewordValid2 || !isAlphabetPass2 ) {
+      setError({...error, ...{"passwordError": true}} )
     } 
+    else if ( password1Var !== passwordVar ){
+      setError({...error, ...{"password1Error": true, "passwordError": true}} )
+    }
     else if( password1Var === passwordVar) {
       setLogin("")
       setLoader('<div class="spinner-border "style="color: #e0922f;"></div>`')

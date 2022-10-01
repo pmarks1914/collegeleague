@@ -59,6 +59,22 @@ export default function SignUp() {
       const is_developer = data.get('is_developer')
       const password = data.get('password')
       
+      let mainCharacter = "()[]{}|\`~!@#$%^&*_-+=;:,<>./?'" + '"';
+      let alphabet ="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      let arrayAlphabet = Array.from( alphabet)
+      let arrayMainCharacter = Array.from( mainCharacter)
+      let [isPassewordValid1, isAlphabetPass1] = [false, false]
+  
+      for(let i=0; i<arrayMainCharacter.length; i++){
+        if( (Array.from(password)).includes(arrayMainCharacter[i]) ){
+          isPassewordValid1 = true
+        }
+      }
+      for(let i=0; i<arrayAlphabet.length; i++){
+        if( (Array.from(password)).includes(arrayAlphabet[i]) ){
+          isAlphabetPass1 = true
+        }
+      }
       
       const payload = JSON.stringify({
         "firstname": firstname,
@@ -83,7 +99,7 @@ export default function SignUp() {
           data: payload
         };
         axios(config).then(function (response){
-          // console.log(response["data"]["message"])
+          // console.log(response["data"]["message"], isPassewordValid1, isAlphabetPass1)
           if ( Number(firstname) || firstname.length < 2 ){
             toast.error('First name', {
                 position: toast.POSITION.TOP_RIGHT
@@ -105,13 +121,13 @@ export default function SignUp() {
               position: toast.POSITION.TOP_RIGHT
           });
           }
-          else if (password === "" || password.length < 8 || Number(password) ) {
-            toast.error("Password strength! 8 Alphanumeric with a special characters, eg. Mymi%4536 ", {
+          else if (password === "" || password.length < 8 || Number(password) || !isPassewordValid1 || !isAlphabetPass1 ) {
+            toast.error("Password strength! 8 Alphanumeric with a special character, eg. Mymi%4536 ", {
               position: toast.POSITION.TOP_RIGHT
           });
           }
           
-          if ( response["data"]["message"] === "Otp has been sent successfully." && response["data"]["status"] === true && expPhone.test(phone.replace(/\s+/g, '') ) && ( !Number(lastname) && lastname.length > 1 ) && ( !Number(firstname) && firstname.length > 1 ) && (password.length > 7 && !Number(password) ) ){
+          if ( response["data"]["message"] === "Otp has been sent successfully." && response["data"]["status"] === true && expPhone.test(phone.replace(/\s+/g, '') ) && ( !Number(lastname) && lastname.length > 1 ) && ( !Number(firstname) && firstname.length > 1 ) && (password.length > 7 && !Number(password)) && isPassewordValid1 && isAlphabetPass1){
             localStorage.setItem("signupInfo", payload)
             navigate('/otp')
           }

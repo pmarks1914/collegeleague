@@ -1140,13 +1140,14 @@ const PaymentLinkDataTables = (apikeyDetails) => {
                     currentUser?.permission_list?.includes("can_create_and_manage_payment_pages") ?
                     <p>
                       <CBadge className='bg-text-wp' onClick={() => { setModal2(true); setEditFormData(post) }} > Edit </CBadge> 
-                      <CBadge color='black' style={{marginRight: "5px"}} onClick={(e) => { setEditFormData(post); deletePaymentLink(e) }} >   </CBadge> 
+                      <CBadge color='black' style={{marginRight: "5px"}} onClick={(e) => { setEditFormData(post); deletePaymentLink(e) }} > Delete </CBadge> 
                     </p>
                     : "N/A"
                   }
                 </td>
               </tr>
-            )}            
+            )}
+            
         </tbody>
       </table>
 
