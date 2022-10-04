@@ -16,19 +16,19 @@ export function getSessionTimeout(){
             let distance = new Date(currentUser_new?.timeLogout).getTime() - now;
             let seconds = Math.floor((distance % (1000 * 60)) / 1000);
             // console.log( " <> ", currentUser_new?.counter);
-            // console.log(distance, " <> ", seconds);
+            // console.log(distance " <> ", seconds);
 
             if(distance < 5742 ){
-            Swal.fire({
-                icon: 'error',
-                title: 'Signing you out in ' + (seconds < 1 ? 0 : seconds) + 's.',
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-                closeOnConfirm: false
-            })
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Signing you out in ' + (seconds < 1 ? 0 : seconds) + 's.',
+                  toast: true,
+                  position: 'top-end',
+                  showConfirmButton: false,
+                  timer: 3000,
+                  timerProgressBar: true,
+                  closeOnConfirm: false
+              })
             }
             if (distance < 1) {
             clearInterval(x);
