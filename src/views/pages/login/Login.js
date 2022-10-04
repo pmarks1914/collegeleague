@@ -147,7 +147,7 @@ const Login = () => {
 
           localStorage.setItem("userDataStore", JSON.stringify(userData));
           // Cookie
-          document.cookie = "cookie" + "=" + JSON.stringify({ 
+          document.cookie = "cookieData" + "=" + JSON.stringify({ 
             account: "", wallet: "",
             status: response.data.status,
             access: response?.data?.access,
