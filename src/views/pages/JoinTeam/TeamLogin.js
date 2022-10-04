@@ -101,8 +101,8 @@ const Login = () => {
         setLogin("Login")
         // console.log(response.status);
         if (response?.data?.status) { 
-          // console.log(response?.data)
-          let counter = 700000;
+          // console.log(response?.data) 600000 == 10m
+          let counter = 600000;
           
           const userData = {
             status: response.data.status,

@@ -104,7 +104,7 @@ const Login = () => {
         console.log(response.status);
         if (response?.data?.status) { 
           // console.log(response?.data)
-          let counter = 700000;
+          let counter = 600000; // 600000 = 10m
 
           const userData = {
             status: response.data.status,
@@ -146,7 +146,14 @@ const Login = () => {
           };
 
           localStorage.setItem("userDataStore", JSON.stringify(userData));
-          document.cookie = "dataInCookies" + "=" + JSON.stringify({...userData, ...{"account": "", "wallet": ""}})
+          // Cookie
+          document.cookie = "cookie" + "=" + JSON.stringify({ 
+            account: "", wallet: "",
+            status: response.data.status,
+            access: response?.data?.access,
+            refresh: response?.data?.refresh,            
+            permission_list: response?.data?.default_permissions_list
+        })
 
           window.location.href = "/dashboard"; 
 
