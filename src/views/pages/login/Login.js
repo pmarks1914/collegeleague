@@ -147,13 +147,14 @@ const Login = () => {
 
           localStorage.setItem("userDataStore", JSON.stringify(userData));
           // Cookie
-          document.cookie = "cookieData" + "=" + JSON.stringify({ 
-            account: "", wallet: "",
-            status: response.data.status,
-            access: response?.data?.access,
-            refresh: response?.data?.refresh,            
-            permission_list: response?.data?.default_permissions_list
-        })
+          // document.cookie = "cookieData" + "=" + JSON.stringify({ 
+          //   account: "", 
+            // wallet: "",
+            // status: "",
+            // access: "",
+            // refresh: "",            
+            // permission_list: ""
+          // })
 
           window.location.href = "/dashboard"; 
 

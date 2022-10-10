@@ -61,6 +61,7 @@ const Bulkpay = React.lazy(() => import('./views/pages/Bulkpay/Bulkpay'))
 const BulkpayList = React.lazy(() => import('./views/pages/Bulkpay/BulkpayList'))
 const PaymentLink = React.lazy(() => import('./views/pages/PaymentLink/PaymentLink'))
 const UserManagement = React.lazy(() => import('./views/pages/UserManagement/UserManagement'))
+const Ticket = React.lazy(() => import('./views/pages/Ticket/Ticket'))
 // const Checkout = React.lazy(() => import('./views/pages/Checkout/Checkout'))
 
 const routes = [
@@ -120,6 +121,7 @@ const routes = [
   { path: '/bulk-pay/item/:id', name: 'Item List', element: BulkpayList },
   { path: '/payment-link', name: 'Payment Link', element: PaymentLink },
   { path: '/settings/user-management', name: 'User Management', element: UserManagement },
+  { path: '/settings/support', name: 'Support', element: Ticket },
 
   // { path: '/checkout/:id', name: '', element: Checkout }, 
 

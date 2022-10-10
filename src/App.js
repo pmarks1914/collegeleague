@@ -33,6 +33,7 @@ const Checkout = React.lazy(() => import('./views/pages/Checkout/Checkout'))
 const Compliance = React.lazy(() => import('./views/pages/Compliance/Compliance'))
 const Otp = React.lazy(() => import('./views/pages/register/Otp'))
 const ChangePassword = React.lazy(() => import('./views/pages/AccountSetup/ChangePassword'))
+const ChatBot = React.lazy(() => import('./ChatBot'))
 
 class App extends Component {
   render() {
@@ -67,6 +68,7 @@ class App extends Component {
 
             }
             {/* <Route exact path="/compliance" name="Compliance" element={<Compliance />} /> */}
+            <Route exact path='/chat' name="" element={<ChatBot />} />
 
           </Routes>
         </Suspense>

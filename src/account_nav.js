@@ -28,12 +28,16 @@ import {
   cilMoodBad,
   cilDataTransferDown,
   cilUserPlus,
+  cilHappy,
+  cilBasket,
+  cilBookmark,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
 
 
-if(["/", "/theme", "/dashboard", "/payment/transaction", "/payment/refunds", "/payment/payouts", "/compliance", "/settings/api-keys", "/bulk-pay", `/bulk-pay/item/${window.location.pathname.split("/")[3]}`, `/bulk-pay/item/${window.location.pathname.split("/")[3]}/`, '/payment-link', '/settings', '/settings/user-management'].includes(window.location.pathname)){
+// catch unavailable urls when user logs into the app
+if(["/", "/theme", "/dashboard", "/payment/transaction", "/payment/refunds", "/payment/payouts", "/compliance", "/settings/api-keys", "/bulk-pay", `/bulk-pay/item/${window.location.pathname.split("/")[3]}`, `/bulk-pay/item/${window.location.pathname.split("/")[3]}/`, '/payment-link', '/settings', '/settings/user-management', '/settings/support'].includes(window.location.pathname)){
   // 
 }
 else{
@@ -163,6 +167,12 @@ const account_nav = [
         name: 'Api keys',
         to: '/settings/api-keys',
         icon: <CIcon icon={cilLibrary} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Support',
+        to: '/settings/support',
+        icon: <CIcon icon={cilBookmark} customClassName="nav-icon" />,
       },
     ],
   },

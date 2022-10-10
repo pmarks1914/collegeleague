@@ -21,7 +21,7 @@ class DefaultLayout extends Component {
     // }
 
     window.onstorage = () => {
-      // // console.log("storage ", JSON.parse(localStorage.getItem("userDataStore")) )
+      // // console.log("storage >", JSON.parse(localStorage.getItem("userDataStore")) )
       if(JSON.parse(localStorage.getItem("userDataStore")) === null){
         // // console.log("storage ")
         window.location.href="/";
