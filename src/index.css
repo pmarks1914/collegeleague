@@ -39,12 +39,12 @@ body, .dash-info-des-0{
     font-size: 10rem !important;
 }
 .bg-text-com-wp{
-    background-color: #FF7643;
+    background-color: #1152bd;
     color: #fff;
 }
 
 .body, .header, .footer, .bg-light{
-    background-color: #fff !important;
+    background-color: #f8f8f8 !important;
 }
 .sidebar{
     background-color: var(--cui-sidebar-bg, #797575) !important;

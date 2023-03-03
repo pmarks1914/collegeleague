@@ -16,11 +16,12 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 import axios from 'axios';
-import TextField from '@mui/material/TextField';
+import { TextField, OutlinedInput, InputLabel } from '@mui/material';
 import Button from '@mui/material/Button';
 import { Col, Row } from 'reactstrap'
 import Box from '@mui/material/Box';
 
+import avatar9 from '../../../assets/brand/logo.svg'
 // import swal from 'sweetalert2'
 
 const swal = require("sweetalert2");
@@ -63,6 +64,10 @@ let permList = [
 ];
 const Login = () => {
 
+  const [getFormDataError, setGetFormDataError] = React.useState({
+    "password": false,
+    "email": false
+  })
   const [usernameVar, setUsernameVar] = useState("")
   const [passwordVar, setPasswordVar] = useState("")
   const [loader, setLoader] = useState("<div></div")
@@ -71,15 +76,16 @@ const Login = () => {
 
   function CheckLogin(e) {
     e.preventDefault();
+    // window.location.href = "/dashboard";
 
     // // console.log("fff", process.env.REACT_APP_BASE_API, passwordVar, usernameVar)
 
     if (usernameVar === "") {
-      // document.getElementById("usernameError").style.display = "block";
+      setGetFormDataError({...getFormDataError, ...{"email": true}})
     }
     else if (passwordVar === "") {
-      document.getElementById("passwordErr").style.display = "block";
-      document.getElementById("usernameError").style.display = "none";
+      setGetFormDataError({...getFormDataError, ...{"password": true}})
+
     }
     else {
       setLogin("")
@@ -87,7 +93,10 @@ const Login = () => {
       // console.log(" login ")
       let data = JSON.stringify({
         "username": usernameVar,
-        "password": passwordVar
+        "password": passwordVar,
+        "client_id": "EjNqFG6LRmFACGCH9pLhfuF8n5FvIH9TMUPsdm8I",
+        "client_secret": "6YiYZ6YHy7D05Y2AmVUQCLo004PJuK1TYSNI2WFYnhHGwLeqLMlpU6R4yCQFW0v4Fr5UKaky2df3wOr5flWBKq8pc6HzMNkl5NDQcmbgv6jno0pDK0eeeMxzQvPWgKcY"
+
       });
 
       let config = {
@@ -102,7 +111,7 @@ const Login = () => {
         setLoader("<a></a>")
         setLogin("Login")
         console.log(response.status);
-        if (response?.data?.status) { 
+        if (response?.data?.status) {
           // console.log(response?.data)
           let counter = 600000; // 600000 = 10m
 
@@ -127,8 +136,8 @@ const Login = () => {
             role: response?.data?.role || "none",
             timeLogout: new Date(new Date().getTime() + counter),
             counter: counter,
-            business_email: response?.data?.kyc?.business_email, 
-            business_name: response?.data?.business_name || response?.data?.kyc?.business_name || ( (response?.data?.firstname + " " + response?.data?.lastname)?.toString() ), 
+            business_email: response?.data?.kyc?.business_email,
+            business_name: response?.data?.business_name || response?.data?.kyc?.business_name || ((response?.data?.firstname + " " + response?.data?.lastname)?.toString()),
             gps: response?.data?.kyc?.gps,
             business_TIN: response?.data?.kyc?.business_TIN,
             postal_address: response?.data?.kyc?.postal_address,
@@ -141,7 +150,7 @@ const Login = () => {
             business_registration_docs: response?.data?.business_registration_docs,
             business_address: response?.data?.kyc?.business_address,
             permission_list: response?.data?.default_permissions_list,
-            team_list: response?.data?.team_list, 
+            team_list: response?.data?.team_list,
 
           };
 
@@ -149,43 +158,38 @@ const Login = () => {
           // Cookie
           // document.cookie = "cookieData" + "=" + JSON.stringify({ 
           //   account: "", 
-            // wallet: "",
-            // status: "",
-            // access: "",
-            // refresh: "",            
-            // permission_list: ""
+          // wallet: "",
+          // status: "",
+          // access: "",
+          // refresh: "",            
+          // permission_list: ""
           // })
 
-          window.location.href = "/dashboard"; 
+          window.location.href = "/dashboard";
 
         }
         else {
           setLoginError("Wrong user credentials")
-          document.getElementById("wrongUser_id").style.display = "block";
         }
 
       }).catch(function (error) {
 
         if (error.response) {
           // // console.log("==>");
-          
+
           setLoader("<a></a>")
           setLogin("Login")
           setLoginError("Wrong user credentials")
-          document.getElementById("wrongUser_id").style.display = "block";
           /*
             * The request was made and the server responded with a
             * status code that falls out of the range of 2xx
             */
 
         } else if (error.request) {
-          
+
           setLoader("<a></a>")
           setLogin("Login")
           setLoginError("Wrong user credentials")
-          document.getElementById("wrongUser_id").style.display = "block";
-
-
           /*
             * The request was made but no response was received, `error.request`
             * is an instance of XMLHttpRequest in the browser and an instance
@@ -215,119 +219,110 @@ const Login = () => {
 
   return (
     <div className="bg-light min-vh-100 min-vw-100 d-flex flex-row align-items-center">
-      <CContainer>
-      <Box
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        marginBottom: '10px'
-                    }}
-                >
-                    <img src="https://wingipay.com/static/wingipay/logo/wingipay-2.4086593aa042.png" className='mb-3' style={{ width: "160px"}}/>
+      <CContainer> 
 
-                </Box>
         <CRow className="justify-content-center">
-          <CCol lg={5} xl={5}>
-            <CCardGroup>
-              <CCard className="p-4">
-                <CCardBody>
-                  <CForm>
-                    <h1>Login</h1>
-                    <p className="text-medium-emphasis">Sign In to your account</p>
+          <CCol md={4} lg={3} xl={3}>
+            <CCard className="p-0 cl-container">
+              <CCardBody className='m-0'>
+                <CRow>
+                  <CCol xs="0" sm="0" md={0} lg="1" xl="1" ></CCol>
+                  <CCol xs="12" sm="12" md={12} lg="10" xl="10" className='trade-name' >
+                    <span><img src={avatar9} className='mb-0' style={{ width: "30px" }} alt="college league" /> COLLEGE LEAGUE
+                    </span>
 
 
-                    <TextField 
-                    id="standard-basic"
-                    name = "email"
-                    label="Email"
-                    variant="standard"
-                    margin = "normal" 
-                    type="email"
-                    fullWidth
-                    required
-                    onChange={(e) => { setUsernameVar(e.target.value) }}
-                    />
+                    <Col xs="12" sm="12" md={12} lg={12} className="mt-3" >
+                      <div className='mui-control-form' >
+                        <Box
+                          component="form"
+                          noValidate
+                          autoComplete="on"
+                        >
+                          <InputLabel shrink htmlFor="email"> </InputLabel>
+                          <TextField
+                            error={getFormDataError?.email}
+                            id="email"
+                            name="email"
+                            placeholder="Email"
+                            variant="outlined"
+                            margin="normal"
+                            type="email"
+                            fullWidth
+                            required                           
+                            onChange={(e)=> (setUsernameVar(e.target.value), setGetFormDataError({...getFormDataError, ...{"first_name": false}}))}
 
-                    <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="password"
-                    label="Password"
-                    type="password"
-                    id="standard-basic"
-                    variant = "standard"
-                    autoComplete="current-password"
-                    onChange={(e) => { setPasswordVar(e.target.value) }}
-                    />
+                          />
+
+                          <InputLabel shrink htmlFor="password"> </InputLabel>
+                          <TextField
+                            error={getFormDataError?.password}
+                            margin="normal"
+                            required
+                            fullWidth
+                            name="password"
+                            placeholder="Password "
+                            type="password"
+                            id="password"
+                            // variant = "standard"
+                            autoComplete="current-password"
+                            onChange={(e) => (setPasswordVar(e.target.value), setGetFormDataError({...getFormDataError, ...{"password": false}})) }
+                          />
+
+                        </Box>
+                      </div>
+                    </Col>
+
 
                     <p className="text-medium-emphasis">{loginError}</p>
                     <CRow>
                       <CCol xs={12}>
-                        
-                      {login === "Login" ? 
 
-                        <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        sx={{ mt: 3, mb: 2 }}
-                        onClick={(e) => CheckLogin(e)}
-                        style={{ background: "#FF7643"}}
-                        >
-                        {login}
-                        </Button>
-                        // <CButton color="primary" className="px-4 " onClick={(e) => CheckLogin(e)}>
-                        //   {login}
-                        // </CButton>
-                        :
-                        // <CButton style={{ background: "#fff"}} className="px-4 ">
+                        {login === "Login" ?
+
+                          <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            sx={{ mt: 3, mb: 2 }}
+                            onClick={(e) => CheckLogin(e)}
+                            // style={{ background: "#0a0463"}}
+                            className="bg-text-com-wp"
+                          >
+                            {login}
+                          </Button>
+                          :
                           <a dangerouslySetInnerHTML={{ __html: loader }}></a>
-                        // </CButton>
+
                         }
                       </CCol>
-                      {/* <CCol xs={6} className="text-right">
-                        <CButton color="link" className="px-0">
-                          Forgot password?
-                        </CButton>
-                      </CCol> */}
                     </CRow>
-                  </CForm>
-                </CCardBody>
-              </CCard>
-              {/* <CCard className="text-white bg-primary py-5" style={{ width: '44%' }}>
-                <CCardBody className="text-center">
-                  <div>
-                    <h2>Sign up</h2>
-                    <p>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                      tempor incididunt ut labore et dolore magna aliqua.
-                    </p>
-                    <Link to="/register">
-                      <CButton color="primary" className="mt-3" active tabIndex={-1}>
-                        Register Now!
-                      </CButton>
-                    </Link>
-                  </div>
-                </CCardBody>
-              </CCard> */}
-            </CCardGroup>
+
+
+
+                  </CCol>
+                  <CCol xs="0" sm="0" md={0} lg="1" xl="1" ></CCol>
+                </CRow>
+                <div >
+                </div>
+
+
+              </CCardBody>
+            </CCard>
             <Box >
-              <p className='mt-10 text-center'> 
+              <p className='mt-10 text-center'>
                 <br />
-                By clicking {'"'}{login}{'"'}, I agree to the Service Agreement, <a href='https://wingipay.com/terms/'> Terms </a> of service and <a href='https://wingipay.com/privacy/'>  Privacy </a> Policy. 
                 <br />
-                Don{"'"}t have an account? <a href='/signup'> Sign Up </a>
+                <a href='/signup'> Sign Up </a> 
+                <br />
+                <a href='/reset-password' >Forget Password</a>
+                
               </p>
 
             </Box>
           </CCol>
         </CRow>
 
-        {/* <iframe src='https://dashboard.wingipay.com/pay/42LlzbZI/'  width="100%" height="350px" title="Iframe Example">
-          
-        </iframe> */}
 
       </CContainer>
     </div>

@@ -52,17 +52,8 @@ const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 
 // main pages components
 // compliance
-const Transaction = React.lazy(() => import('./views/pages/Transaction/Transaction'))
-const Apikey = React.lazy(() => import('./views/pages/Apikey/Apikey'))
-const Refund = React.lazy(() => import('./views/pages/Refund/Refund'))
-const Payout = React.lazy(() => import('./views/pages/Payout/Payout'))
-const Compliance = React.lazy(() => import('./views/pages/Compliance/Compliance'))
-const Bulkpay = React.lazy(() => import('./views/pages/Bulkpay/Bulkpay'))
-const BulkpayList = React.lazy(() => import('./views/pages/Bulkpay/BulkpayList'))
-const PaymentLink = React.lazy(() => import('./views/pages/PaymentLink/PaymentLink'))
+// const Compliance = React.lazy(() => import('./views/pages/Compliance/Compliance'))
 const UserManagement = React.lazy(() => import('./views/pages/UserManagement/UserManagement'))
-const Ticket = React.lazy(() => import('./views/pages/Ticket/Ticket'))
-// const Checkout = React.lazy(() => import('./views/pages/Checkout/Checkout'))
 
 const routes = [
   // { path: '/theme', name: 'Theme', element: Colors, exact: true },
@@ -111,17 +102,8 @@ const routes = [
   // below main pages views 
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
-  { path: '/payment/refunds', name: 'Refund', element: Refund },
-  { path: '/payment/transaction', name: 'Transaction', element: Transaction },
-  { path: '/payment/payouts', name: 'Payout', element: Payout },
-  { path: '/settings/api-keys', name: 'Api Key', element: Apikey },
-  { path: '/compliance', name: 'Compliance', element: Compliance },
-  // { path: '/bulk-pay', name: 'Bulkpay', element: PaymentLink },
-  { path: '/bulk-pay', name: 'Bulk Payment', element: Bulkpay },
-  { path: '/bulk-pay/item/:id', name: 'Item List', element: BulkpayList },
-  { path: '/payment-link', name: 'Payment Link', element: PaymentLink },
+  // { path: '/compliance', name: 'Compliance', element: Compliance },
   { path: '/settings/user-management', name: 'User Management', element: UserManagement },
-  { path: '/settings/support', name: 'Support', element: Ticket },
 
   // { path: '/checkout/:id', name: '', element: Checkout }, 
 

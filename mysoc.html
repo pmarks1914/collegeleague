@@ -1,0 +1,29 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button onClick="sendMsg()">Hit Me</button>
+
+    <script src="https://cdn.socket.io/4.4.1/socket.io.esm.min.js"></script>
+    <script>
+      const socket = io("http://localhost:8080");
+
+      function sendMsg() {
+        socket.emit(
+          ('receive_message_from_client', JSON.stringify({
+        "sender":"aff7eb97-9d89-4916-bd67-2234187c566f",
+        "receiver":"d7c62d26-057e-46d3-bda3-5098edfc2565",
+        "sender_type": "RECEIVER",
+        "chat_source": "MOBILE"
+    }))
+        );
+      }
+    </script>
+  </body>
+</html>

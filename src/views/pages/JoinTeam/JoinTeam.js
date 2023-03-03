@@ -26,6 +26,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Swal from 'sweetalert2'
 // import swal from 'sweetalert2'
 
+import avatar9 from '../../../assets/brand/logo.svg'
 const swal = require("sweetalert2");
 
 const JoinTeam = () => {
@@ -209,7 +210,7 @@ const JoinTeam = () => {
             allowOutsideClick: false,
             // allowEscapeKey: false,
             showCancelButton: false,
-            confirmButtonColor: '#FF7643',
+            confirmButtonColor: '#0a0463',
             // cancelButtonColor: '#d33',
             confirmButtonText: 'OK!'
           }).then((result) => {
@@ -226,7 +227,7 @@ const JoinTeam = () => {
             allowOutsideClick: false,
             // allowEscapeKey: false,
             showCancelButton: false,
-            confirmButtonColor: '#FF7643',
+            confirmButtonColor: '#0a0463',
             // cancelButtonColor: '#d33',
             confirmButtonText: 'OK!'
           }).then((result) => {
@@ -307,7 +308,7 @@ const JoinTeam = () => {
                         marginBottom: '10px'
                     }}
                 >
-                    <img src="https://wingipay.com/static/wingipay/logo/wingipay-2.4086593aa042.png" className='mb-3' style={{ width: "160px"}}/>
+                    <img src={avatar9} className='mb-3' style={{ width: "160px"}}/>
 
                 </Box>
         <CRow className="justify-content-center">
@@ -426,44 +427,18 @@ const JoinTeam = () => {
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
                         onClick={(e) => CheckLogin(e)}
-                        style={{ background: "#FF7643"}}
+                        className="bg-text-com-wp"
                         >
                         {login}
                         </Button>
-                        // <CButton color="primary" className="px-4 " onClick={(e) => CheckLogin(e)}>
-                        //   {login}
-                        // </CButton>
                         :
-                        // <CButton style={{ background: "#fff"}} className="px-4 ">
                           <a dangerouslySetInnerHTML={{ __html: loader }}></a>
-                        // </CButton>
                         }
                       </CCol>
-                      {/* <CCol xs={6} className="text-right">
-                        <CButton color="link" className="px-0">
-                          Forgot password?
-                        </CButton>
-                      </CCol> */}
                     </CRow>
                   </CForm>
                 </CCardBody>
               </CCard>
-              {/* <CCard className="text-white bg-primary py-5" style={{ width: '44%' }}>
-                <CCardBody className="text-center">
-                  <div>
-                    <h2>Sign up</h2>
-                    <p>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                      tempor incididunt ut labore et dolore magna aliqua.
-                    </p>
-                    <Link to="/register">
-                      <CButton color="primary" className="mt-3" active tabIndex={-1}>
-                        Register Now!
-                      </CButton>
-                    </Link>
-                  </div>
-                </CCardBody>
-              </CCard> */}
             </CCardGroup>
 
 
@@ -486,10 +461,6 @@ const JoinTeam = () => {
           </CCol>
           
         </CRow>
-
-        {/* <iframe src='https://dashboard.wingipay.com/pay/42LlzbZI/'  width="100%" height="350px" title="Iframe Example">
-          
-        </iframe> */}
 
       </CContainer>
     </div>

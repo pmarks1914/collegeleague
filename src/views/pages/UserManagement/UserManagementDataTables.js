@@ -341,7 +341,7 @@ const UserManagementDataTables = (props) => {
   function printContent() {
     let w = window.open();
 
-    $(".bg-text-wp").css("background-color", "#FF7643");
+    $(".bg-text-wp").css("background-color", "#0a0463");
     $(".bg-text-wp").css("color", "#fff");
     $(".bg-text-wp").css("text-align", "center");
     $(".icon-wp").css("border-radius", "100%");
@@ -597,7 +597,7 @@ const UserManagementDataTables = (props) => {
           allowOutsideClick: false,
           // allowEscapeKey: false,
           showCancelButton: false,
-          confirmButtonColor: '#FF7643',
+          confirmButtonColor: '#0a0463',
           // cancelButtonColor: '#d33',
           confirmButtonText: 'Ok'
         }).then((result) => {
@@ -695,7 +695,7 @@ const UserManagementDataTables = (props) => {
           allowOutsideClick: false,
           // allowEscapeKey: false,
           showCancelButton: false,
-          confirmButtonColor: '#FF7643',
+          confirmButtonColor: '#0a0463',
           // cancelButtonColor: '#d33',
           confirmButtonText: 'OK!'
         }).then((result) => {
@@ -774,7 +774,7 @@ const UserManagementDataTables = (props) => {
       allowOutsideClick: false,
       // allowEscapeKey: false,
       showCancelButton: true,
-      confirmButtonColor: '#FF7643',
+      confirmButtonColor: '#0a0463',
       cancelButtonColor: '#d33',
       cancelButtonText: "Cancel",
       confirmButtonText: 'Confirm',
@@ -811,7 +811,7 @@ const UserManagementDataTables = (props) => {
           allowOutsideClick: false,
           // allowEscapeKey: false,
           showCancelButton: false,
-          confirmButtonColor: '#FF7643',
+          confirmButtonColor: '#0a0463',
           // cancelButtonColor: '#d33',
           confirmButtonText: 'OK!'
         }).then((result) => {

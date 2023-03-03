@@ -16,10 +16,13 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 import axios from 'axios';
-import TextField from '@mui/material/TextField';
+import {TextField, InputLabel} from '@mui/material/';
 import Button from '@mui/material/Button';
 import { Col, Row } from 'reactstrap'
 import Box from '@mui/material/Box';
+
+import avatar9 from '../../../assets/brand/logo.svg'
+// import "../login/generic.css"
 
 const inviteData = JSON.parse(localStorage.getItem("inviteData"));
 let permList = [
@@ -203,56 +206,63 @@ const Login = () => {
   }
 
   return (
-    <div className="bg-light min-vh-100 min-vw-100 d-flex flex-row align-items-center">
-      <CContainer>
-      <Box
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        marginBottom: '10px'
-                    }}
-                >
-                    <img src="https://wingipay.com/static/wingipay/logo/wingipay-2.4086593aa042.png" className='mb-3' style={{ width: "160px"}}/>
 
-                </Box>
-        <CRow className="justify-content-center">
-          <CCol lg={5} xl={5}>
-            <CCardGroup>
-              <CCard className="p-4">
-                <CCardBody>
-                  <CForm>
-                    <h1>Login</h1>
-                    <p className="text-medium-emphasis">Sign In to your account</p>
+<div className="bg-light min-vh-100 min-vw-100 d-flex flex-row align-items-center">
+<CContainer>
+
+  <CRow className="justify-content-center">
+    <CCol md={4} lg={3} xl={3}>
+      <CCard className="p-0 cl-container">
+        <CCardBody className='m-0'>
+          <CRow>
+            <CCol xs="0" sm="0" md={0} lg="1" xl="1" ></CCol>
+            <CCol xs="12" sm="12" md={12} lg="10" xl="10" className='trade-name' >
+              <span><img src={avatar9} className='mb-0' style={{ width: "30px" }} alt="college league" /> COLLEGE LEAGUE
+              </span>
 
 
-                    <TextField 
-                    id="standard-basic"
-                    name = "email"
-                    label="Email"
-                    variant="standard"
-                    margin = "normal" 
-                    type="email"
-                    fullWidth
-                    required
-                    onChange={(e) => { setUsernameVar(e.target.value) }}
-                    />
-
+              <Col xs="12" sm="12" md={12} lg={12} className="mt-3" >
+                <div className='mui-control-form' >
+                  <Box
+                    component="form"
+                    noValidate
+                    autoComplete="on"
+                  >
+                    <InputLabel shrink htmlFor="email"> </InputLabel>
                     <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="password"
-                    label="Password"
-                    type="password"
-                    id="standard-basic"
-                    variant = "standard"
-                    autoComplete="current-password"
-                    onChange={(e) => { setPasswordVar(e.target.value) }}
+                      id="email"
+                      name="email"
+                      placeholder="Email"
+                      variant="outlined"
+                      margin="normal"
+                      type="email"
+                      fullWidth
+                      required
+                      onChange={(e) => { setUsernameVar(e.target.value) }}
                     />
 
-                    <p className="text-medium-emphasis">{loginError}</p>
-                    <CRow>
+                    <InputLabel shrink htmlFor="password"> </InputLabel>
+                    <TextField
+                      margin="normal"
+                      required
+                      fullWidth
+                      name="password"
+                      placeholder="Password "
+                      type="password"
+                      id="password"
+                      // variant = "standard"
+                      autoComplete="current-password"
+                      onChange={(e) => { setPasswordVar(e.target.value) }}
+                    />
+
+                  </Box>
+                </div>
+              </Col>
+
+
+              <p className="text-medium-emphasis">{loginError}</p>
+              <CRow>
+              
                       <CCol xs={12}>
                         
                       {login === "Login" ? 
@@ -263,63 +273,43 @@ const Login = () => {
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
                         onClick={(e) => CheckLogin(e)}
-                        style={{ background: "#FF7643"}}
+                        className="bg-text-com-wp"
                         >
                         {login}
                         </Button>
-                        // <CButton color="primary" className="px-4 " onClick={(e) => CheckLogin(e)}>
-                        //   {login}
-                        // </CButton>
                         :
-                        // <CButton style={{ background: "#fff"}} className="px-4 ">
                           <a dangerouslySetInnerHTML={{ __html: loader }}></a>
-                        // </CButton>
+                     
                         }
                       </CCol>
-                      {/* <CCol xs={6} className="text-right">
-                        <CButton color="link" className="px-0">
-                          Forgot password?
-                        </CButton>
-                      </CCol> */}
-                    </CRow>
-                  </CForm>
-                </CCardBody>
-              </CCard>
-              {/* <CCard className="text-white bg-primary py-5" style={{ width: '44%' }}>
-                <CCardBody className="text-center">
-                  <div>
-                    <h2>Sign up</h2>
-                    <p>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                      tempor incididunt ut labore et dolore magna aliqua.
-                    </p>
-                    <Link to="/register">
-                      <CButton color="primary" className="mt-3" active tabIndex={-1}>
-                        Register Now!
-                      </CButton>
-                    </Link>
-                  </div>
-                </CCardBody>
-              </CCard> */}
-            </CCardGroup>
-            <Box >
-              <p className='mt-10 text-center'> 
-                <br />
-                By clicking {'"'}{login}{'"'}, I agree to the Service Agreement, <a href='https://wingipay.com/terms/'> Terms </a> of service and <a href='https://wingipay.com/privacy/'>  Privacy </a> Policy. 
-                <br />
-                Don{"'"}t have an account? <a href='/signup'> Sign Up </a>
-              </p>
 
-            </Box>
-          </CCol>
-        </CRow>
+              </CRow>
 
-        {/* <iframe src='https://dashboard.wingipay.com/pay/42LlzbZI/'  width="100%" height="350px" title="Iframe Example">
-          
-        </iframe> */}
 
-      </CContainer>
-    </div>
+
+            </CCol>
+            <CCol xs="0" sm="0" md={0} lg="1" xl="1" ></CCol>
+          </CRow>
+          <div >
+          </div>
+
+
+        </CCardBody>
+      </CCard>
+      <Box >
+        <p className='mt-10 text-center'>
+          <br />
+          <br />
+          <a href='/signup'> Sign Up </a>
+        </p>
+
+      </Box>
+    </CCol>
+  </CRow>
+
+
+</CContainer>
+</div>
   )
 }
 

@@ -235,7 +235,7 @@ const DatatableMain = (transactionDetails) => {
   function printContent(){
       let w=window.open();
 
-      $(".bg-text-wp").css("background-color", "#FF7643");
+      $(".bg-text-wp").css("background-color", "#0a0463");
       $(".bg-text-wp").css("color", "#fff");
       $(".bg-text-wp").css("text-align", "center");
       $(".icon-wp").css("border-radius", "100%");

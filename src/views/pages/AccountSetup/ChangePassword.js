@@ -1,161 +1,3 @@
-// import React, { useState } from 'react'
-// import {
-//   CCard,
-//   CCardBody,
-//   CCardGroup,
-//   CCol,
-//   CContainer,
-//   CForm,
-//   CRow,
-// } from '@coreui/react'
-
-// import axios from 'axios';
-// import TextField from '@mui/material/TextField';
-// import Button from '@mui/material/Button';
-// import Box from '@mui/material/Box';
-// import { useNavigate } from 'react-router-dom';
-// import CircularProgress from '@mui/material/CircularProgress';
-
-
-// const swal = require("sweetalert2");
-
-// export default function ChangePassword(){
-//     const navigate = useNavigate()
-
-//     const handleSubmit = (event) => {
-
-//         event.preventDefault();
-//         const data = new FormData(event.currentTarget);
-    
-//             const oldPassword = data.get('oldPassword')
-//             const newPassword = data.get('newPassword')
-//             const newPassword2 = data.get('newPassword2')
-//             console.log(oldPassword)
-//             console.log(newPassword)
-//             console.log(newPassword2)
-
-//             const payload = JSON.stringify({
-//                 "old_password": oldPassword,
-//                 "password": newPassword,
-//                 "password2": newPassword2
-//             })
-
-//             console.log(payload)
-//                 let config = {
-//                 method: 'post',
-//                 url: process.env.REACT_APP_BASE_API + 'auth/changePassword/',
-                
-//                 headers: {
-//                     'Content-Type': 'application/json'
-//                 },
-//                 data: payload
-//                 };
-//                 axios(config).then(function (response){
-//                 console.log(response["data"])
-//                 if (response["data"]["message"] === "Otp has been sent successfully." && response["data"]["status"] === true){
-//                     localStorage.setItem("signupInfo", payload)
-//                     navigate('/otp')
-//                 }
-//                 else if (!response){
-//                     <Box sx={{ display: 'flex' }}>
-//                     <CircularProgress />
-//                     </Box>
-//                 }
-//                 })
-//                 .catch(function (error) {
-//                 console.log(error);
-//                 });
-// };
-
-//     // // console.log("fff", process.env.REACT_APP_BASE_API, passwordVar, usernameVar)
-//   return (
-//     <div className="bg-light min-vh-100 min-vw-100 d-flex flex-row align-items-center">
-//       <CContainer>
-//       <Box
-//         sx={{
-//             display: 'flex',
-//             flexDirection: 'column',
-//             alignItems: 'center',
-//             marginBottom: '10px'
-//         }}
-//     >
-//         <img src="https://wingipay.com/static/wingipay/logo/wingipay-2.4086593aa042.png" className='mb-3' style={{ width: "160px"}}/>
-
-//     </Box>
-//         <CRow className="justify-content-center">
-//           <CCol lg={5} xl={5}>
-//             <CCardGroup>
-//               <CCard className="p-4">
-//                 <CCardBody>
-//                   <CForm>
-//                     <h2>Change Password</h2>
-
-//                     <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-
-//                     <TextField 
-//                     id="standard-basic"
-//                     name = "oldPassword"
-//                     label="Old Password"
-//                     variant="standard"
-//                     margin = "normal" 
-//                     type="password"
-//                     fullWidth
-//                     required
-//                     />
-
-//                     <TextField
-//                     margin="normal"
-//                     required
-//                     fullWidth
-//                     name="newPassword"
-//                     label="New Password"
-//                     type="password"
-//                     id="standard-basic"
-//                     variant = "standard"
-//                     autoComplete="current-password"
-//                     />
-
-//                     <TextField
-//                     margin="normal"
-//                     required
-//                     fullWidth
-//                     name="newPassword2"
-//                     label="Confirm New Password"
-//                     type="password"
-//                     id="standard-basic"
-//                     variant = "standard"
-//                     autoComplete="current-password"
-//                     />
-
-//                     <CRow>
-//                       <CCol xs={12}>
-                     
-//                       <Button
-//                         type="submit"
-//                         fullWidth
-//                         variant="contained"
-//                         sx={{ mt: 3, mb: 2 }}
-//                         style = {{color: "#fff"}}
-//                         >
-//                         Change Password
-//                         </Button>
-//                       </CCol>
-//                     </CRow>
-//                       </Box>
-//                   </CForm>
-//                 </CCardBody>
-//               </CCard>
-              
-//             </CCardGroup>
-//           </CCol>
-//         </CRow>
-//       </CContainer>
-//     </div>
-//   )
-// }
-
-
-
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -180,6 +22,21 @@ import axios from "axios"
 import { useNavigate } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
 
+import avatar9 from '../../../assets/brand/logo.svg'
+import {
+  CButton,
+  CCard,
+  CCardBody,
+  CCardGroup,
+  CCardHeader,
+  CCol,
+  CContainer,
+  CForm,
+  CFormInput,
+  CInputGroup,
+  CInputGroupText,
+  CRow,
+} from '@coreui/react'
 
 export default function SignUp() {
   const navigate = useNavigate()
@@ -198,9 +55,9 @@ export default function SignUp() {
         "newPassword": newPassword,
         "newPassword2": newPassword2,
       })
-      console.log(payload);
+      // console.log(payload);
 
-      console.log(payload)
+      // console.log(payload)
         let config = {
           method: 'post',
           url: process.env.REACT_APP_BASE_API + '/auth/validate_email/',
@@ -211,7 +68,7 @@ export default function SignUp() {
           data: payload
         };
         axios(config).then(function (response){
-          console.log(response["data"])
+          // console.log(response["data"])
           if (response["data"]["message"] === "Otp has been sent successfully." && response["data"]["status"] === true){
             localStorage.setItem("signupInfo", payload)
             navigate('/otp')
@@ -223,72 +80,111 @@ export default function SignUp() {
           }
         })
         .catch(function (error) {
-          console.log(error);
+          // console.log(error);
         });
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs">
+    <div >
+      <div className="bg-light min-vh-100 min-vw-100 d-flex flex-row align-items-center">
         <CssBaseline />
-        <Box
-          sx={{
-            marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          
-          <Typography component="h1" variant="h5">
-            Change Password
-          </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-          
-           
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              label="old password"
-              name="oldPassword"
-              autoFocus
-              variant = "standard"
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              label="new password"
-              name="newPassword"
-              autoFocus
-              variant = "standard"
-            />
 
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              label="confirm new password"
-              name="newPassword2"
-              autoFocus
-              variant = "standard"
-            />
-            
-          
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-              style = {{color: "#fff"}}
-            >
-              Change Password
-            </Button>
-            
-          </Box>
-        </Box>
-      </Container>
-    </ThemeProvider>
+          <CContainer>
+
+            <CRow className="justify-content-center">
+              <CCol md={4} lg={3} xl={3}>
+                <CCard className="p-0 cl-container">
+                  <CCardHeader>
+                  </CCardHeader>
+                  <CCardBody className='m-0'>
+                    <CRow>
+                      <CCol xs="0" sm="0" md={0} lg="1" xl="1" ></CCol>
+                      <CCol xs="12" sm="12" md={12} lg="10" xl="10" className='trade-name' >
+                        <span><img src={avatar9} className='mb-0' style={{ width: "30px" }} alt="college league" /> COLLEGE LEAGUE
+                        </span>
+
+                        <Typography component="h6" variant="h6" className='mt-3 text-center fs-6'>
+                            Change Password
+                        </Typography>
+                        <CCol xs="12" sm="12" md={12} lg={12} className="mt-1" >
+                          <div className='mui-control-form' >
+                            <Box
+                              component="form"
+                              noValidate
+                              autoComplete="on"
+                            >
+                              <InputLabel shrink htmlFor="oldPassword"> </InputLabel>
+                              <TextField
+                                error
+                                id="oldPassword"
+                                name="oldPassword"
+                                placeholder="Old password"
+                                variant="outlined"
+                                margin="normal"
+                                type="email"
+                                fullWidth
+                                required
+                              />
+
+                              <InputLabel shrink htmlFor="newPassword"> </InputLabel>
+
+                              <TextField
+                                margin="normal"
+                                required
+                                fullWidth
+                                placeholder="new password"
+                                name="newPassword"
+                                autoFocus
+                                variant="outlined"
+                              />
+
+                              <InputLabel shrink htmlFor="newPassword2"> </InputLabel>
+
+                              <TextField
+                                margin="normal"
+                                required
+                                fullWidth
+                                placeholder="confirm password"
+                                name="newPassword2"
+                                autoFocus
+                                variant="outlined"
+                              />
+
+                            </Box>
+                          </div>
+                        </CCol>
+
+
+                        <Button
+                          type="submit"
+                          fullWidth
+                          variant="contained"
+                          sx={{ mt: 3, mb: 2 }}
+                          style = {{color: "#fff"}}
+                          className="bg-text-com-wp"
+                          onClick={handleSubmit}
+                        >
+                          Submit
+                        </Button>
+
+                      </CCol>
+                      <CCol xs="0" sm="0" md={0} lg="1" xl="1" ></CCol>
+                    </CRow>
+                    <div >
+                    </div>
+
+
+                  </CCardBody>
+                </CCard>
+              </CCol>
+            </CRow>
+
+
+          </CContainer>
+        
+      </div>
+
+
+    </div>
   );
 }
