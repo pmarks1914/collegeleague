@@ -37,6 +37,7 @@ import {
   CInputGroupText,
   CRow,
 } from '@coreui/react'
+import Swal from 'sweetalert2';
 
 export default function SignUp() {
   const navigate = useNavigate()
@@ -84,6 +85,87 @@ export default function SignUp() {
         });
   };
 
+  function sendOTP(){
+    
+
+    const payload = JSON.stringify({
+      "email": getFormData?.email
+    })
+
+
+    let config_otp = {
+      method: 'post',
+      url: process.env.REACT_APP_BASE_API + "/otp/send/email/",
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      data: payload
+  };
+    axios(config_otp).then(function (response){
+      console.log(response)
+      
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+
+     Swal.fire({
+      text: 'Check your email and type the code here.',
+      input: 'text',
+      inputAttributes: {
+          autocapitalize: 'off'
+      },
+      showCancelButton: true,
+      confirmButtonText: 'Submit',
+      showLoaderOnConfirm: true,
+      allowOutsideClick: false,
+      confirmButtonColor: '#1677ff',
+      cancelButtonColor: '#d33',
+      preConfirm: (otpCode) => {
+          // otpCodecription = otpCode
+          if (otpCode === "") {
+              Swal.showValidationMessage(
+                  `Request failed! code is required.`
+              )
+          }
+          else {
+              let data = JSON.stringify({
+                  "email": getFormData?.email,
+                  "first_name": getFormData?.first_name,
+                  "last_name": getFormData?.last_name,
+                  "other_names": getFormData?.other_names,
+                  "password": getFormData?.password,
+                  "password1": getFormData?.password,
+                  "otp": otpCode
+              })
+              let config = {
+                  method: 'post',
+                  url: process.env.REACT_APP_BASE_API + "/auth/sign_up/",
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+                  data: data
+              };
+
+              sendApiData(config);
+          }
+      },
+  }).then((result1) => {
+
+  })
+
+  }
+
+  function sendApiData(config){
+    // console.log(config)
+    axios(config).then(function (response){
+      // console.log(response)
+      
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  }
   return (
     <div >
       <div className="bg-light min-vh-100 min-vw-100 d-flex flex-row align-items-center">
