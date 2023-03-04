@@ -205,9 +205,9 @@ export default function SignUp() {
   }
 
   function sendApiData(config){
-    console.log(config)
+    // console.log(config)
     axios(config).then(function (response){
-      console.log(response)
+      // console.log(response)
       
     })
     .catch(function (error) {
