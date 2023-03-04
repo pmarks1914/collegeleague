@@ -141,6 +141,22 @@ export default function SignUp() {
     })
 
 
+    let config_otp = {
+      method: 'post',
+      url: process.env.REACT_APP_BASE_API + "/otp/send/email/",
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      data: payload
+  };
+    axios(config_otp).then(function (response){
+      console.log(response)
+      
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+
     Swal.fire({
       text: 'Check your email and type the code here.',
       input: 'text',
