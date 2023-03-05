@@ -109,11 +109,11 @@ export default function SignUp() {
       data: payload
   };
     axios(config_otp).then(function (response){
-      console.log(response)
+      // console.log(response)
       
     })
     .catch(function (error) {
-      console.log(error);
+      // console.log(error);
     });
 
      Swal.fire({
@@ -143,7 +143,7 @@ export default function SignUp() {
                   "otp": otpCode
               })
               let config = {
-                  method: 'post',
+                  method: 'put',
                   url: process.env.REACT_APP_BASE_API + "/auth/reset_password/",
                   headers: {
                       'Content-Type': 'application/json'
@@ -164,11 +164,52 @@ export default function SignUp() {
     // console.log(config)
     axios(config).then(function (response){
       // console.log(response)
+      if(response.data.status){
+        Swal.fire({
+          // title: 'Successfully created!',
+          text: response?.data?.message,
+          icon: "success",
+          allowOutsideClick: false,
+          // allowEscapeKey: false,
+          showCancelButton: false,
+          confirmButtonColor: '#950707',
+          // cancelButtonColor: '#d33',
+          confirmButtonText: 'Ok'
+        }).then((result) => { 
+          navigate("/login")
+        });
+      }
+      else{
+        Swal.fire({
+          // title: 'Successfully created!',
+          text: response.data.message,
+          icon: "error",
+          allowOutsideClick: false,
+          // allowEscapeKey: false,
+          showCancelButton: false,
+          confirmButtonColor: '#950707',
+          // cancelButtonColor: '#d33',
+          confirmButtonText: 'Ok'
+        }).then((result) => { });
+      }
       
     })
     .catch(function (error) {
-      console.log(error);
-    });
+      // console.log(error.response.data);
+      Swal.fire({
+        // title: 'Successfully created!',
+        text: error.response.data.message,
+        icon: "error",
+        allowOutsideClick: false,
+        // allowEscapeKey: false,
+        showCancelButton: false,
+        confirmButtonColor: '#950707',
+        // cancelButtonColor: '#d33',
+        confirmButtonText: 'Ok'
+      }).then((result) => { });
+      
+    })
+  
   }
   return (
     <div >
