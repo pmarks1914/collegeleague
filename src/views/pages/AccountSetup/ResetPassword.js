@@ -42,47 +42,55 @@ import Swal from 'sweetalert2';
 export default function SignUp() {
   const navigate = useNavigate()
 
+  const [getFormDataError, setGetFormDataError] = React.useState({
+    "password": false,
+    "password1": false,
+    "first_name": false,
+    "last_name": false,
+    "other_names": false,
+    "email": false
+  })
+  const [getFormData, setGetFormData] = React.useState({})
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
     
-      const oldPassword = data.get('oldPassword')
-      const newPassword = data.get('newPassword')
-      const newPassword2 = data.get('newPassword2')
-     
+    
+    let mainCharacter = "()[]{}|\`~!@#$%^&*_-+=;:,<>./?'" + '"';
+    let alphabet ="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    let arrayAlphabet = Array.from( alphabet)
+    let arrayMainCharacter = Array.from( mainCharacter)
+    let [isPassewordValid1, isAlphabetPass1] = [false, false]
 
-      const payload = JSON.stringify({
-        "oldPassword": oldPassword,
-        "newPassword": newPassword,
-        "newPassword2": newPassword2,
-      })
-      // console.log(payload);
+    for(let i=0; i<arrayMainCharacter.length; i++){
+      if( (Array.from(getFormData?.password || "")).includes(arrayMainCharacter[i]) ){
+        isPassewordValid1 = true
+      }
+    }
 
-      // console.log(payload)
-        let config = {
-          method: 'post',
-          url: process.env.REACT_APP_BASE_API + '/auth/validate_email/',
-         
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          data: payload
-        };
-        axios(config).then(function (response){
-          console.log(response)
-          if (response["data"]["message"] === "Otp has been sent successfully." && response["data"]["status"] === true){
-            localStorage.setItem("signupInfo", payload)
-            // navigate('/otp')
-          }
-          else if (!response){
-            <Box sx={{ display: 'flex' }}>
-              <CircularProgress />
-            </Box>
-          }
-        })
-        .catch(function (error) {
-          // console.log(error);
-        });
+    for(let i=0; i<arrayAlphabet.length; i++){
+      if( (Array.from(getFormData?.password || "")).includes(arrayAlphabet[i]) ){
+        isAlphabetPass1 = true
+      }
+    }
+    
+    if (!(getFormData?.email)){
+      
+      setGetFormDataError({...getFormDataError, ...{"email": true}})
+    }
+    else if (!(getFormData?.password) || getFormData?.password === "" || getFormData?.password?.length < 8 || Number(getFormData?.password) || !isPassewordValid1 || !isAlphabetPass1 ) {
+      setGetFormDataError({...getFormDataError, ...{"password": true}})
+
+
+    }
+    else if( getFormData?.password !== getFormData?.password1 ){
+      // 
+      setGetFormDataError({...getFormDataError, ...{"password1": true}})
+    }
+    else{
+      sendOTP()
+    }
+
   };
 
   function sendOTP(){
@@ -91,7 +99,6 @@ export default function SignUp() {
     const payload = JSON.stringify({
       "email": getFormData?.email
     })
-
 
     let config_otp = {
       method: 'post',
@@ -131,16 +138,13 @@ export default function SignUp() {
           else {
               let data = JSON.stringify({
                   "email": getFormData?.email,
-                  "first_name": getFormData?.first_name,
-                  "last_name": getFormData?.last_name,
-                  "other_names": getFormData?.other_names,
                   "password": getFormData?.password,
                   "password1": getFormData?.password,
                   "otp": otpCode
               })
               let config = {
                   method: 'post',
-                  url: process.env.REACT_APP_BASE_API + "/auth/sign_up/",
+                  url: process.env.REACT_APP_BASE_API + "/auth/reset_password/",
                   headers: {
                       'Content-Type': 'application/json'
                   },
@@ -197,7 +201,7 @@ export default function SignUp() {
                             >
                               <InputLabel shrink htmlFor="email"> </InputLabel>
                               <TextField
-                                error={false}
+                                error={getFormDataError?.email}
                                 id="email"
                                 name="email"
                                 placeholder="Your email"
@@ -206,31 +210,50 @@ export default function SignUp() {
                                 type="email"
                                 fullWidth
                                 required
+                                onChange={(e)=> (setGetFormData({...getFormData, ...{"email": e.target.value}}), setGetFormDataError({...getFormDataError, ...{"email": false}}))}
                               />
 
-                              <InputLabel shrink htmlFor="newPassword"> </InputLabel>
 
-                              <TextField
-                                margin="normal"
-                                required
-                                fullWidth
-                                placeholder="New password"
-                                name="newPassword"
-                                autoFocus
-                                variant="outlined"
-                              />
+                          <InputLabel shrink htmlFor="newPassword"> </InputLabel>
+                          <TextField
+                            error={getFormDataError?.password}
+                            margin="normal"
+                            required
+                            fullWidth
+                            type="password"
+                            placeholder="New password"
+                            name="newPassword"
+                            autoFocus
+                            variant="outlined"
+                            className='mb-0'
+                            onChange={(e)=> (setGetFormData({...getFormData, ...{"password": e.target.value}}), setGetFormDataError({...getFormDataError, ...{"password": false}}))}
+                          />
+                          {
+                            getFormDataError?.password ?
+                            <p className='mt-0 mb-0 cl-text-warn-color'>Strong password is required, eg. Yase@#3064</p>
+                            : ""
+                          }
 
-                              <InputLabel shrink htmlFor="newPassword2"> </InputLabel>
+                          <InputLabel shrink htmlFor="newPassword2"> </InputLabel>
 
-                              <TextField
-                                margin="normal"
-                                required
-                                fullWidth
-                                placeholder="Confirm password"
-                                name="newPassword2"
-                                autoFocus
-                                variant="outlined"
-                              />
+                          <TextField
+                            error={getFormDataError?.password1}
+                            margin="normal"
+                            required
+                            fullWidth
+                            type="password"
+                            placeholder="Confirm password"
+                            name="newPassword2"
+                            autoFocus
+                            variant="outlined"                            
+                            className='mt-4 mb-0'
+                            onChange={(e)=> (setGetFormData({...getFormData, ...{"password1": e.target.value}}), setGetFormDataError({...getFormDataError, ...{"password1": false}}))}
+                          />
+                          {
+                            getFormDataError?.password1 ?
+                            <p className='mt-0 cl-text-warn-color'>New and confirm passwords do not match.</p>
+                            : ""
+                          }
 
                             </Box>
                           </div>
