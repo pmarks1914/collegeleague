@@ -272,9 +272,7 @@ const Login = () => {
                         </Box>
                       </div>
                     </Col>
-
-
-                    <p className="text-medium-emphasis">{loginError}</p>
+                    <p className="text-medium-emphasis mb-0">{loginError}</p>
                     <CRow>
                       <CCol xs={12}>
 
@@ -305,21 +303,14 @@ const Login = () => {
                 </CRow>
                 <div >
                 </div>
-
-
+                <p className='mt-10 mb-2 text-center'>
+                  Don{"'"}t have an account? <a href='/signup'> Sign Up </a> 
+                  <br />
+                  <a href='/reset-password' >Forget Password</a>
+                </p>
               </CCardBody>
             </CCard>
-            <Box >
-              <p className='mt-10 text-center'>
-                <br />
-                <br />
-                <a href='/signup'> Sign Up </a> 
-                <br />
-                <a href='/reset-password' >Forget Password</a>
-                
-              </p>
-
-            </Box>
+            
           </CCol>
         </CRow>
 

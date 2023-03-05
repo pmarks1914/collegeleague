@@ -363,10 +363,11 @@ export default function SignUp() {
                   </CCol>
                   <CCol xs="0" sm="0" md={0} lg="1" xl="1" ></CCol>
                 </CRow>
-                <div >
-                </div>
-
-
+                <p className='mt-10 mb-2 text-center'>
+                  Already have an account? <a href='/login'> Login </a>
+                  <br />
+                  <a href='/reset-password' >Forget Password</a>
+                </p>
               </CCardBody>
             </CCard>
           </CCol>
