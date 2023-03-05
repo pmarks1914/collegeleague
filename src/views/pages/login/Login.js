@@ -94,14 +94,15 @@ const Login = () => {
       let data = JSON.stringify({
         "username": usernameVar,
         "password": passwordVar,
-        "client_id": "EjNqFG6LRmFACGCH9pLhfuF8n5FvIH9TMUPsdm8I",
-        "client_secret": "6YiYZ6YHy7D05Y2AmVUQCLo004PJuK1TYSNI2WFYnhHGwLeqLMlpU6R4yCQFW0v4Fr5UKaky2df3wOr5flWBKq8pc6HzMNkl5NDQcmbgv6jno0pDK0eeeMxzQvPWgKcY"
+        'client_id': 'EjNqFG6LRmFACGCH9pLhfuF8n5FvIH9TMUPsdm8I',
+        'client_secret': '6YiYZ6YHy7D05Y2AmVUQCLo004PJuK1TYSNI2WFYnhHGwLeqLMlpU6R4yCQFW0v4Fr5UKaky2df3wOr5flWBKq8pc6HzMNkl5NDQcmbgv6jno0pDK0eeeMxzQvPWgKcY',
+        'grant_type': 'password' 
 
       });
 
       let config = {
         method: 'post',
-        url: process.env.REACT_APP_BASE_API + "/auth/login/",
+        url: process.env.REACT_APP_BASE_API + "/o/token/",
         headers: {
           'Content-Type': 'application/json'
         },

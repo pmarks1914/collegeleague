@@ -57,7 +57,7 @@ import avatar6 from 'src/assets/images/avatars/6.jpg'
 import WidgetsDropdown from '../widgets/WidgetsDropdown'
 import Datatable from '../datatable/DatatableMain'
 import { getTransactionData } from './DashboardData'
-import { getSessionTimeout } from '../../Utils/Utils'; 
+import { getSessionTimeout } from '../../Utils/Utils';
 
 const Dashboard = () => {
   const [transactionDetails, setTransactionDetails] = useState(null)
@@ -68,18 +68,18 @@ const Dashboard = () => {
     let transactionData = getTransactionData();
     transactionData?.transaction?.then(value => { setTransactionDetails(value) });
     trackActivity();
-    
+
     let summaryData = getTransactionData();
     summaryData?.summary?.then(value => { setSummaryDetails(value) });
-   
+
   }, [])
   // // console.log("summarry ", summaryDetails)
 
   const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
 
   const progressExample = [
-    { title: 'Total Transaction', value: '29', percent: 40, color: 'success' },
-    { title: 'Unique Transaction', value: '24', percent: 20, color: 'info' },
+    { title: 'Total', value: '29', percent: 40, color: 'success' },
+    { title: 'Unique', value: '24', percent: 20, color: 'info' },
     // { title: 'Pageviews', value: '78.706 Views', percent: 60, color: 'warning' },
     // { title: 'New Users', value: '22.123 Users', percent: 80, color: 'danger' },
     // { title: 'Bounce Rate', value: 'Average Rate', percent: 40.15, color: 'primary' },
@@ -202,8 +202,8 @@ const Dashboard = () => {
   function trackActivity() {
     // e.preventDefault();
     getSessionTimeout();
-    const currentUser_new = JSON.parse(localStorage.getItem("userDataStore"));    
-    if(currentUser_new){
+    const currentUser_new = JSON.parse(localStorage.getItem("userDataStore"));
+    if (currentUser_new) {
       currentUser_new["timeLogout"] = new Date().getTime() + currentUser_new?.counter;
       localStorage.setItem('userDataStore', JSON.stringify(currentUser_new))
     }
@@ -220,8 +220,8 @@ const Dashboard = () => {
       {/* <WidgetsDropdown /> */}
       {/* <WidgetsBrand withCharts /> */}
 
-      <CRow>
-        <CCol xs={12} sm={12} md={9} xl={9} style={{float: "left!important"}}>
+      <CRow className='m-5'>
+        <CCol xs={12} sm={12} md={9} xl={9} style={{ float: "left!important" }} className="mb-0" >
 
           <CCard className="mb-0">
             <CCardBody>
@@ -318,7 +318,7 @@ const Dashboard = () => {
                   },
                 }}
               />
-            </CCardBody> 
+            </CCardBody>
             <CCardFooter>
               <CRow xs={{ cols: 1 }} md={{ cols: 4 }} className="text-center">
                 {progressExample.map((item, index) => (
@@ -333,63 +333,62 @@ const Dashboard = () => {
               </CRow>
             </CCardFooter>
           </CCard>
-          <Datatable transactionDetails={transactionDetails} />
+          {/* <Datatable transactionDetails={transactionDetails} /> */}
         </CCol>
 
-        <CCol xs={12} sm={12} md={3} xl={3} style={{float: "right" }}>
+        <CCol xs={12} sm={12} md={3} xl={3} style={{ float: "right" }}>
           <CCard className="mb-4">
-              <CCardHeader> Quick Overview </CCardHeader>
+            <CCardHeader> Quick Overview </CCardHeader>
           </CCard>
-          <div style={{ height: "69em", "overflowY": "auto", whiteSpace: "nowrap" }}>
+          {/* <div style={{ height: "69em", "overflowY": "auto", whiteSpace: "nowrap" }}> */}
+
+          <div style={{"overflowY": "auto", whiteSpace: "nowrap" }}>
             {/*  */}
-            
-
-
 
             <CCard className="mb-4">
-                  <CCardBody>
-                    <div className="border-start border-start-4 border-start-primary py-1 px-3">
-                      <div className="text-medium-emphasis small"> {"TODAY'S "}COLLECTION</div>
-                      <div className="fs-5 fw-semibold">
-                        {summaryDetails?.currency} {summaryDetails?.todays_collections_amount || 0.00}
-                      </div>
-                      <div className="text-medium-emphasis small">COUNT {summaryDetails?.todays_collections_count || 0}</div>
-                    </div>
-                  </CCardBody>
-              </CCard>
+              <CCardBody>
+                <div className="border-start border-start-4 border-start-primary py-1 px-3">
+                  <div className="text-medium-emphasis small"> Institutions/Colleges</div>
+                  <div className="fs-5 fw-semibold">
+                    {summaryDetails?.currency} {summaryDetails?.todays_collections_amount || 0.00}
+                  </div>
+                  <div className="text-medium-emphasis small"> Application {summaryDetails?.todays_collections_count || 0}</div>
+                </div>
+              </CCardBody>
+            </CCard>
 
-              <CCard className="mb-4">
-                  <CCardBody>
-                    <div className="border-start border-start-4 border-start-danger py-1 px-3">
-                      <div className="text-medium-emphasis small">LAST PAYOUT</div>
-                      <div className="fs-5 fw-semibold">
-                        {summaryDetails?.currency} {summaryDetails?.last_payout_amount || 0.00}
-                      </div>
-                      <div className="text-medium-emphasis small">COUNT {summaryDetails?.last_payout_count || 0}</div>
-                      <div className="text-medium-emphasis small"> {moment(summaryDetails?.last_payout_date || new Date()).format("MMM Do YYYY") }</div>
-                      
-                    </div>
-                  </CCardBody>
-              </CCard>
-              <CCard className="mb-4">
-                  <CCardBody>
-                    <div className="border-start border-start-4 border-start-warning py-1 px-3">
-                      <div className="text-medium-emphasis small">NEXT PAYOUT</div>
-                      <div className="fs-5 fw-semibold">
-                        {summaryDetails?.currency} {summaryDetails?.next_payout_amount || 0.00}
-                      </div>
-                      <div className="text-medium-emphasis small">COUNT {summaryDetails?.next_payout_count || 0}</div>
-                      <div className="text-medium-emphasis small"> {moment(summaryDetails?.next_payout_date || new Date()).format("MMM Do YYYY") }</div>
-                    </div>
-                  </CCardBody>
-              </CCard>
+            {/* <CCard className="mb-4">
+              <CCardBody>
+                <div className="border-start border-start-4 border-start-danger py-1 px-3">
+                  <div className="text-medium-emphasis small">LAST PAYOUT</div>
+                  <div className="fs-5 fw-semibold">
+                    {summaryDetails?.currency} {summaryDetails?.last_payout_amount || 0.00}
+                  </div>
+                  <div className="text-medium-emphasis small">COUNT {summaryDetails?.last_payout_count || 0}</div>
+                  <div className="text-medium-emphasis small"> {moment(summaryDetails?.last_payout_date || new Date()).format("MMM Do YYYY")}</div>
+
+                </div>
+              </CCardBody>
+            </CCard>
+            <CCard className="mb-4">
+              <CCardBody>
+                <div className="border-start border-start-4 border-start-warning py-1 px-3">
+                  <div className="text-medium-emphasis small">NEXT PAYOUT</div>
+                  <div className="fs-5 fw-semibold">
+                    {summaryDetails?.currency} {summaryDetails?.next_payout_amount || 0.00}
+                  </div>
+                  <div className="text-medium-emphasis small">COUNT {summaryDetails?.next_payout_count || 0}</div>
+                  <div className="text-medium-emphasis small"> {moment(summaryDetails?.next_payout_date || new Date()).format("MMM Do YYYY")}</div>
+                </div>
+              </CCardBody>
+            </CCard> */}
 
           </div>
 
           {/* <hr className="mt-0" /> */}
         </CCol>
 
-        {/* <CCol xs>
+        <CCol xs className='mt-5'>
           <CCard className="mb-4">
             <CCardHeader> {' & '} Sales</CCardHeader>
             <CCardBody>
@@ -447,7 +446,7 @@ const Dashboard = () => {
               </CTable>
             </CCardBody>
           </CCard>
-        </CCol> */}
+        </CCol>
       </CRow>
     </>
   )

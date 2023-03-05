@@ -207,11 +207,49 @@ export default function SignUp() {
   function sendApiData(config){
     // console.log(config)
     axios(config).then(function (response){
-      // console.log(response)
+      
+      if(response.data.status){
+        Swal.fire({
+          // title: 'Successfully created!',
+          text: response?.data?.message,
+          icon: "success",
+          allowOutsideClick: false,
+          // allowEscapeKey: false,
+          showCancelButton: false,
+          confirmButtonColor: '#950707',
+          // cancelButtonColor: '#d33',
+          confirmButtonText: 'Ok'
+        }).then((result) => { 
+          navigate("/login")
+        });
+      }
+      else{
+        Swal.fire({
+          // title: 'Successfully created!',
+          text: response.data.message,
+          icon: "error",
+          allowOutsideClick: false,
+          // allowEscapeKey: false,
+          showCancelButton: false,
+          confirmButtonColor: '#950707',
+          // cancelButtonColor: '#d33',
+          confirmButtonText: 'Ok'
+        }).then((result) => { });
+      }
       
     })
     .catch(function (error) {
-      console.log(error);
+      Swal.fire({
+        // title: 'Successfully created!',
+        text: error.response.data.message,
+        icon: "error",
+        allowOutsideClick: false,
+        // allowEscapeKey: false,
+        showCancelButton: false,
+        confirmButtonColor: '#950707',
+        // cancelButtonColor: '#d33',
+        confirmButtonText: 'Ok'
+      }).then((result) => { });    
     });
   }
 

@@ -22,6 +22,8 @@ const loading = (
 // Containers
 const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'))
 
+const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
+
 // Pages
 const Login = React.lazy(() => import('./views/pages/login/Login'))
 const JoinTeam = React.lazy(() => import('./views/pages/JoinTeam/JoinTeam'))
@@ -59,7 +61,7 @@ class App extends Component {
               <Route exact path="*" name="Page 404" element={<Page404 />} />
 
             }
-            {/* <Route exact path="/compliance" name="Compliance" element={<Compliance />} /> */}
+            <Route exact path="/dash" name="Compliance" element={<Dashboard />} />
 
           </Routes>
         </Suspense>
