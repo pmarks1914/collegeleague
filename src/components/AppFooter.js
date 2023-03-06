@@ -8,7 +8,7 @@ const AppFooter = () => {
         <a href="/" target="_blank" rel="noopener noreferrer">
           college league
         </a>
-        <span className="ms-1">&copy; 2022.</span>
+        <span className="ms-1">&copy; {(new Date()).getUTCFullYear()}.</span>
       </div>
     </CFooter>
   )

@@ -136,15 +136,15 @@ const Login = () => {
           setLogin("Login")
           // console.log(JSON.stringify(response.data));
           if (response?.data?.status) {
-            // console.log(response?.data, response1?.data)
+            // console.log("user data >> ",response?.data, " data >> ", response1?.data)
             let counter = 600000; // 600000 = 10m
   
             const userData = {
               status: response.data.status,
               access: response1?.data?.access_token,
               refresh: response1?.data?.refresh_token,
-              firstname: response?.data?.firstname,
-              lastname: response?.data?.lastname,
+              firstname: response?.data?.first_name,
+              lastname: response?.data?.last_name,
               other_names: response?.data?.other_names,
               gender: response?.data?.gender,
               id: response?.data?.id,
@@ -176,8 +176,10 @@ const Login = () => {
             // refresh: "",            
             // permission_list: ""
             // })
-  
-            window.location.href = "/dashboard";
+            setTimeout(()=>{
+              window.location.href = "/dashboard";
+            }, 1000)
+            
   
           }
           else {

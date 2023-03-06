@@ -36,7 +36,7 @@ body, .dash-info-des-0{
 .profile-img, .profile-img:hover, .profile-img:focus{
     background-color: #fafafa;
     box-shadow: none !important;
-    border: solid 10px #fff;
+    border: solid 1px #fff;
 }
 
 .my-actions { margin: 0 2em; }
