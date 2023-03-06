@@ -84,7 +84,7 @@ const DatatableMain = (transactionDetails) => {
   function datatablaScript(tdata) {
     let printCounter = 0;
 
-    setTableData(tdata.filter((post, id)=>{return id < 5}));
+    // setTableData(tdata?.filter((post, id)=>{return id < 5}));
     $('#myTable').DataTable().destroy();
 
     setTimeout(()=>{

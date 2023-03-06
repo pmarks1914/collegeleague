@@ -220,7 +220,7 @@ const Dashboard = () => {
       {/* <WidgetsDropdown /> */}
       {/* <WidgetsBrand withCharts /> */}
 
-      <CRow className='m-5'>
+      <CRow className='m-0' style={{width: "100%"}}>
         <CCol xs={12} sm={12} md={9} xl={9} style={{ float: "left!important" }} className="mb-0" >
 
           <CCard className="mb-0">
@@ -447,7 +447,7 @@ const Dashboard = () => {
             </CCardBody>
           </CCard>
         </CCol>
-      </CRow>
+      </CRow> 
     </>
   )
 }

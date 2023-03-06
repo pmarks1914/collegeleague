@@ -22,7 +22,7 @@ import {
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import $ from 'jquery'
-import avatar9 from './../../assets/brand/logo.png'
+import avatar9 from './../../assets/brand/logo.svg' 
 
 const AppHeaderDropdown = (userData) => {
   function logoutUser(){

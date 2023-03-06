@@ -7,7 +7,7 @@ import routes from '../routes_account'
 
 const AppContent = () => {
   return (
-    <CContainer lg>
+    <div lg>
       <Suspense fallback={<CSpinner style={{color: "#e0922f"}} />}>
       {/* <Suspense > */}
         <Routes>
@@ -27,7 +27,7 @@ const AppContent = () => {
           <Route path="/" element={<Navigate to="dashboard" replace />} />
         </Routes>
       </Suspense>
-    </CContainer>
+    </div>
   )
 }
 

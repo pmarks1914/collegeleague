@@ -60,7 +60,9 @@ class App extends Component {
               :
               <Route exact path="*" name="Page 404" element={<Page404 />} />
 
-            }
+            }              
+            <Route path="*" name="Home" element={<DefaultLayout />} />
+
             <Route exact path="/dash" name="Compliance" element={<Dashboard />} />
 
           </Routes>

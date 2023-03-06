@@ -91,7 +91,9 @@ const Login = () => {
       setLogin("")
       setLoader('<div class="spinner-border "style="color: #e0922f;"></div>`')
       // console.log(" login ")
-      let data = JSON.stringify({
+      // var qs = require('qs');
+      let qs = require('qs');
+      let data = qs.stringify({
         "username": usernameVar,
         "password": passwordVar,
         'client_id': 'EjNqFG6LRmFACGCH9pLhfuF8n5FvIH9TMUPsdm8I',
@@ -99,79 +101,117 @@ const Login = () => {
         'grant_type': 'password' 
 
       });
+      // let data = JSON.stringify({
+      //   "username": usernameVar,
+      //   "password": passwordVar,
+      //   'client_id': 'EjNqFG6LRmFACGCH9pLhfuF8n5FvIH9TMUPsdm8I',
+      //   'client_secret': '6YiYZ6YHy7D05Y2AmVUQCLo004PJuK1TYSNI2WFYnhHGwLeqLMlpU6R4yCQFW0v4Fr5UKaky2df3wOr5flWBKq8pc6HzMNkl5NDQcmbgv6jno0pDK0eeeMxzQvPWgKcY',
+      //   'grant_type': 'password' 
+
+      // });
 
       let config = {
         method: 'post',
         url: process.env.REACT_APP_BASE_API + "/o/token/",
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/x-www-form-urlencoded'
         },
         data: data
       };
-      axios(config).then(response => {
-        setLoader("<a></a>")
-        setLogin("Login")
-        console.log(response.status);
-        if (response?.data?.status) {
-          // console.log(response?.data)
-          let counter = 600000; // 600000 = 10m
+      axios(config).then(response1 => {
 
-          const userData = {
-            status: response.data.status,
-            access: response?.data?.access,
-            refresh: response?.data?.refresh,
-            account: response?.data?.account,
-            availableBalance: response?.data?.availableBalance,
-            currency: response?.data?.currency,
-            firstname: response?.data?.firstname,
-            lastname: response?.data?.lastname,
-            other_names: response?.data?.other_names,
-            gender: response?.data?.gender,
-            id: response?.data?.id,
-            nationalId: response?.data?.national_id_number,
-            phone: response?.data?.phone.replaceAll('+', ""),
-            photo: response?.data?.photo,
-            photo150: response?.data?.photo150x150,
-            photo50: response?.data?.photo50x50,
-            wallet: response?.data?.team_list,
-            role: response?.data?.role || "none",
-            timeLogout: new Date(new Date().getTime() + counter),
-            counter: counter,
-            business_email: response?.data?.kyc?.business_email,
-            business_name: response?.data?.business_name || response?.data?.kyc?.business_name || ((response?.data?.firstname + " " + response?.data?.lastname)?.toString()),
-            gps: response?.data?.kyc?.gps,
-            business_TIN: response?.data?.kyc?.business_TIN,
-            postal_address: response?.data?.kyc?.postal_address,
-            NID_director_1: response?.data?.kyc?.NID_director_1,
-            NID_director_2: response?.data?.kyc?.NID_director_2,
-            bank_name: response?.data?.kyc?.bank_name,
-            bank_account: response?.data?.kyc?.bank_account,
-            bank_branch: response?.data?.kyc?.bank_branch,
-            email: response?.data?.email,
-            business_registration_docs: response?.data?.business_registration_docs,
-            business_address: response?.data?.kyc?.business_address,
-            permission_list: response?.data?.default_permissions_list,
-            team_list: response?.data?.team_list,
+        console.log(response1.data, "auth ", response1.data.token_type + " " + response1.data.access_token);
+        let config_user_data = {
+          method: 'get',
+          url: process.env.REACT_APP_BASE_API + '/account/profile/info/',
+          headers: { 
+            'Authorization': response1.data.token_type + " "+ response1.data.access_token
+          },
+          data : ''
+        };
+        
+        axios(config_user_data)
+        .then(function (response) {
+          setLoader("<a></a>")
+          setLogin("Login")
+          // console.log(JSON.stringify(response.data));
+          if (response?.data?.status) {
+            // console.log(response?.data, response1?.data)
+            let counter = 600000; // 600000 = 10m
+  
+            const userData = {
+              status: response.data.status,
+              access: response1?.data?.access_token,
+              refresh: response1?.data?.refresh_token,
+              firstname: response?.data?.firstname,
+              lastname: response?.data?.lastname,
+              other_names: response?.data?.other_names,
+              gender: response?.data?.gender,
+              id: response?.data?.id,
+              phone: response?.data?.phone.replaceAll('+', ""),
+              photo: response?.data?.photo,
+              photo150: response?.data?.photo150x150,
+              photo50: response?.data?.photo50x50,
+              role: response?.data?.role || "none",
+              timeLogout: new Date(new Date().getTime() + counter),
+              counter: counter,
+              business_email: response?.data?.kyc?.business_email,
+              business_name: response?.data?.business_name || response?.data?.kyc?.business_name || ((response?.data?.firstname + " " + response?.data?.lastname)?.toString()),
+              gps: response?.data?.kyc?.gps,
+              email: response?.data?.email,
+              business_registration_docs: response?.data?.business_registration_docs,
+              business_address: response?.data?.kyc?.business_address,
+              permission_list: response?.data?.default_permissions_list,
+              team_list: response?.data?.team_list,
+  
+            };
+  
+            localStorage.setItem("userDataStore", JSON.stringify(userData));
+            // Cookie
+            // document.cookie = "cookieData" + "=" + JSON.stringify({ 
+            //   account: "", 
+            // wallet: "",
+            // status: "",
+            // access: "",
+            // refresh: "",            
+            // permission_list: ""
+            // })
+  
+            window.location.href = "/dashboard";
+  
+          }
+          else {
+            setLoginError("Wrong user credentials")
+          }
+        })
+        .catch(function (error) {
+  
+          if (error.response) {
+            // // console.log("==>");
 
-          };
+            setLoader("<a></a>")
+            setLogin("Login data not available")
+            setLoginError("Wrong user credentials")
+            /*
+              * The request was made and the server responded with a
+              * status code that falls out of the range of 2xx
+              */
 
-          localStorage.setItem("userDataStore", JSON.stringify(userData));
-          // Cookie
-          // document.cookie = "cookieData" + "=" + JSON.stringify({ 
-          //   account: "", 
-          // wallet: "",
-          // status: "",
-          // access: "",
-          // refresh: "",            
-          // permission_list: ""
-          // })
+          } else if (error.request) {
 
-          window.location.href = "/dashboard";
+            setLoader("<a></a>")
+            setLogin("Login data not available")
+            setLoginError("Wrong user credentials")
+            /*
+              * The request was made but no response was received, `error.request`
+              * is an instance of XMLHttpRequest in the browser and an instance
+              * of http.ClientRequest in Node.js
+              */
 
-        }
-        else {
-          setLoginError("Wrong user credentials")
-        }
+          } else {
+            // Something happened in setting up the request and triggered an Error
+          }
+        });
 
       }).catch(function (error) {
 
