@@ -42,7 +42,7 @@ if(["/", "/theme", "/dashboard", "/payment/transaction", "/payment/refunds", "/p
 }
 else{
   // console.log(window.location.pathname.split("/")[3])
-  window.location.href = '/404'
+  // window.location.href = '/404'
 }
 
 const account_nav = [

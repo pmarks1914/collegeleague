@@ -26,41 +26,7 @@ import avatar9 from '../../../assets/brand/logo.svg'
 
 const swal = require("sweetalert2");
 let permList = [
-  "can_view_business_performance_metrics",
-  "can_view_transactions",
-  "can_export_transactions",
-  "can_manage_refunds_&_disputes",
-  "can_view_customers",
-  "can_create_new_customers",
-  "can_manage_&_update_customers",
-  "can_view_customer_insights",
-  "can_view_payouts",
-  "can_export_payouts",
-  "can_view_transfers",
-  "can_export_transfers",
-  "can_create_and_manage_transfers",
-  "can_view_balance_history",
-  "can_export_balance_history",
-  "can_view_payment_pages",
-  "can_create_and_manage_payment_pages",
-  "can_view_products",
-  "can_create_and_manage_products",
-  "can_view_invoices",
-  "can_create_and_manage_invoices",
-  "can_view_subaccounts_&_splits",
-  "can_create_and_manage_subaccounts_&_splits",
-  "can_view_plans_&_subscriptions",
-  "can_create_and_manage_plans_&_subscriptions",
-  "can_view_business_settings_&_preferences",
-  "can_edit_business_settings_&_preferences",
-  "can_view_api_keys_&_webhooks",
-  "can_manage_api_keys_&_webhooks",
-  "can_view_users",
-  "can_manage_and_invite_users",
-  "can_view_bank_accounts_settings",
-  "can_manage_bank_accounts_settings",
-  "can_create_and_manage_charges",
-  "can_pay_with_transfer_for_failed_refund"
+  "can_view",
 ];
 const Login = () => {
 
@@ -79,7 +45,7 @@ const Login = () => {
     // window.location.href = "/dashboard";
 
     // // console.log("fff", process.env.REACT_APP_BASE_API, passwordVar, usernameVar)
-
+    // window.location.href = "/dashboard";
     if (usernameVar === "") {
       setGetFormDataError({...getFormDataError, ...{"email": true}})
     }
@@ -96,8 +62,8 @@ const Login = () => {
       let data = qs.stringify({
         "username": usernameVar,
         "password": passwordVar,
-        'client_id': 'EjNqFG6LRmFACGCH9pLhfuF8n5FvIH9TMUPsdm8I',
-        'client_secret': '6YiYZ6YHy7D05Y2AmVUQCLo004PJuK1TYSNI2WFYnhHGwLeqLMlpU6R4yCQFW0v4Fr5UKaky2df3wOr5flWBKq8pc6HzMNkl5NDQcmbgv6jno0pDK0eeeMxzQvPWgKcY',
+        'client_id': process.env.REACT_APP_client_id,
+        'client_secret': process.env.REACT_APP_client_secret,
         'grant_type': 'password' 
 
       });
@@ -120,7 +86,7 @@ const Login = () => {
       };
       axios(config).then(response1 => {
 
-        console.log(response1.data, "auth ", response1.data.token_type + " " + response1.data.access_token);
+        // console.log(response1.data, "auth ", response1.data.token_type + " " + response1.data.access_token);
         let config_user_data = {
           method: 'get',
           url: process.env.REACT_APP_BASE_API + '/account/profile/info/',
@@ -134,13 +100,13 @@ const Login = () => {
         .then(function (response) {
           setLoader("<a></a>")
           setLogin("Login")
-          // console.log(JSON.stringify(response.data));
+          // console.log((response.data));
           if (response?.data?.status) {
             // console.log("user data >> ",response?.data, " data >> ", response1?.data)
             let counter = 600000; // 600000 = 10m
   
             const userData = {
-              status: response.data.status,
+              status: response?.data.status,
               access: response1?.data?.access_token,
               refresh: response1?.data?.refresh_token,
               firstname: response?.data?.first_name,
@@ -148,7 +114,7 @@ const Login = () => {
               other_names: response?.data?.other_names,
               gender: response?.data?.gender,
               id: response?.data?.id,
-              phone: response?.data?.phone.replaceAll('+', ""),
+              phone: response?.data?.phone?.replaceAll('+', ""),
               photo: response?.data?.photo,
               photo150: response?.data?.photo150x150,
               photo50: response?.data?.photo50x50,
@@ -166,6 +132,7 @@ const Login = () => {
   
             };
   
+            // console.log((JSON.stringify(userData)));
             localStorage.setItem("userDataStore", JSON.stringify(userData));
             // Cookie
             // document.cookie = "cookieData" + "=" + JSON.stringify({ 
@@ -318,7 +285,7 @@ const Login = () => {
                     <p className="text-medium-emphasis mb-0">{loginError}</p>
                     <CRow>
                       <CCol xs={12}>
-
+{/*  */}
                         {login === "Login" ?
 
                           <Button
