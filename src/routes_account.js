@@ -1,5 +1,5 @@
 import React from 'react'
-import General from './views/pages/Profile/General'
+import General from './views/pages/UserInfo/General'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
