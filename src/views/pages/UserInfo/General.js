@@ -78,6 +78,11 @@ const General = () => {
   const [activeTab, setActiveTab] = useState('1');
   const [month, setMonth] = useState(null);
   const [year, setYear] = useState(null);
+
+  // manage profile switches for items - tab 2
+  // basic info, education info, family info
+  const [manageProfileSwitch, setManageProfileSwitch] = useState("basic")
+
   useEffect(() => {
 
     getSessionTimeout();
@@ -174,17 +179,17 @@ const General = () => {
             <Row>
               <Col sm="4" xs="4" md="2" lg="2" xl="2" className='mt-5 mr-0 bg-white'>
                 <Nav className="mt-4">
-                  <NavItem className='w-100'>
+                  <NavItem className='w-100' onClick={()=> setManageProfileSwitch("basic")} >
                     <NavLink className='border border-top-primary'>
                       Basic Information 
                     </NavLink>
                   </NavItem>
-                  <NavItem className='w-100'>
+                  <NavItem className='w-100' onClick={()=> setManageProfileSwitch("education")} >
                     <NavLink className='border border-top-primary'>
                       Education Information
                     </NavLink>
                   </NavItem>
-                  <NavItem className='w-100'>
+                  <NavItem className='w-100' onClick={()=> setManageProfileSwitch("family")} >
                     <NavLink className='border border-top-primary'>
                       Family Information
                     </NavLink>
@@ -192,7 +197,7 @@ const General = () => {
                 </Nav>
               </Col>
               <Col sm="8" xs="8" md="8" lg="8" xl="8" id="tab-type2" className='ml-0'>
-                <BasicInfo />
+                <BasicInfo profileManage={manageProfileSwitch} />
               </Col>
               <Col sm="0" xs="0" md="2" lg="2" xl="2" className='ml-0'>
               </Col>
