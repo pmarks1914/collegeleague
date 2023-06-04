@@ -22,7 +22,7 @@
     "test:cov": "npm test -- --coverage --watchAll=false",
     "test:debug": "react-scripts --inspect-brk test --runInBand",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -b main -d build"
+    "deploy": "gh-pages -b stagebuild -d build"
   },
   "config": {
     "coreui_library_short_version": "4.2"

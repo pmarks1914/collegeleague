@@ -62,7 +62,7 @@ import { DownloadIcon } from '@chakra-ui/icons';
 
 import { DocsCallout, DocsExample } from 'src/components'
 import classnames from 'classnames';
-// import './gen.css';
+//dd import './gen.css';
 import $ from 'jquery';
 import Select, { components } from 'react-select';
 import PropTypes, { func } from "prop-types";
