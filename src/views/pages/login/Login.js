@@ -116,6 +116,7 @@ const Login = () => {
               id: response?.data?.id,
               phone: response?.data?.phone?.replaceAll('+', ""),
               photo: response?.data?.photo,
+              dob: response?.data?.date_of_birth,
               photo150: response?.data?.photo150x150,
               photo50: response?.data?.photo50x50,
               role: response?.data?.role || "none",
