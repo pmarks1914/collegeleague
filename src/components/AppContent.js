@@ -7,7 +7,7 @@ import routes from '../routes_account'
 
 const AppContent = () => {
   return (
-    <div lg>
+    <div >
       <Suspense fallback={<CSpinner style={{color: "#e0922f"}} />}>
       {/* <Suspense > */}
         <Routes>

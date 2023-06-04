@@ -40,6 +40,7 @@ import {
   CRow,
 } from '@coreui/react'
 import Swal from 'sweetalert2';
+import { Col, Row } from 'reactstrap';
 
 export default function SignUp() {
   const navigate = useNavigate()
@@ -260,8 +261,8 @@ export default function SignUp() {
 
       <CContainer>
 
-        <CRow className="justify-content-center">
-          <CCol md={4} lg={3} xl={3}>
+        <Row className="justify-content-center">
+          <Col md={4} lg={3} xl={3}>
             <CCard className="p-0 cl-container">
               <CCardHeader>
               </CCardHeader>
@@ -272,7 +273,7 @@ export default function SignUp() {
                     <span><img src={avatar9} className='mb-0' style={{ width: "30px" }} alt="college league" /> COLLEGE LEAGUE
                     </span>
 
-                    <p component="h6" variant="h6" className='mt-3 text-center fs-6'>
+                    <p className='mt-3 text-center fs-6'>
                         Sign Up
                     </p>
                     <CCol xs="12" sm="12" md={12} lg={12} className="mt-1" >
@@ -408,8 +409,8 @@ export default function SignUp() {
                 </p>
               </CCardBody>
             </CCard>
-          </CCol>
-        </CRow>
+          </Col>
+        </Row>
 
 
       </CContainer>

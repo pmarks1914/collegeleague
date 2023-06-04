@@ -230,7 +230,7 @@ export default function SignUp() {
                         <span><img src={avatar9} className='mb-0' style={{ width: "30px" }} alt="college league" /> COLLEGE LEAGUE
                         </span>
 
-                        <p component="h6" variant="h6" className='mt-3 text-center fs-6'>
+                        <p className='mt-3 text-center fs-6'>
                             Reset Password
                         </p>
                         <CCol xs="12" sm="12" md={12} lg={12} className="mt-1" >
