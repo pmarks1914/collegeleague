@@ -122,7 +122,7 @@ const WidgetsDropdown = () => {
               </div> 
             </>
           }
-          title="WINGIPAY TO WINGIPAY"
+          title="COLLEAGELEAGUE TO COLLEAGELEAGUE"
           action={
             <CDropdown alignment="end">
               <CDropdownToggle color="transparent" caret={false} className="p-0">
@@ -211,7 +211,7 @@ const WidgetsDropdown = () => {
               </div> 
             </>
           }
-          title="WINGIPAY TO MTN"
+          title="COLLEAGELEAGUE TO MTN"
           action={
             <CDropdown alignment="end">
               <CDropdownToggle color="transparent" caret={false} className="p-0">
@@ -287,7 +287,7 @@ const WidgetsDropdown = () => {
               </div> 
             </>
           }
-          title="WINGIPAY TO VODAFONE"
+          title="COLLEAGELEAGUE TO VODAFONE"
           action={
             <CDropdown alignment="end">
               <CDropdownToggle color="transparent" caret={false} className="p-0">

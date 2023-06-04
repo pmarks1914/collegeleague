@@ -38,7 +38,7 @@ const AppSidebar = () => {
     >
       <CSidebarBrand className="d-none d-md-flex bg-white rounded-0" to="/">
         {/* <CIcon className="sidebar-brand-full" icon={logoNegative} height={35} /> */}
-        <img src={logo} alt="wingipay logo" width="10%" />
+        <img src={logo} alt="collegeleague logo" width="10%" />
         {/* <CIcon className="sidebar-brand-narrow" icon={sygnet} height={35} /> */}
       </CSidebarBrand>
       <CSidebarBrand className="d-flex rounded-0" to="/">

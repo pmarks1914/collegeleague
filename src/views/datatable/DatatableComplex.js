@@ -59,7 +59,7 @@ let posts = [
   {
   "id": "33bc65a6-70f5-470a-812a-61944b6412f3",
   "amount": "0.01",
-  "note": "wingipay to MTN ussd GhS 0.01 from Eli",
+  "note": "collegeleague to MTN ussd GhS 0.01 from Eli",
   "service": 2,
   "status_code": "SUCCESSFUL",
   "status_message": "Transaction completed successfully",
@@ -68,7 +68,7 @@ let posts = [
 {
 "id": "33bc65a6-70f5-470a-812a-61944b6412f3",
 "amount": "0.01",
-"note": "wingipay to MTN ussd GhS 0.01 from Eli",
+"note": "collegeleague to MTN ussd GhS 0.01 from Eli",
 "service": 2,
 "status_code": "PENDING",
 "status_message": "Transaction completed successfully",
@@ -77,7 +77,7 @@ let posts = [
 {
 "id": "33bc65a6-70f5-470a-812a-61944b6412f3",
 "amount": "0.01",
-"note": "wingipay to MTN ussd GhS 0.01 from Eli",
+"note": "collegeleague to MTN ussd GhS 0.01 from Eli",
 "service": 2,
 "status_code": "FAILED",
 "status_message": "Transaction completed successfully",
@@ -168,7 +168,7 @@ const DatatableMain = (transactionDetails) => {
                 }
               },
               customize: function (anytype) {
-                let sheet = anytype.xl.worksheets['wingipaytransaction.xml'];
+                let sheet = anytype.xl.worksheets['collegeleaguetransaction.xml'];
                 $('row:first c', sheet).attr('s', '7');
               }
             },
@@ -190,7 +190,7 @@ const DatatableMain = (transactionDetails) => {
                 }
               },
               customize: function (anytype) {
-                let sheet = anytype.xl.worksheets['wingipaytransaction.pdf'];
+                let sheet = anytype.xl.worksheets['collegeleaguetransaction.pdf'];
                 $('row:first c', sheet).attr('s', '7');
               }
             },

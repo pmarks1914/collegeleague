@@ -59,14 +59,14 @@ export default function ViewDetails(post) {
             <Col sm="4"></Col>
             <Col sm="4">
                 <a style={{ color: "#000" }}>
-                    { post?.viewData?.service === 1 ? "WINGIPAY TO WINGIPAY" : "" } 
-                    { post?.viewData?.service === 2 ? "WINGIPAY TO MTN" : "" }
-                    { post?.viewData?.service === 3 ? "WINGIPAY TO VODAFONE" : "" }
-                    { post?.viewData?.service === 4 ? "WINGIPAY TO AIRTELTIGO" : "" }
-                    { post?.viewData?.service === 5 ? "MTN TO WINGIPAY" : "" }
-                    { post?.viewData?.service === 6 ? "VODAFONE TO WINGIPAY" : "" }
-                    { post?.viewData?.service === 7 ? "AIRTELTIGO TO WINGIPAY" : "" }
-                    { post?.viewData?.service === 8 ? "WINGIPAY TO AGENT" : "" }
+                    { post?.viewData?.service === 1 ? "COLLEAGELEAGUE TO COLLEAGELEAGUE" : "" } 
+                    { post?.viewData?.service === 2 ? "COLLEAGELEAGUE TO MTN" : "" }
+                    { post?.viewData?.service === 3 ? "COLLEAGELEAGUE TO VODAFONE" : "" }
+                    { post?.viewData?.service === 4 ? "COLLEAGELEAGUE TO AIRTELTIGO" : "" }
+                    { post?.viewData?.service === 5 ? "MTN TO COLLEAGELEAGUE" : "" }
+                    { post?.viewData?.service === 6 ? "VODAFONE TO COLLEAGELEAGUE" : "" }
+                    { post?.viewData?.service === 7 ? "AIRTELTIGO TO COLLEAGELEAGUE" : "" }
+                    { post?.viewData?.service === 8 ? "COLLEAGELEAGUE TO AGENT" : "" }
                     { [1, 2, 3, 4, 5, 6, 7, 8].includes(post?.viewData?.service) ? "" : "None" }
                 </a>
             </Col>

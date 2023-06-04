@@ -11,7 +11,7 @@ import "./generic.css"
 // import 'https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js'
 // import 'https://cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js'
 
-// let userData = JSON.parse(localStorage.getItem("userDataStore"));
+let userData = JSON.parse(localStorage.getItem("userDataStore"));
 
 const loading = (
   <div className="pt-3 text-center">
@@ -54,13 +54,13 @@ class App extends Component {
             <Route exact path="/500" name="Page 500" element={<Page500 />} />
             <Route exact path="/change-password" name="Change Password" element={<ChangePassword />} />
             <Route exact path="/reset-password" name="Reset Password" element={<ResetPassword />} />
-            {/* {
+            {
               userData?.access ?
               <Route path="*" name="Home" element={<DefaultLayout />} />
               :
               <Route exact path="*" name="Page 404" element={<Page404 />} />
 
-            }               */}
+            }              
             <Route path="*" name="Home" element={<DefaultLayout />} />
 
             <Route exact path="/dash" name="Compliance" element={<Dashboard />} />

@@ -56,7 +56,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import Swal from 'sweetalert2';
 
-import 'antd/dist/antd.css';
+import 'antd/dist/antd.min.css';
 import { message, Upload } from 'antd';
 import { DownloadIcon } from '@chakra-ui/icons';
 

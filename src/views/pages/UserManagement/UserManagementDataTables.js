@@ -279,7 +279,7 @@ const UserManagementDataTables = (props) => {
                 }
               },
               customize: function (anytype) {
-                let sheet = anytype.xl.worksheets['wingipayuserGetInfo.xml'];
+                let sheet = anytype.xl.worksheets['collegeleagueuserGetInfo.xml'];
                 $('row:first c', sheet).attr('s', '7');
               }
             },
@@ -301,7 +301,7 @@ const UserManagementDataTables = (props) => {
                 }
               },
               customize: function (anytype) {
-                let sheet = anytype.xl.worksheets['wingipayuserGetInfo.pdf'];
+                let sheet = anytype.xl.worksheets['collegeleagueuserGetInfo.pdf'];
                 $('row:first c', sheet).attr('s', '7');
               }
             },
