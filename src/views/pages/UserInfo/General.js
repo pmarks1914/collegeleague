@@ -91,10 +91,10 @@ const General = () => {
   const toggle = tab => {
     if (activeTab !== tab) setActiveTab(tab);
     if (tab === '1' || tab === '14') {
-      document.getElementById("fin-month-id").style.display = "block";
+      // document.getElementById("fin-month-id").style.display = "block";
     }
     else {
-      document.getElementById("fin-month-id").style.display = "none";
+      // document.getElementById("fin-month-id").style.display = "none";
     }
 
 
