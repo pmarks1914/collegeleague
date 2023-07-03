@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { TabContent, TabPane, Nav, NavItem, NavLink, Row, Col, Label, ButtonGroup } from 'reactstrap'
+import { TabContent, TabPane, Nav, NavItem, NavLink, Row, Col, Label, ButtonGroup, Badge } from 'reactstrap'
 import {
     CCard,
     CCardBody,
@@ -98,6 +98,7 @@ const optionsFinMonth = [
     { value: "December", label: "December", key: 12 },
 ];
 
+let family_Data = [{"id": 1, "first_name": "first", "last_name": "last", "other_names": "oth"}, {"id": 2, "first_name": "first", "last_name": "last", "other_names": "oth"}]
 const userData = JSON.parse(localStorage.getItem('userDataStore'));
 
 // console.log(userData)
@@ -151,11 +152,13 @@ const BasicInfo = (props) => {
     const [uploading2, setUploading2] = useState(false);
     const [newCertificate, setNewCertificate] = useState(null)
     useEffect(() => {
-
         //   getSessionTimeout();
-
         passConfiguration("get", "get", "address", 419)
     }, [])
+    const [familyData, setFamilyData] = useState(family_Data)
+    useEffect(() => {
+        console.log(familyData)
+    }, [familyData])
 
     const toggle = tab => {
         if (activeTab !== tab) setActiveTab(tab);
@@ -205,12 +208,14 @@ const BasicInfo = (props) => {
     const handlePhotoUpload = () => {
         const formData2 = new FormData();
         photoList.forEach((photo) => {
+            
+            // formData2.append('user', userData?.id);
             formData2.append('photo', photo);
-            // console.log("rtghrghhrthrhrthrthrthrtrtrtgrt", directorTwoID)
+            console.log("rtghrghhrthrhrthrthrthrtrtrtgrt", photo, userData)
 
             let config = {
                 method: 'patch',
-                url: process.env.REACT_APP_BASE_API + '/auth/profile_update/',
+                url: process.env.REACT_APP_BASE_API + '/user-account/' + userData?.id + "/",
                 headers: {
                     "Authorization": `Bearer ${userData.access}`,
                     'Content-Type': 'application/json',
@@ -233,7 +238,7 @@ const BasicInfo = (props) => {
 
                         localStorage.setItem("userDataStore", JSON.stringify(currentUser_new));
                         setTimeout(() => {
-                            window.location.reload()
+                            // window.location.reload()
                         }, 1000)
 
                     }
@@ -265,17 +270,19 @@ const BasicInfo = (props) => {
     };
     // certificate 
     const handleCertificateUpload = () => {
+        // console.log(userData,getFormData, moment(getFormData.certificateIssuedDate).format('YYYY-MM-DD'))
         const formData2 = new FormData();
-        formData2.append('name', getFormData.certificateName);
-        formData2.append('issued_date', getFormData.certificateIssuedDate);
+        formData2.append('account', userData?.id);
+        formData2.append('name', getFormData.certificate_name);
+        formData2.append('issued_date', moment(getFormData.certificateIssuedDate).format('YYYY-MM-DD'));
 
         certificateList.forEach((cert) => {
-            formData2.append('cert', cert);
+            formData2.append('file_attachment', cert);
             // console.log("rtghrghhrthrhrthrthrthrtrtrtgrt", getFormData, formData2)
 
             let config = {
                 method: 'post',
-                url: process.env.REACT_APP_BASE_API + '/certificate/add/',
+                url: process.env.REACT_APP_BASE_API + '/certificate/',
                 headers: {
                     "Authorization": `Bearer ${userData.access}`,
                     'Content-Type': 'application/json',
@@ -286,9 +293,9 @@ const BasicInfo = (props) => {
             if (cert.type === 'image/png' || cert.type === 'image/jpg' || cert.type === 'image/jpeg' || cert.type === 'application/pdf') {
                 axios(config).then(function (response) {
 
-                    // console.log(response?.data, cert)
-                    if (response.status === 200) {
-                        toast.success(response?.data.message, {
+                    console.log(response.status)
+                    if (response.status === 201) {
+                        toast.success(response?.data.message || "Successful", {
                             position: toast.POSITION.TOP_CENTER
                         });
                         setNewCert(cert);
@@ -303,7 +310,7 @@ const BasicInfo = (props) => {
 
                     }
                     else{
-                        toast.error(response?.data.message, {
+                        toast.error(response?.data.message || "Failed", {
                             position: toast.POSITION.TOP_CENTER
                         });
                     }
@@ -382,8 +389,8 @@ const BasicInfo = (props) => {
                     "other_names": getFormData?.other_names,
                     // "phone": "0208556743",
                     // "email": "",
-                    "date_of_birth": moment(getFormData?.dateOfBirth).format('DD-MM-YYYY'),
-                    "dob": moment(getFormData?.dateOfBirth).format('DD-MM-YYYY'),
+                    "date_of_birth": moment(getFormData?.dateOfBirth).format('YYYY-MM-DD'),
+                    "dob": moment(getFormData?.dateOfBirth).format('YYYY-MM-DD'),
                     // "photo": ""
                 }
                 config = {
@@ -503,6 +510,109 @@ const BasicInfo = (props) => {
     }
     function setAddressConntryInfo(e){
         setGetFormData({...getFormData, ...{ "country": e.value, "code": e.code }})
+    }
+
+    function handleFamilySubmit(e, familyAction, postData, familyRelation){
+        e.preventDefault()
+        let config, data = {};
+
+        if(familyRelation === "Parent"){
+            // 
+            // familyAction === Put, Post, Delete
+            if(familyAction === "Post"){
+                // 
+                // familyData = {...familyData, ...{"primary_first_name": getFormData?.primary_first_name, "primary_other_name": getFormData?.primary_other_name, "primary_last_name": getFormData?.primary_last_name}}
+
+                let arrayData = familyData
+                arrayData.push({"first_name": getFormData?.primary_first_name, "other_name": getFormData?.primary_other_name || "", "last_name": getFormData?.primary_last_name, "id": familyData.length + 1})
+
+                setFamilyData(arrayData)
+                // console.log(familyData)
+                // clear the post id === use this to manage props effects
+                setGetFormData({...getFormData, ...{"primary": false}})
+                
+                data = {
+                    "first_name": getFormData?.primary_first_name,
+                    "last_name": getFormData?.primary_last_name,
+                    "relation_type": "Sibling",
+                    "account": userData?.id
+                  }
+                config = {
+                    method: familyAction,
+                    url: process.env.REACT_APP_BASE_API + "/family/",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + userData?.access
+                    },
+                    data: data
+                };
+                genericApiCall(config, familyRelation)
+            }
+            else if(familyAction === "Put"){
+                // 
+                let arrayData = familyData.filter(post => {return post.id !== getFormData?.theId})
+                arrayData.push({"first_name": getFormData?.primary_first_name, "other_name": getFormData?.primary_other_name || "", "last_name": getFormData?.primary_last_name, "id": getFormData?.theId })
+                setFamilyData(arrayData)
+                
+                // // clear the post id
+                setGetFormData({...getFormData, ...{"theId": "", "primary": false}})
+            }
+            else if(familyAction === "Delete" && postData?.id){
+                // 
+                console.log(familyData)
+                let arrayData = familyData.filter(post => {return post.id !== postData?.id})
+                // console.log(arrayData, postData?.id)
+                setFamilyData(arrayData)
+                setGetFormData({...getFormData, ...{"nothing": "", "primary": false}})
+            }
+        }
+        else if(familyRelation === "Sibling"){
+            // 
+            // familyAction === Put, Post, Delete
+            if(familyAction === "Post"){
+                //
+                let arrayData = familyData
+                arrayData.push({"first_name": getFormData?.primary_first_name, "other_name": getFormData?.primary_other_name || "", "last_name": getFormData?.primary_last_name, "id": familyData.length + 1})
+
+                setFamilyData(arrayData)
+                // clear the post id === use this to manage props effects
+                setGetFormData({...getFormData, ...{"primary": false}})
+                
+                data = {
+                    "first_name": getFormData?.primary_first_name,
+                    "last_name": getFormData?.primary_last_name,
+                    "relation_type": "Sibling",
+                    "account": userData?.id
+                  }
+                config = {
+                    method: familyAction,
+                    url: process.env.REACT_APP_BASE_API + "/family/",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + userData?.access
+                    },
+                    data: data
+                };
+                genericApiCall(config, familyRelation)
+            }
+            else if(familyAction === "Put"){
+                // 
+                let arrayData = familyData.filter(post => {return post.id !== getFormData?.theId})
+                arrayData.push({"first_name": getFormData?.primary_first_name, "other_name": getFormData?.primary_other_name || "", "last_name": getFormData?.primary_last_name, "id": getFormData?.theId })
+                setFamilyData(arrayData)
+                
+                // // clear the post id
+                setGetFormData({...getFormData, ...{"theId": "", "primary": false}})
+            }
+            else if(familyAction === "Delete" && postData?.id){
+                // 
+                console.log(familyData)
+                let arrayData = familyData.filter(post => {return post.id !== postData?.id})
+                // console.log(arrayData, postData?.id)
+                setFamilyData(arrayData)
+                setGetFormData({...getFormData, ...{"nothing": "", "primary": false}})
+            }
+        }
     }
     return (
         <div className="">
@@ -943,9 +1053,27 @@ const BasicInfo = (props) => {
                     <CAccordion activeItemKey={1} className="mt-5">
                         <h6>Family Information</h6>
                         <CAccordionItem itemKey={1}>
-                            <CAccordionHeader>Parent - Primary</CAccordionHeader>
+                            <CAccordionHeader>Parent </CAccordionHeader>
                             <CAccordionBody>
                                 <strong></strong>
+                                {
+                                    familyData?.map((post, id) => {
+                                        return (
+                                            <Row key={post.id} >
+                                                <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > {post.first_name} </Col>
+                                                <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > {post.last_name} </Col>
+                                                <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > {post.other_names} </Col>
+                                                <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > 
+                                                <Badge color='secondary' onClick={()=> setGetFormData({...getFormData, ...{"primary": "Put", "theId": post?.id, "primary_first_name": post?.first_name, "primary_other_name": post?.other_names, "primary_last_name": post?.last_name }}) }>Edit</Badge> 
+                                             
+                                                <Badge color='primary' onClick={(e)=>{ handleFamilySubmit(e, "Delete", post, "Parent") } } >Delete</Badge> 
+                                                </Col>
+                                            </Row>
+                                        )
+                                    }
+
+                                    )
+                                }
                                 <Row>
                                     <Col xs="12" sm="12" md={12} lg={12} className="mt-2" >
                                         <div className='mui-control-form' >
@@ -1026,14 +1154,14 @@ const BasicInfo = (props) => {
                                     fullWidth
                                     variant="contained"
                                     sx={{ mt: 3, mb: 2 }}
-                                //   onClick={(e)=>handleSubmit(e)}
+                                    onClick={(e)=> (getFormData?.primary_first_name && getFormData?.primary_last_name) ? handleFamilySubmit(e, (getFormData?.primary ? (getFormData?.primary === "Put" ? "Put" : "Delete" ) : "Post" ), {}, "Parent") : "" }
                                 >
                                     Save
                                 </Button>
                             </CAccordionBody>
                         </CAccordionItem>
                         <CAccordionItem itemKey={2}>
-                            <CAccordionHeader>Parent - Secondary</CAccordionHeader>
+                            <CAccordionHeader>Spouce </CAccordionHeader>
                             <CAccordionBody>
                                 <strong></strong>
                                 <Row>
@@ -1123,22 +1251,6 @@ const BasicInfo = (props) => {
                             </CAccordionBody>
                         </CAccordionItem>
                         <CAccordionItem itemKey={3}>
-                            <CAccordionHeader>Household</CAccordionHeader>
-                            <CAccordionBody>
-                                <strong></strong>
-
-                                <Button
-                                    type="submit"
-                                    fullWidth
-                                    variant="contained"
-                                    sx={{ mt: 3, mb: 2 }}
-                                //   onClick={(e)=>handleSubmit(e)}
-                                >
-                                    Save
-                                </Button>
-                            </CAccordionBody>
-                        </CAccordionItem>
-                        <CAccordionItem itemKey={3}>
                             <CAccordionHeader>Sibling</CAccordionHeader>
                             <CAccordionBody>
                                 <strong>Add a sibling</strong>
@@ -1150,6 +1262,24 @@ const BasicInfo = (props) => {
                                                 noValidate
                                                 autoComplete="on"
                                             >
+                                            {
+                                                familyData?.map((post, id) => {
+                                                    return (
+                                                        <Row key={post.id} >
+                                                            <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > {post.first_name} </Col>
+                                                            <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > {post.last_name} </Col>
+                                                            <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > {post.other_names} </Col>
+                                                            <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > 
+                                                            <Badge color='secondary' onClick={()=> setGetFormData({...getFormData, ...{"sibling": "Put", "theId": post?.id, "sibling_first_name": post?.first_name, "sibling_other_name": post?.other_names, "sibling_last_name": post?.last_name }}) }>Edit</Badge> 
+                                                         
+                                                            <Badge color='primary' onClick={(e)=>{ handleFamilySubmit(e, "Delete", post, "Sibling") } } >Delete</Badge> 
+                                                            </Col>
+                                                        </Row>
+                                                    )
+                                                }
+            
+                                                )
+                                            }
                                                 <InputLabel shrink htmlFor="sibling_first_name"> </InputLabel>
                                                 <TextField
                                                     error={getFormDataError?.sibling_first_name}
@@ -1222,12 +1352,28 @@ const BasicInfo = (props) => {
                                     fullWidth
                                     variant="contained"
                                     sx={{ mt: 3, mb: 2 }}
-                                //   onClick={(e)=>handleSubmit(e)}
+                                    onClick={(e)=> (getFormData?.sibling_first_name && getFormData?.sibling_last_name) ? handleFamilySubmit(e, (getFormData?.sibling ? (getFormData?.sibling === "Put" ? "Put" : "Delete" ) : "Post" ), {}, "Sibling") : "" }
                                 >
                                     Save
                                 </Button>
                             </CAccordionBody>
                         </CAccordionItem>
+                        {/* <CAccordionItem itemKey={4}>
+                            <CAccordionHeader>Household</CAccordionHeader>
+                            <CAccordionBody>
+                                <strong></strong>
+
+                                <Button
+                                    type="submit"
+                                    fullWidth
+                                    variant="contained"
+                                    sx={{ mt: 3, mb: 2 }}
+                                //   onClick={(e)=>handleSubmit(e)}
+                                >
+                                    Save
+                                </Button>
+                            </CAccordionBody>
+                        </CAccordionItem> */}
                     </CAccordion>
                     : ""
             }
