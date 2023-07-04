@@ -98,7 +98,7 @@ const optionsFinMonth = [
     { value: "December", label: "December", key: 12 },
 ];
 
-let family_Data = [{"id": 1, "first_name": "first", "last_name": "last", "other_names": "oth"}, {"id": 2, "first_name": "first", "last_name": "last", "other_names": "oth"}]
+let family_Data = [{"id": 1, "first_name": "first", "last_name": "last", "other_name": "oth", "relation_type": "Parent" }, {"id": 2, "first_name": "first", "last_name": "last", "other_names": "oth", "relation_type": "Sibling" }, {"id": 3, "first_name": "first", "last_name": "last", "other_names": "oth", "relation_type": "Spouce" } ]
 const userData = JSON.parse(localStorage.getItem('userDataStore'));
 
 // console.log(userData)
@@ -107,6 +107,7 @@ const BasicInfo = (props) => {
     const [month, setMonth] = useState(null);
     const [year, setYear] = useState(null);
 
+    const [address, setAddress] = useState(null)
     const [getFormDataError, setGetFormDataError] = React.useState({
         "first_name": false,
         "last_name": false,
@@ -155,9 +156,14 @@ const BasicInfo = (props) => {
         //   getSessionTimeout();
         passConfiguration("get", "get", "address", 419)
     }, [])
-    const [familyData, setFamilyData] = useState(family_Data)
+    const [familyData, setFamilyData] = useState(null)
+
     useEffect(() => {
-        console.log(familyData)
+        getDataInfo()
+        // console.log(familyData)
+    }, [])
+    useEffect(() => {
+        // console.log(familyData)
     }, [familyData])
 
     const toggle = tab => {
@@ -528,13 +534,11 @@ const BasicInfo = (props) => {
 
                 setFamilyData(arrayData)
                 // console.log(familyData)
-                // clear the post id === use this to manage props effects
-                setGetFormData({...getFormData, ...{"primary": false}})
                 
                 data = {
                     "first_name": getFormData?.primary_first_name,
                     "last_name": getFormData?.primary_last_name,
-                    "relation_type": "Sibling",
+                    "relation_type": familyRelation,
                     "account": userData?.id
                   }
                 config = {
@@ -547,14 +551,32 @@ const BasicInfo = (props) => {
                     data: data
                 };
                 genericApiCall(config, familyRelation)
+                // clear the post id === use this to manage props effects
+                setGetFormData({...getFormData, ...{"primary": false}})
             }
-            else if(familyAction === "Put"){
+            else if(familyAction === "Patch"){
                 // 
                 let arrayData = familyData.filter(post => {return post.id !== getFormData?.theId})
                 arrayData.push({"first_name": getFormData?.primary_first_name, "other_name": getFormData?.primary_other_name || "", "last_name": getFormData?.primary_last_name, "id": getFormData?.theId })
                 setFamilyData(arrayData)
-                
-                // // clear the post id
+
+                data = {
+                    "first_name": getFormData?.primary_first_name,
+                    "last_name": getFormData?.primary_last_name,
+                    "relation_type": familyRelation,
+                    "account": userData?.id
+                  }
+                config = {
+                    method: familyAction,
+                    url: process.env.REACT_APP_BASE_API + "/family/" + getFormData?.theId + "/",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + userData?.access
+                    },
+                    data: data
+                };
+                genericApiCall(config, familyRelation)
+                // clear the post id
                 setGetFormData({...getFormData, ...{"theId": "", "primary": false}})
             }
             else if(familyAction === "Delete" && postData?.id){
@@ -563,6 +585,19 @@ const BasicInfo = (props) => {
                 let arrayData = familyData.filter(post => {return post.id !== postData?.id})
                 // console.log(arrayData, postData?.id)
                 setFamilyData(arrayData)
+
+                data = {}
+                config = {
+                    method: familyAction,
+                    url: process.env.REACT_APP_BASE_API + "/family/" + postData?.id + "/",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + userData?.access
+                    },
+                    data: data
+                };
+                genericApiCall(config, familyRelation)
+
                 setGetFormData({...getFormData, ...{"nothing": "", "primary": false}})
             }
         }
@@ -579,9 +614,9 @@ const BasicInfo = (props) => {
                 setGetFormData({...getFormData, ...{"primary": false}})
                 
                 data = {
-                    "first_name": getFormData?.primary_first_name,
-                    "last_name": getFormData?.primary_last_name,
-                    "relation_type": "Sibling",
+                    "first_name": getFormData?.sibling_first_name,
+                    "last_name": getFormData?.sibling_last_name,
+                    "relation_type": familyRelation,
                     "account": userData?.id
                   }
                 config = {
@@ -595,12 +630,29 @@ const BasicInfo = (props) => {
                 };
                 genericApiCall(config, familyRelation)
             }
-            else if(familyAction === "Put"){
+            else if(familyAction === "Patch"){
                 // 
                 let arrayData = familyData.filter(post => {return post.id !== getFormData?.theId})
                 arrayData.push({"first_name": getFormData?.primary_first_name, "other_name": getFormData?.primary_other_name || "", "last_name": getFormData?.primary_last_name, "id": getFormData?.theId })
                 setFamilyData(arrayData)
                 
+                data = {
+                    "first_name": getFormData?.primary_first_name,
+                    "last_name": getFormData?.primary_last_name,
+                    "relation_type": familyRelation,
+                    "account": userData?.id
+                  }
+                config = {
+                    method: familyAction,
+                    url: process.env.REACT_APP_BASE_API + "/family/" + getFormData?.theId + "/",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + userData?.access
+                    },
+                    data: data
+                };
+                genericApiCall(config, familyRelation)
+
                 // // clear the post id
                 setGetFormData({...getFormData, ...{"theId": "", "primary": false}})
             }
@@ -610,9 +662,140 @@ const BasicInfo = (props) => {
                 let arrayData = familyData.filter(post => {return post.id !== postData?.id})
                 // console.log(arrayData, postData?.id)
                 setFamilyData(arrayData)
+
+                data = {}
+                config = {
+                    method: familyAction,
+                    url: process.env.REACT_APP_BASE_API + "/family/" + postData?.id + "/",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + userData?.access
+                    },
+                    data: data
+                };
+                genericApiCall(config, familyRelation)
+
                 setGetFormData({...getFormData, ...{"nothing": "", "primary": false}})
             }
         }
+        else if(familyRelation === "Spouce"){
+            // 
+            console.log(getFormData, familyAction)
+            // familyAction === Put, Post, Delete
+            if(familyAction === "Post"){
+                //
+                let arrayData = familyData
+                arrayData.push({"first_name": getFormData?.primary_first_name, "other_name": getFormData?.primary_other_name || "", "last_name": getFormData?.primary_last_name, "id": familyData.length + 1})
+
+                setFamilyData(arrayData)
+                // clear the post id === use this to manage props effects
+                setGetFormData({...getFormData, ...{"primary": false}})
+                
+                data = {
+                    "first_name": getFormData?.sibling_first_name,
+                    "last_name": getFormData?.sibling_last_name,
+                    "relation_type": familyRelation,
+                    "account": userData?.id
+                  }
+                config = {
+                    method: familyAction,
+                    url: process.env.REACT_APP_BASE_API + "/family/",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + userData?.access
+                    },
+                    data: data
+                };
+                genericApiCall(config, familyRelation)
+            }
+            else if(familyAction === "Patch"){
+                // 
+                let arrayData = familyData.filter(post => {return post.id !== getFormData?.theId})
+                arrayData.push({"first_name": getFormData?.spouce_first_name, "other_name": getFormData?.spouce_other_name || "", "last_name": getFormData?.spouce_last_name, "id": getFormData?.theId })
+                setFamilyData(arrayData)
+                
+                data = {
+                    "first_name": getFormData?.spouce_first_name,
+                    "last_name": getFormData?.spouce_last_name,
+                    "relation_type": familyRelation,
+                    "account": userData?.id
+                  }
+                config = {
+                    method: familyAction,
+                    url: process.env.REACT_APP_BASE_API + "/family/" + getFormData?.theId + "/",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + userData?.access
+                    },
+                    data: data
+                };
+                genericApiCall(config, familyRelation)
+
+                // // clear the post id
+                setGetFormData({...getFormData, ...{"theId": "", "primary": false}})
+            }
+            else if(familyAction === "Delete" && postData?.id){
+                // 
+                console.log(familyData)
+                let arrayData = familyData.filter(post => {return post.id !== postData?.id})
+                // console.log(arrayData, postData?.id)
+                setFamilyData(arrayData)
+
+                data = {}
+                config = {
+                    method: familyAction,
+                    url: process.env.REACT_APP_BASE_API + "/family/" + postData?.id + "/",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + userData?.access
+                    },
+                    data: data
+                };
+                genericApiCall(config, familyRelation)
+
+                setGetFormData({...getFormData, ...{"nothing": "", "primary": false}})
+            }
+        }
+    }
+    function getDataInfo(){
+        let config = {
+            method: "get",
+            maxBodyLength: "Infinity",
+            url: process.env.REACT_APP_BASE_API + "/user-account/" + userData?.id + "/user-detail/",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + userData?.access
+            },
+        };
+        axios(config).then(response => {
+            console.log(response.data);
+            if(response.status === 200){
+                setFamilyData(response?.data?.family)
+                setAddress(response?.data?.address)
+            }
+
+        }).catch(function (error) {
+
+            if (error.response) {
+                // // console.log("==>");
+                /*
+                    * The request was made and the server responded with a
+                    * status code that falls out of the range of 2xx
+                    */
+
+            } else if (error.request) {
+                /*
+                    * The request was made but no response was received, `error.request`
+                    * is an instance of XMLHttpRequest in the browser and an instance
+                    * of http.ClientRequest in Node.js
+                    */
+
+            } else {
+                // Something happened in setting up the request and triggered an Error
+            }
+        }
+        );
+        
     }
     return (
         <div className="">
@@ -810,6 +993,25 @@ const BasicInfo = (props) => {
                         <CAccordionItem itemKey={4}>
                             <CAccordionHeader>Address</CAccordionHeader>
                             <CAccordionBody>
+
+                            {
+                                    familyData?.filter(filt => filt?.relation_type === "Parent")?.map((post, id) => {
+                                        return (
+                                            <Row key={post.id} >
+                                                <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > {post.first_name} </Col>
+                                                <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > {post.last_name} </Col>
+                                                <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > </Col>
+                                                <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > 
+                                                <Badge color='secondary' onClick={()=> setGetFormData({...getFormData, ...{"addressAction": "patch", "theId": post?.id, "city": post?.city, "town": post?.towm, "address": post?.address, "longitude": post?.longitude, "latitude": post?.latitude, "country": post?.country, "code": post?.code }}) } style={{"marginRight": "4px"}}>Edit</Badge> 
+                                             
+                                                <Badge color='primary' onClick={(e)=>{ passConfiguration("add", "delete", "address", post?.id ) } } >Delete</Badge> 
+                                                </Col>
+                                            </Row>
+                                        )
+                                    }
+
+                                    )
+                                }
                                 <Row>
                                     <Col xs="6" sm="6" md={4} lg={4} >
                                         <Label for="country" className="label-dc"> </Label>
@@ -944,8 +1146,10 @@ const BasicInfo = (props) => {
                                     fullWidth
                                     variant="contained"
                                     sx={{ mt: 3, mb: 2 }}
-                                    onClick={(e) => passConfiguration("add", "patch", "address", 419)}
+                                    onClick={(e) => (getFormData?.address && getFormData?.city) ? passConfiguration("", (getFormData?.addressAction ? (getFormData?.addressAction === "patch" ? "patch" : "delete" ) : "post" ), "Address", 419) : ""}
                                 >
+                                    {/* passConfiguration("add", "patch", "address", 419) */}
+                                
                                     Save
                                 </Button>
 
@@ -1057,14 +1261,14 @@ const BasicInfo = (props) => {
                             <CAccordionBody>
                                 <strong></strong>
                                 {
-                                    familyData?.map((post, id) => {
+                                    familyData?.filter(filt => filt?.relation_type === "Parent")?.map((post, id) => {
                                         return (
                                             <Row key={post.id} >
                                                 <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > {post.first_name} </Col>
                                                 <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > {post.last_name} </Col>
-                                                <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > {post.other_names} </Col>
+                                                <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > </Col>
                                                 <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > 
-                                                <Badge color='secondary' onClick={()=> setGetFormData({...getFormData, ...{"primary": "Put", "theId": post?.id, "primary_first_name": post?.first_name, "primary_other_name": post?.other_names, "primary_last_name": post?.last_name }}) }>Edit</Badge> 
+                                                <Badge color='secondary' onClick={()=> setGetFormData({...getFormData, ...{"primary": "Patch", "theId": post?.id, "primary_first_name": post?.first_name, "primary_other_name": post?.other_names, "primary_last_name": post?.last_name }}) } style={{"marginRight": "4px"}}>Edit</Badge> 
                                              
                                                 <Badge color='primary' onClick={(e)=>{ handleFamilySubmit(e, "Delete", post, "Parent") } } >Delete</Badge> 
                                                 </Col>
@@ -1130,7 +1334,7 @@ const BasicInfo = (props) => {
                                                 noValidate
                                                 autoComplete="on"
                                             >
-                                                <InputLabel shrink htmlFor="primary_other_name"> </InputLabel>
+                                                {/* <InputLabel shrink htmlFor="primary_other_name"> </InputLabel>
                                                 <TextField
                                                     error={getFormDataError?.primary_other_name}
                                                     value={getFormData?.primary_other_name}
@@ -1143,7 +1347,7 @@ const BasicInfo = (props) => {
                                                     fullWidth
                                                     required
                                                     onChange={(e) => (setGetFormData({ ...getFormData, ...{ "primary_other_name": e.target.value } }), setGetFormDataError({ ...getFormDataError, ...{ "primary_other_name": false } }))}
-                                                />
+                                                /> */}
                                             </Box>
                                         </div>
                                     </Col>
@@ -1154,7 +1358,7 @@ const BasicInfo = (props) => {
                                     fullWidth
                                     variant="contained"
                                     sx={{ mt: 3, mb: 2 }}
-                                    onClick={(e)=> (getFormData?.primary_first_name && getFormData?.primary_last_name) ? handleFamilySubmit(e, (getFormData?.primary ? (getFormData?.primary === "Put" ? "Put" : "Delete" ) : "Post" ), {}, "Parent") : "" }
+                                    onClick={(e)=> (getFormData?.primary_first_name && getFormData?.primary_last_name) ? handleFamilySubmit(e, (getFormData?.primary ? (getFormData?.primary === "Patch" ? "Patch" : "Delete" ) : "Post" ), {}, "Parent") : "" }
                                 >
                                     Save
                                 </Button>
@@ -1172,19 +1376,37 @@ const BasicInfo = (props) => {
                                                 noValidate
                                                 autoComplete="on"
                                             >
-                                                <InputLabel shrink htmlFor="secondary_first_name"> </InputLabel>
+                                            {
+                                                familyData?.filter(filt => filt?.relation_type === "Spouce")?.map((post, id) => {
+                                                    return (
+                                                        <Row key={post.id} >
+                                                            <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > {post.first_name} </Col>
+                                                            <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > {post.last_name} </Col>
+                                                            <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > </Col>
+                                                            <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > 
+                                                            <Badge color='secondary' onClick={()=> setGetFormData({...getFormData, ...{"spouce": "Patch", "theId": post?.id, "spouce_first_name": post?.first_name, "spouce_other_name": post?.other_names, "spouce_last_name": post?.last_name }}) } style={{"marginRight": "4px"}} >Edit</Badge> 
+                                                         
+                                                            <Badge color='primary' onClick={(e)=>{ handleFamilySubmit(e, "Delete", post, "Spouce") } } >Delete</Badge> 
+                                                            </Col>
+                                                        </Row>
+                                                    )
+                                                }
+            
+                                                )
+                                            }
+                                                <InputLabel shrink htmlFor="spouce_first_name"> </InputLabel>
                                                 <TextField
-                                                    error={getFormDataError?.secondary_first_name}
-                                                    value={getFormData?.secondary_first_name}
-                                                    id="secondary_first_name"
-                                                    name="secondary_first_name"
+                                                    error={getFormDataError?.spouce_first_name}
+                                                    value={getFormData?.spouce_first_name}
+                                                    id="spouce_first_name"
+                                                    name="spouce_first_name"
                                                     placeholder="First name"
                                                     variant="outlined"
                                                     margin="normal"
-                                                    type="secondary_first_name"
+                                                    type="spouce_first_name"
                                                     fullWidth
                                                     required
-                                                    onChange={(e) => (setGetFormData({ ...getFormData, ...{ "secondary_first_name": e.target.value } }), setGetFormDataError({ ...getFormDataError, ...{ "secondary_first_name": false } }))}
+                                                    onChange={(e) => (setGetFormData({ ...getFormData, ...{ "spouce_first_name": e.target.value } }), setGetFormDataError({ ...getFormDataError, ...{ "spouce_first_name": false } }))}
                                                 />
                                             </Box>
                                         </div>
@@ -1196,19 +1418,19 @@ const BasicInfo = (props) => {
                                                 noValidate
                                                 autoComplete="on"
                                             >
-                                                <InputLabel shrink htmlFor="secondary_last_name"> </InputLabel>
+                                                <InputLabel shrink htmlFor="spouce_last_name"> </InputLabel>
                                                 <TextField
-                                                    error={getFormDataError?.secondary_last_name}
-                                                    value={getFormData?.secondary_last_name}
-                                                    id="secondary_last_name"
-                                                    name="secondary_last_name"
+                                                    error={getFormDataError?.spouce_last_name}
+                                                    value={getFormData?.spouce_last_name}
+                                                    id="spouce_last_name"
+                                                    name="spouce_last_name"
                                                     placeholder="last name"
                                                     variant="outlined"
                                                     margin="normal"
-                                                    type="secondary_last_name"
+                                                    type="spouce_last_name"
                                                     fullWidth
                                                     required
-                                                    onChange={(e) => (setGetFormData({ ...getFormData, ...{ "secondary_last_name": e.target.value } }), setGetFormDataError({ ...getFormDataError, ...{ "secondary_last_name": false } }))}
+                                                    onChange={(e) => (setGetFormData({ ...getFormData, ...{ "spouce_last_name": e.target.value } }), setGetFormDataError({ ...getFormDataError, ...{ "spouce_last_name": false } }))}
                                                 />
                                             </Box>
                                         </div>
@@ -1220,20 +1442,20 @@ const BasicInfo = (props) => {
                                                 noValidate
                                                 autoComplete="on"
                                             >
-                                                <InputLabel shrink htmlFor="secondary_other_name"> </InputLabel>
+                                                {/* <InputLabel shrink htmlFor="spouce_other_name"> </InputLabel>
                                                 <TextField
-                                                    error={getFormDataError?.secondary_other_name}
-                                                    value={getFormData?.secondary_other_name}
-                                                    id="secondary_other_name"
-                                                    name="secondary_other_name"
+                                                    error={getFormDataError?.spouce_other_name}
+                                                    value={getFormData?.spouce_other_name}
+                                                    id="spouce_other_name"
+                                                    name="spouce_other_name"
                                                     placeholder="other name"
                                                     variant="outlined"
                                                     margin="normal"
-                                                    type="secondary_other_name"
+                                                    type="spouce_other_name"
                                                     fullWidth
                                                     required
-                                                    onChange={(e) => (setGetFormData({ ...getFormData, ...{ "secondary_other_name": e.target.value } }), setGetFormDataError({ ...getFormDataError, ...{ "secondary_other_name": false } }))}
-                                                />
+                                                    onChange={(e) => (setGetFormData({ ...getFormData, ...{ "spouce_other_name": e.target.value } }), setGetFormDataError({ ...getFormDataError, ...{ "spouce_other_name": false } }))}
+                                                /> */}
                                             </Box>
                                         </div>
                                     </Col>
@@ -1244,7 +1466,7 @@ const BasicInfo = (props) => {
                                     fullWidth
                                     variant="contained"
                                     sx={{ mt: 3, mb: 2 }}
-                                //   onClick={(e)=>handleSubmit(e)}
+                                    onClick={(e)=> (getFormData?.spouce_first_name && getFormData?.spouce_last_name) ? handleFamilySubmit(e, (getFormData?.spouce ? (getFormData?.spouce === "Patch" ? "Patch" : "Delete" ) : "Post" ), {}, "Spouce") : "" }
                                 >
                                     Save
                                 </Button>
@@ -1263,14 +1485,14 @@ const BasicInfo = (props) => {
                                                 autoComplete="on"
                                             >
                                             {
-                                                familyData?.map((post, id) => {
+                                                familyData?.filter(filt => filt?.relation_type === "Sibling")?.map((post, id) => {
                                                     return (
                                                         <Row key={post.id} >
                                                             <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > {post.first_name} </Col>
                                                             <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > {post.last_name} </Col>
-                                                            <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > {post.other_names} </Col>
+                                                            <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > </Col>
                                                             <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > 
-                                                            <Badge color='secondary' onClick={()=> setGetFormData({...getFormData, ...{"sibling": "Put", "theId": post?.id, "sibling_first_name": post?.first_name, "sibling_other_name": post?.other_names, "sibling_last_name": post?.last_name }}) }>Edit</Badge> 
+                                                            <Badge color='secondary' onClick={()=> setGetFormData({...getFormData, ...{"sibling": "Patch", "theId": post?.id, "sibling_first_name": post?.first_name, "sibling_other_name": post?.other_names, "sibling_last_name": post?.last_name }}) } style={{"marginRight": "4px"}}>Edit</Badge> 
                                                          
                                                             <Badge color='primary' onClick={(e)=>{ handleFamilySubmit(e, "Delete", post, "Sibling") } } >Delete</Badge> 
                                                             </Col>
@@ -1328,7 +1550,7 @@ const BasicInfo = (props) => {
                                                 noValidate
                                                 autoComplete="on"
                                             >
-                                                <InputLabel shrink htmlFor="sibling_other_name"> </InputLabel>
+                                                {/* <InputLabel shrink htmlFor="sibling_other_name"> </InputLabel>
                                                 <TextField
                                                     error={getFormDataError?.sibling_other_name}
                                                     value={getFormData?.sibling_other_name}
@@ -1341,7 +1563,7 @@ const BasicInfo = (props) => {
                                                     fullWidth
                                                     required
                                                     onChange={(e) => (setGetFormData({ ...getFormData, ...{ "sibling_other_name": e.target.value } }), setGetFormDataError({ ...getFormDataError, ...{ "sibling_other_name": false } }))}
-                                                />
+                                                /> */}
                                             </Box>
                                         </div>
                                     </Col>
@@ -1352,7 +1574,7 @@ const BasicInfo = (props) => {
                                     fullWidth
                                     variant="contained"
                                     sx={{ mt: 3, mb: 2 }}
-                                    onClick={(e)=> (getFormData?.sibling_first_name && getFormData?.sibling_last_name) ? handleFamilySubmit(e, (getFormData?.sibling ? (getFormData?.sibling === "Put" ? "Put" : "Delete" ) : "Post" ), {}, "Sibling") : "" }
+                                    onClick={(e)=> (getFormData?.sibling_first_name && getFormData?.sibling_last_name) ? handleFamilySubmit(e, (getFormData?.sibling ? (getFormData?.sibling === "Patch" ? "Patch" : "Delete" ) : "Post" ), {}, "Sibling") : "" }
                                 >
                                     Save
                                 </Button>
