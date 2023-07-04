@@ -385,6 +385,7 @@ const BasicInfo = (props) => {
     // execute pass configuration
     function passConfiguration(action, method, section, id) {
 
+        console.log(method, section, id)
         let config = {};
         let data = {};
         if (section === "personal") {
@@ -428,6 +429,7 @@ const BasicInfo = (props) => {
             }
         }
         else if(section === "address"){
+            console.log(getFormData)
             if (method === "post" && getFormData?.address) {
                 data = {
                     "address": getFormData?.address,
@@ -439,11 +441,12 @@ const BasicInfo = (props) => {
                     "plus_code": getFormData?.code,
                     "lon": getFormData?.longitude,
                     "lat": getFormData?.latitude,
+                    "account": userData?.id
                                       
                 }
                 config = {
                     method: method,
-                    url: process.env.REACT_APP_BASE_API + "/auth/profile_update/",
+                    url: process.env.REACT_APP_BASE_API + "/address/",
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': 'Bearer ' + userData?.access
@@ -462,11 +465,12 @@ const BasicInfo = (props) => {
                     "plus_code": getFormData?.code,
                     "lon": getFormData?.longitude,
                     "lat": getFormData?.latitude,
+                    "account": userData?.id
                                       
                 }
                 config = {
                     method: method,
-                    url: process.env.REACT_APP_BASE_API + "/auth/profile_update/",
+                    url: process.env.REACT_APP_BASE_API + "/address/" + userData?.id + "/",
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': 'Bearer ' + userData?.access
@@ -995,14 +999,14 @@ const BasicInfo = (props) => {
                             <CAccordionBody>
 
                             {
-                                    familyData?.filter(filt => filt?.relation_type === "Parent")?.map((post, id) => {
+                                    address?.map((post, id) => {
                                         return (
                                             <Row key={post.id} >
-                                                <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > {post.first_name} </Col>
-                                                <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > {post.last_name} </Col>
-                                                <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > </Col>
+                                                <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > {post.country} </Col>
+                                                <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > {post.town} </Col>
+                                                <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > {post.address} </Col>
                                                 <Col xs="3" sm="3" md={3} lg={3} className="mt-2" > 
-                                                <Badge color='secondary' onClick={()=> setGetFormData({...getFormData, ...{"addressAction": "patch", "theId": post?.id, "city": post?.city, "town": post?.towm, "address": post?.address, "longitude": post?.longitude, "latitude": post?.latitude, "country": post?.country, "code": post?.code }}) } style={{"marginRight": "4px"}}>Edit</Badge> 
+                                                <Badge color='secondary' onClick={()=> setGetFormData({...getFormData, ...{"addressAction": "patch", "theId": post?.id, "city": post?.city, "town": post?.town, "address": post?.address, "longitude": post?.lon, "latitude": post?.lat, "country": post?.country, "code": post?.code }}) } style={{"marginRight": "4px"}}>Edit</Badge> 
                                              
                                                 <Badge color='primary' onClick={(e)=>{ passConfiguration("add", "delete", "address", post?.id ) } } >Delete</Badge> 
                                                 </Col>
@@ -1019,6 +1023,7 @@ const BasicInfo = (props) => {
                                             placeholder={"Select country"}
                                             options={transformCountriesData}
                                             id="country"
+                                            value={getFormData?.country}
                                             className='other-input-select d-filters wp-cursor-pointer'
                                         // components={{ Option: paymentOption }}
                                         onChange={(e) => setAddressConntryInfo(e)}
@@ -1034,6 +1039,7 @@ const BasicInfo = (props) => {
                                                 <InputLabel shrink htmlFor="city"> </InputLabel>
                                                 <TextField
                                                     error={getFormDataError?.city}
+                                                    value={getFormData?.city}
                                                     id="city"
                                                     name="city"
                                                     placeholder="Your city"
@@ -1057,6 +1063,7 @@ const BasicInfo = (props) => {
                                                 <InputLabel shrink htmlFor="town"> </InputLabel>
                                                 <TextField
                                                     error={getFormDataError?.town}
+                                                    value={getFormData?.town}
                                                     id="town"
                                                     name="town"
                                                     placeholder="Your town"
@@ -1080,6 +1087,7 @@ const BasicInfo = (props) => {
                                                 <InputLabel shrink htmlFor="address"> </InputLabel>
                                                 <TextField
                                                     error={getFormDataError?.address}
+                                                    value={getFormData?.address}
                                                     id="address"
                                                     name="address"
                                                     placeholder="Your address"
@@ -1103,6 +1111,7 @@ const BasicInfo = (props) => {
                                                 <InputLabel shrink htmlFor="latitude"> </InputLabel>
                                                 <TextField
                                                     error={getFormDataError?.latitude}
+                                                    value={getFormData?.latitude}
                                                     id="latitude"
                                                     name="latitude"
                                                     placeholder="Latitude"
@@ -1126,6 +1135,7 @@ const BasicInfo = (props) => {
                                                 <InputLabel shrink htmlFor="longitude"> </InputLabel>
                                                 <TextField
                                                     error={getFormDataError?.longitude}
+                                                    value={getFormData?.longitude}
                                                     id="longitude"
                                                     name="longitude"
                                                     placeholder="Longitude"
@@ -1146,7 +1156,7 @@ const BasicInfo = (props) => {
                                     fullWidth
                                     variant="contained"
                                     sx={{ mt: 3, mb: 2 }}
-                                    onClick={(e) => (getFormData?.address && getFormData?.city) ? passConfiguration("", (getFormData?.addressAction ? (getFormData?.addressAction === "patch" ? "patch" : "delete" ) : "post" ), "Address", 419) : ""}
+                                    onClick={(e) => (getFormData?.address && getFormData?.city) ? passConfiguration("", (getFormData?.addressAction ? (getFormData?.addressAction === "patch" ? "patch" : "delete" ) : "post" ), "address", 419) : ""}
                                 >
                                     {/* passConfiguration("add", "patch", "address", 419) */}
                                 
