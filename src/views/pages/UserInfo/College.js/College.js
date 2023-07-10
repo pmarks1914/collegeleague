@@ -16,24 +16,30 @@ import {
 } from '@coreui/react';
 import axios from "axios"
 
+
+const userData = JSON.parse(localStorage.getItem('userDataStore'));
+
 const College = () => {
+    const [collegeInformation, setCollegeInformation] = useState(null)
+    useEffect(()=> {
+        // 
+        getDataInfo()
+    }, [])
 
 
     function getDataInfo(){
         let config = {
             method: "get",
             maxBodyLength: "Infinity",
-            url: process.env.REACT_APP_BASE_API + "/user-account/" + userData?.id + "/user-detail/",
+            url: process.env.REACT_APP_BASE_API + "/organization/",
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + userData?.access
             },
         };
         axios(config).then(response => {
-            console.log(response.data);
-            if(response.status === 200){
-                // 
-            }
+            console.log(response?.data);
+            setCollegeInformation(response?.data)
 
         }).catch(function (error) {
 
