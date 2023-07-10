@@ -354,7 +354,9 @@ const BasicInfo = (props) => {
                 if(section === "address"){
                   setGetFormData({...getFormData, ...{ "address": "", "street_name": "", "town": "", "city": "", "country": "", "code": "", "longitude": "", "latitude": "" }})
                 }
+
             }
+            getDataInfo()
 
         }).catch(function (error) {
 
@@ -760,6 +762,7 @@ const BasicInfo = (props) => {
                 setGetFormData({...getFormData, ...{"nothing": "", "primary": false}})
             }
         }
+        getDataInfo();
     }
     function getDataInfo(){
         let config = {
@@ -776,6 +779,17 @@ const BasicInfo = (props) => {
             if(response.status === 200){
                 setFamilyData(response?.data?.family)
                 setAddress(response?.data?.address)
+                setGetFormData({
+                    "first_name": response?.data?.user?.first_name,
+                    "last_name": response?.data?.user?.last_name,
+                    "other_names": response?.data?.user?.other_names,
+                    "email": response?.data?.user?.email,
+                    "phoneNumber": response?.data?.user?.phone,
+                    "photo": response?.data?.photo,
+                    "dateOfBirth": response?.data?.dob,
+                    "certificate_name": "",
+                    "certificateDate": ""
+                })
             }
 
         }).catch(function (error) {
@@ -1023,7 +1037,6 @@ const BasicInfo = (props) => {
                                             placeholder={"Select country"}
                                             options={transformCountriesData}
                                             id="country"
-                                            value={getFormData?.country}
                                             className='other-input-select d-filters wp-cursor-pointer'
                                         // components={{ Option: paymentOption }}
                                         onChange={(e) => setAddressConntryInfo(e)}

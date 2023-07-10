@@ -20,6 +20,7 @@ import Select, { components } from 'react-select';
 
 import { getSessionTimeout } from '../../../Utils/Utils';
 import BasicInfo from './Profile/BasicInfo';
+import College from './College.js/College';
 
 let date = new Date();
 // let dateYearInterval = 100;
@@ -171,7 +172,7 @@ const General = () => {
 
         {activeTab === "1" ?
           <TabPane tabId="1">
-            hhh
+            <College />
           </TabPane>
           : ""}
         {activeTab === "2" ?
