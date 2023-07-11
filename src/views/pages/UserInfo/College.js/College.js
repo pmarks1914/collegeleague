@@ -157,14 +157,14 @@ const College = () => {
                                         </CCol>
                                         <CCol xs="4" sm="4" md={4} lg={4} className="mt-1" >
 
-<Label for="program" className="label-dc"> </Label>
-<Select
-    placeholder={"Select program"}
-    options={transformProgramData}
-    id="program"
-    className='other-input-select d-filters wp-cursor-pointer'
-    onChange={(e) => setProgramInfo(e)}
-/>
+                                            <Label for="program" className="label-dc"> </Label>
+                                            <Select
+                                                placeholder={"Select program"}
+                                                options={transformProgramData}
+                                                id="program"
+                                                className='other-input-select d-filters wp-cursor-pointer'
+                                                onChange={(e) => setProgramInfo(e)}
+                                            />
                                             <Button
                                                 type="submit"
                                                 fullWidth
