@@ -220,11 +220,18 @@ const Dashboard = () => {
       {/* <WidgetsDropdown /> */}
       {/* <WidgetsBrand withCharts /> */}
 
-      <CRow className='m-0' style={{width: "100%"}}>
+      <CRow className='m-3' >
 
-        <CCol xs className='mt-5'>
-          <CCard className="mb-4">
-            <CCardHeader> {' & '} Application </CCardHeader>
+      <CCol sm="12" md="12" lg="12" xl="12">
+          <a href='/apply' className='justify-content-between align-items-center text-white bg-dark rounded-1 p-2' > Quick link to apply </a>
+        </CCol>
+      </CRow>
+      <CRow className='m-3' style={{width: "100%"}}>
+
+        <CCol xs className='mt-2'>
+          
+          <CCard className="mb-4">            
+            <CCardHeader> Application Overview </CCardHeader>
             <CCardBody>
 
               <CTable align="middle" className="mb-0 border" hover responsive>
@@ -233,10 +240,9 @@ const Dashboard = () => {
                     <CTableHeaderCell className="text-center">
                       <CIcon icon={cilPeople} />
                     </CTableHeaderCell>
-                    <CTableHeaderCell>User</CTableHeaderCell>
+                    <CTableHeaderCell>Name</CTableHeaderCell>
                     <CTableHeaderCell className="text-center">Country</CTableHeaderCell>
-                    <CTableHeaderCell>Usage</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center">Payment Method</CTableHeaderCell>
+                    <CTableHeaderCell>Status</CTableHeaderCell>
                     <CTableHeaderCell>Activity</CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
@@ -267,9 +273,6 @@ const Dashboard = () => {
                         </div>
                         <CProgress thin color={item.usage.color} value={item.usage.value} />
                       </CTableDataCell>
-                      <CTableDataCell className="text-center">
-                        <CIcon size="xl" icon={item.payment.icon} />
-                      </CTableDataCell>
                       <CTableDataCell>
                         <div className="small text-medium-emphasis">Last login</div>
                         <strong>{item.activity}</strong>
@@ -281,6 +284,7 @@ const Dashboard = () => {
             </CCardBody>
           </CCard>
         </CCol>
+
       </CRow> 
     </>
   )

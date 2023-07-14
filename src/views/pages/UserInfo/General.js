@@ -101,7 +101,7 @@ const General = () => {
 
   }
   function trackActivity() {
-    // e.preventDefault();
+    // e.preventDefault(); 
     getSessionTimeout();
     const currentUser_new = JSON.parse(localStorage.getItem("userDataStore"));
     if (currentUser_new) {

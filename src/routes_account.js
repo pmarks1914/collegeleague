@@ -106,7 +106,7 @@ const routes = [
   // { path: '/compliance', name: 'Compliance', element: Compliance },
   { path: '/settings/user-management', name: 'User Management', element: UserManagement },
 
-  { path: '/test', name: 'Test', element: General },
+  { path: '/apply', name: 'Apply', element: General },
 
   // { path: '/checkout/:id', name: '', element: Checkout }, 
 

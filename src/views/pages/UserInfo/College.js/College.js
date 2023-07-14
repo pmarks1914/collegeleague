@@ -16,6 +16,7 @@ import {
 } from '@coreui/react';
 import Button from '@mui/material/Button';
 import Select, { components } from 'react-select';
+import { ToastContainer, toast } from 'react-toastify';
 import axios from "axios"
 
 
@@ -30,21 +31,24 @@ const College = () => {
         // 
         getSchoolInfo()
     }, [])
-    let transformProgramData = Object.keys(collegeInformation || []).map((post, id) => {
+    let transformProgramData = Object.keys(schoolInformation || []).map((post, id) => {
 
         return {
             "id": id + 1,
-            "programId": collegeInformation[id]?.id,
-            "value": collegeInformation[id]?.name,
-            "label": collegeInformation[id]?.name,
+            "programId": schoolInformation[id]?.id,
+            "value": schoolInformation[id]?.name,
+            "label": schoolInformation[id]?.name,
+            "startDate": schoolInformation[id]?.start_date,
+            "endDate": schoolInformation[id]?.end_date,
+            "department": schoolInformation[id]?.department?.name,
             // "icon": ,
-            // "image": collegeInformation[id]?.flag
+            // "image": schoolInformation[id]?.flag
         }
     })
-    console.log("collegeInformation ", transformProgramData)
+    // console.log("schoolInformation ", getFormData)
 
     function setProgramInfo(e){
-        setGetFormData({...getFormData, ...{ "programName": e.value, "programId": e.id }})
+        setGetFormData({...getFormData, ...{ "programName": e.value, "programId": e.programId, "startDate": e.startDate, "endDate": e.endDate, "department": e.department }})
     }
     function getSchoolInfo() {
         let config = {
@@ -57,7 +61,7 @@ const College = () => {
             },
         };
         axios(config).then(response => {
-            console.log(response?.data);
+            // console.log(response?.data);
             setCollegeInformation(response?.data)
         }).catch(function (error) {
 
@@ -83,19 +87,66 @@ const College = () => {
 
     }
 
-    function getProgramInfo(schoolId) {
+    function getProgramInfo(schoolId, schoolInfo) {
+        setGetFormData({...getFormData, ...{ "programName": "", "department": "", "programId": "" }})
+        // console.log(schoolInfo)
         let config = {
             method: "get",
             maxBodyLength: "Infinity",
-            url: process.env.REACT_APP_BASE_API + "/organization/" + schoolId + "/",
+            url: process.env.REACT_APP_BASE_API + "/department/program/org/" + schoolId + "/",
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + userData?.access
             },
         };
         axios(config).then(response => {
-            console.log(response?.data);
+            // console.log(response?.data);
             setSchoolInformation(response?.data)
+        }).catch(function (error) {
+
+            if (error.response) {
+                // // console.log("==>");
+                /*
+                    * The request was made and the server responded with a
+                    * status code that falls out of the range of 2xx
+                    */
+
+            } else if (error.request) {
+                /*
+                    * The request was made but no response was received, `error.request`
+                    * is an instance of XMLHttpRequest in the browser and an instance
+                    * of http.ClientRequest in Node.js
+                    */
+
+            } else {
+                // Something happened in setting up the request and triggered an Error
+            }
+        }
+        );
+
+    }
+
+    function applyProgram(programId) {
+
+        // console.log(programId)
+        let config = {
+            method: "post",
+            maxBodyLength: "Infinity",
+            url: process.env.REACT_APP_BASE_API + "/admission/apply/" + programId + "/",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + userData?.access
+            },
+            body: {}
+        };
+        axios(config).then(response => {
+            // console.log(response?.data);
+
+            toast.success(response?.data.message, {
+                position: toast.POSITION.TOP_CENTER
+            });
+            setGetFormData({...getFormData, ...{ "programName": "", "department": "", "programId": "" }})
+            // setSchoolInformation(response?.data)
         }).catch(function (error) {
 
             if (error.response) {
@@ -122,13 +173,15 @@ const College = () => {
 
     return (
         <div className='mt-5'>
+            <ToastContainer />
+            <CAccordion activeItemKey={1} className="mt-0">
+
             {
                 collegeInformation ?
                     collegeInformation?.map((post, id) => 
                         (
-                            <CAccordion activeItemKey={id+1} key={post.id} className="mt-0">
-                            <CAccordionItem itemKey={post.id} >
-                                <CAccordionHeader> {post?.name} </CAccordionHeader>
+                            <CAccordionItem key={id+1} itemKey={post.id} >
+                                <CAccordionHeader onClick={()=>getProgramInfo(post?.id, post) }> {post?.name} </CAccordionHeader>
                                 <CAccordionBody>
                                     <CRow>
                                     </CRow>
@@ -148,7 +201,11 @@ const College = () => {
                                             {post?.organization_address?.street_name} { post?.organization_address?.street_name?.length > 1 ? <br /> : ""}
                                             {post?.organization_email} { post?.organization_email?.length > 1 ? <br /> : ""}
                                             {post?.organization_phone} { post?.organization_phone?.length > 1 ? <br /> : ""}
-                                            <a href={post?.website} > {post?.website} </a> <br />
+                                            {post?.website ? <a href={post?.website} target="_blank" rel="noreferrer" >  {post?.website} </a> : "" } { post?.website?.length > 1 ? <br /> : ""}
+                                            <p className='mb-3'></p>
+                                            {getFormData?.department ? `Department name: ${getFormData?.department}` : "" } { getFormData?.department?.length > 1 ? <br /> : ""}
+                                            {getFormData?.programName ? `Program name: ${getFormData?.programName}` : "" } { getFormData?.programName?.length > 1 ? <br /> : ""}
+                                            
                                         </CCol>
                                     </CRow>
                                     <CRow>
@@ -170,23 +227,26 @@ const College = () => {
                                                 fullWidth
                                                 variant="contained"
                                                 sx={{ mt: 3, mb: 2 }}
-                                            // style={{ color: "#fff" }}
-                                            // className="bg-text-com-wp"
-                                            // onClick={(e) => passConfiguration("add", "patch", "personal", 419)}
-                                            >
+                                                // style={{ color: "#fff" }}
+                                                // className="bg-text-com-wp"
+                                                onClick={(e) => applyProgram(getFormData?.programId)}
+                                                >
                                                 Apply
                                             </Button>
                                         </CCol>
                                     </CRow>
                                 </CAccordionBody>
                             </CAccordionItem>
-                            </CAccordion>
                         )
                     )
                     : ""
             }
+            </CAccordion>
         </div>
     );
 };
 
 export default College;
+
+
+

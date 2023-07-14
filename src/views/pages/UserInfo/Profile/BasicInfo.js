@@ -217,7 +217,7 @@ const BasicInfo = (props) => {
             
             // formData2.append('user', userData?.id);
             formData2.append('photo', photo);
-            console.log("rtghrghhrthrhrthrthrthrtrtrtgrt", photo, userData)
+            // console.log("rtghrghhrthrhrthrthrthrtrtrtgrt", photo, userData)
 
             let config = {
                 method: 'patch',
@@ -299,7 +299,7 @@ const BasicInfo = (props) => {
             if (cert.type === 'image/png' || cert.type === 'image/jpg' || cert.type === 'image/jpeg' || cert.type === 'application/pdf') {
                 axios(config).then(function (response) {
 
-                    console.log(response.status)
+                    // console.log(response.status)
                     if (response.status === 201) {
                         toast.success(response?.data.message || "Successful", {
                             position: toast.POSITION.TOP_CENTER
@@ -328,7 +328,7 @@ const BasicInfo = (props) => {
                             position: toast.POSITION.TOP_CENTER
                         });
 
-                        console.log(error);
+                        // console.log(error);
                     });
             }
             else {
@@ -387,7 +387,7 @@ const BasicInfo = (props) => {
     // execute pass configuration
     function passConfiguration(action, method, section, id) {
 
-        console.log(method, section, id)
+        // console.log(method, section, id)
         let config = {};
         let data = {};
         if (section === "personal") {
@@ -431,7 +431,7 @@ const BasicInfo = (props) => {
             }
         }
         else if(section === "address"){
-            console.log(getFormData)
+            // console.log(getFormData)
             if (method === "post" && getFormData?.address) {
                 data = {
                     "address": getFormData?.address,
@@ -587,7 +587,7 @@ const BasicInfo = (props) => {
             }
             else if(familyAction === "Delete" && postData?.id){
                 // 
-                console.log(familyData)
+                // console.log(familyData)
                 let arrayData = familyData.filter(post => {return post.id !== postData?.id})
                 // console.log(arrayData, postData?.id)
                 setFamilyData(arrayData)
@@ -664,7 +664,7 @@ const BasicInfo = (props) => {
             }
             else if(familyAction === "Delete" && postData?.id){
                 // 
-                console.log(familyData)
+                // console.log(familyData)
                 let arrayData = familyData.filter(post => {return post.id !== postData?.id})
                 // console.log(arrayData, postData?.id)
                 setFamilyData(arrayData)
@@ -686,7 +686,7 @@ const BasicInfo = (props) => {
         }
         else if(familyRelation === "Spouce"){
             // 
-            console.log(getFormData, familyAction)
+            // console.log(getFormData, familyAction)
             // familyAction === Put, Post, Delete
             if(familyAction === "Post"){
                 //
@@ -742,7 +742,7 @@ const BasicInfo = (props) => {
             }
             else if(familyAction === "Delete" && postData?.id){
                 // 
-                console.log(familyData)
+                // console.log(familyData)
                 let arrayData = familyData.filter(post => {return post.id !== postData?.id})
                 // console.log(arrayData, postData?.id)
                 setFamilyData(arrayData)
@@ -775,7 +775,7 @@ const BasicInfo = (props) => {
             },
         };
         axios(config).then(response => {
-            console.log(response.data);
+            // console.log(response.data);
             if(response.status === 200){
                 setFamilyData(response?.data?.family)
                 setAddress(response?.data?.address)
