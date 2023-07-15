@@ -332,7 +332,7 @@ const Dashboard = () => {
                       </CTableDataCell>
                       <CTableDataCell>
                         <div className="clearfix">
-                          <div className="float-start">
+                          <div className="float-start ">
                         { item?.status === "Started" ? <strong>25%</strong> : "" }
                         { item?.status === "Completed" ? <strong>50%</strong> : "" }
                         { item?.status === "Processing" ? <strong>75%</strong> : "" }
