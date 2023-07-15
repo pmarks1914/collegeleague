@@ -55,25 +55,29 @@ import avatar6 from 'src/assets/images/avatars/6.jpg'
 
 // import WidgetsBrand from '../widgets/WidgetsBrand'
 import WidgetsDropdown from '../widgets/WidgetsDropdown'
-import Datatable from '../datatable/DatatableMain'
-import { getTransactionData } from './DashboardData'
+// import Datatable from '../datatable/DatatableMain'
+import { getSchData } from './DashboardData'
 import { getSessionTimeout } from '../../Utils/Utils';
+import { Badge } from 'reactstrap'
+
+import { ToastContainer, toast } from 'react-toastify';
+import axios from "axios"
+import Swal from 'sweetalert2'
+
+const userData = JSON.parse(localStorage.getItem("userDataStore"));
 
 const Dashboard = () => {
-  const [transactionDetails, setTransactionDetails] = useState(null)
-  const [summaryDetails, setSummaryDetails] = useState(null)
+  const [schDetails, setSchDetails] = useState(null)
+  const [applicationAction, setApplicationAction] = useState(1)
 
   useEffect(() => {
     // 
-    let transactionData = getTransactionData();
-    transactionData?.transaction?.then(value => { setTransactionDetails(value) });
+    let schData = getSchData();
+    schData?.sch?.then(value => { setSchDetails(value) });
     trackActivity();
 
-    let summaryData = getTransactionData();
-    summaryData?.summary?.then(value => { setSummaryDetails(value) });
-
-  }, [])
-  // // console.log("summarry ", summaryDetails)
+  }, [applicationAction])
+  // console.log("summarry ", schDetails)
 
   const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
 
@@ -198,6 +202,67 @@ const Dashboard = () => {
     },
   ]
 
+  function declineConfirm(programId, action){
+    
+    Swal.fire({
+      // title: 'Successfully created!',
+      text: action,
+      icon: "info",
+      allowOutsideClick: false,
+      // allowEscapeKey: false,
+      showCancelButton: true,
+      cancelButtonColor: 'danger',
+      confirmButtonColor: 'primary',
+      confirmButtonText: 'Confirm'
+    }).then((result) => { 
+      if(result.isConfirmed){
+        declineApply(programId)
+      }
+    });
+  }
+  function declineApply(programId) {
+
+    // console.log(programId)
+    let config = {
+        method: "delete",
+        maxBodyLength: "Infinity",
+        url: process.env.REACT_APP_BASE_API + "/admission/decline/" + programId + "/",
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + userData?.access
+        },
+        body: {}
+    };
+    axios(config).then(response => {
+        // console.log(response?.data);
+        setApplicationAction(applicationAction+1)
+        toast.success(response?.data.message, {
+            position: toast.POSITION.TOP_CENTER
+        });
+        // setSchoolInformation(response?.data)
+    }).catch(function (error) {
+
+        if (error.response) {
+            // // console.log("==>");
+            /*
+                * The request was made and the server responded with a
+                * status code that falls out of the range of 2xx
+                */
+
+        } else if (error.request) {
+            /*
+                * The request was made but no response was received, `error.request`
+                * is an instance of XMLHttpRequest in the browser and an instance
+                * of http.ClientRequest in Node.js
+                */
+
+        } else {
+            // Something happened in setting up the request and triggered an Error
+        }
+    }
+    );
+
+}
 
   function trackActivity() {
     // e.preventDefault();
@@ -216,10 +281,12 @@ const Dashboard = () => {
 
   return (
     <>
-      {/* Transaction  */}
+      {/* Sch  */}
       {/* <WidgetsDropdown /> */}
       {/* <WidgetsBrand withCharts /> */}
 
+      <ToastContainer />
+      
       <CRow className='m-3' >
 
       <CCol sm="12" md="12" lg="12" xl="12">
@@ -241,41 +308,70 @@ const Dashboard = () => {
                       <CIcon icon={cilPeople} />
                     </CTableHeaderCell>
                     <CTableHeaderCell>Name</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center">Country</CTableHeaderCell>
+                    <CTableHeaderCell className="text-center">Programme</CTableHeaderCell>
                     <CTableHeaderCell>Status</CTableHeaderCell>
-                    <CTableHeaderCell>Activity</CTableHeaderCell>
+                    <CTableHeaderCell>Action</CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
-                  {tableExample.map((item, index) => (
+                  {schDetails?.map((item, index) => (
                     <CTableRow v-for="item in tableItems" key={index}>
                       <CTableDataCell className="text-center">
-                        <CAvatar size="md" src={item.avatar.src} status={item.avatar.status} />
+                        <CAvatar size="md" src={process.env.REACT_APP_BASE_API + userData?.photo} status={"success"} />
                       </CTableDataCell>
                       <CTableDataCell>
-                        <div>{item.user.name}</div>
+                        <div>{item?.program?.organization}</div>
                         <div className="small text-medium-emphasis">
-                          <span>{item.user.new ? 'New' : 'Recurring'}</span> | Registered:{' '}
-                          {item.user.registered}
+                          <span>{'New '}</span> | Applied:{' '}  
+                          {moment(item?.updated_at).format("YYYY-MM-DD")}
                         </div>
                       </CTableDataCell>
                       <CTableDataCell className="text-center">
-                        <CIcon size="xl" icon={item.country.flag} title={item.country.name} />
+                        {item?.program?.department}
+                        {/* <CIcon size="xl" icon={item.country.flag} title={item.country.name} /> */}
                       </CTableDataCell>
                       <CTableDataCell>
                         <div className="clearfix">
                           <div className="float-start">
-                            <strong>{item.usage.value}%</strong>
+                        { item?.status === "Started" ? <strong>25%</strong> : "" }
+                        { item?.status === "Completed" ? <strong>50%</strong> : "" }
+                        { item?.status === "Processing" ? <strong>75%</strong> : "" }
+                        { item?.status === "Approved" ? <strong>100%</strong> : "" }
+                        { item?.status === "Rejected" ? <strong>0%</strong> : "" }
                           </div>
                           <div className="float-end">
-                            <small className="text-medium-emphasis">{item.usage.period}</small>
+                            <small className="text-medium-emphasis">{item?.status}</small>
                           </div>
                         </div>
-                        <CProgress thin color={item.usage.color} value={item.usage.value} />
+                        {
+                          item?.status === "Started" ? 
+                          <CProgress thin color={"secondary"} value={25} />
+                          : ""
+                        }
+                        {
+                          item?.status === "Completed" ? 
+                          <CProgress thin color={"info"} value={50} />
+                          : ""
+                        }
+                        {
+                          item?.status === "Processing" ? 
+                          <CProgress thin color={"warning"} value={75} />
+                          : ""
+                        }
+                        {
+                          item?.status === "Approved" ? 
+                          <CProgress thin color={"success"} value={100} />
+                          : ""
+                        }
+                        {
+                          item?.status === "Rejected" ? 
+                          <CProgress thin color={"danger"} value={0} />
+                          : ""
+                        }
                       </CTableDataCell>
                       <CTableDataCell>
-                        <div className="small text-medium-emphasis">Last login</div>
-                        <strong>{item.activity}</strong>
+                        <div className="small text-medium-emphasis"></div>
+                        <Badge color='primary' onClick={(e)=>{ declineConfirm( item?.id, "Decline Application : "+ item?.program?.department ) } } > Decline </Badge> 
                       </CTableDataCell>
                     </CTableRow>
                   ))}

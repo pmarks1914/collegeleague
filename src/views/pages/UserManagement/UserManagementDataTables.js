@@ -56,7 +56,6 @@ import {
   CTooltip,
 } from '@coreui/react'
 import { userGetData } from '../Data/PageData';
-import ViewDetails from '../../datatable/ViewDetails';
 import CIcon from '@coreui/icons-react';
 import {
   // cilBell,
