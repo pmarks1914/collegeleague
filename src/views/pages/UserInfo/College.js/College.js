@@ -38,6 +38,7 @@ const College = () => {
             "programId": schoolInformation[id]?.id,
             "value": schoolInformation[id]?.name,
             "label": schoolInformation[id]?.name,
+            "description": schoolInformation[id]?.description,
             "startDate": schoolInformation[id]?.start_date,
             "endDate": schoolInformation[id]?.end_date,
             "department": schoolInformation[id]?.department?.name,
@@ -48,7 +49,7 @@ const College = () => {
     // console.log("schoolInformation ", getFormData)
 
     function setProgramInfo(e){
-        setGetFormData({...getFormData, ...{ "programName": e.value, "programId": e.programId, "startDate": e.startDate, "endDate": e.endDate, "department": e.department }})
+        setGetFormData({...getFormData, ...{ "programName": e.value, "programId": e.programId, "startDate": e.startDate, "endDate": e.endDate, "department": e.department, "description": e.description }})
     }
     function getSchoolInfo() {
         let config = {
@@ -124,7 +125,7 @@ const College = () => {
         }
         );
 
-    }
+    } 
 
     function applyProgram(programId) {
 
@@ -188,7 +189,16 @@ const College = () => {
                                     <CRow>
                                         <CCol xs="8" sm="8" md={8} lg={8} className="mt-1" >
                                             {/*  */}
-                                            {post?.bio}
+                                            <bold className="text-uppercase fs-6" >School Bio </bold>
+                                            <p>
+                                                {post?.bio}
+                                            </p>
+                                            <p>
+                                                {getFormData?.description ? <bold className="text-uppercase fs-6" >Program description </bold> : "" } 
+                                                { getFormData?.description?.length > 1 ? <br /> : ""}
+                                                { getFormData?.description?.length > 1 ? getFormData?.description : ""}
+                                                
+                                            </p>
 
                                         </CCol>
                                         <CCol xs="4" sm="4" md={4} lg={4} className="mt-1" >
