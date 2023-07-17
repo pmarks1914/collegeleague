@@ -89,7 +89,8 @@ const College = () => {
     }
 
     function getProgramInfo(schoolId, schoolInfo) {
-        setGetFormData({...getFormData, ...{ "programName": "", "department": "", "programId": "" }})
+        setGetFormData({...getFormData, ...{ "programName": "", "department": "", "programId": "", "description": "" }})
+        
         // console.log(schoolInfo)
         let config = {
             method: "get",
