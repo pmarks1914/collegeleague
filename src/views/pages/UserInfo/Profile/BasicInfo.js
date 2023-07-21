@@ -1388,7 +1388,7 @@ const BasicInfo = (props) => {
                             </CAccordionBody>
                         </CAccordionItem>
                         <CAccordionItem itemKey={2}>
-                            <CAccordionHeader>Spouce </CAccordionHeader>
+                            <CAccordionHeader>Spouse </CAccordionHeader>
                             <CAccordionBody>
                                 <strong></strong>
                                 <Row>
