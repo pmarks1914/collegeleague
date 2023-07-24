@@ -345,17 +345,17 @@ const BasicInfo = (props) => {
     function genericApiCall(config, section) {
         // 
         axios(config).then(response => {
-            // console.log(response.data);
+            console.log(response.data);
 
             toast.success(response?.data?.message, {
                 position: toast.POSITION.TOP_CENTER
             });
-            if (response?.data?.status === true) {
-                if(section === "address"){
-                  setGetFormData({...getFormData, ...{ "address": "", "street_name": "", "town": "", "city": "", "country": "", "code": "", "longitude": "", "latitude": "" }})
-                }
+            // if (response?.data?.status === true) {
+                // if(section === "address"){
+                  setGetFormData({...getFormData, ...{ "address": "", "street_name": "", "town": "", "city": "", "country": "", "code": "", "longitude": "", "latitude": "", "primary_first_name": "", "primary_other_name": "", "primary_last_name": "", "spouce_first_name": "", "spouce_last_name": "", "spouce_other_name": "", "sibling_first_name": "", "sibling_last_name": "" }})
+                // }
 
-            }
+            // }
             getDataInfo()
 
         }).catch(function (error) {
@@ -527,6 +527,7 @@ const BasicInfo = (props) => {
     function handleFamilySubmit(e, familyAction, postData, familyRelation){
         e.preventDefault()
         let config, data = {};
+        // console.log("getFormData", familyRelation, familyAction)
 
         if(familyRelation === "Parent"){
             // 
@@ -643,8 +644,8 @@ const BasicInfo = (props) => {
                 setFamilyData(arrayData)
                 
                 data = {
-                    "first_name": getFormData?.primary_first_name,
-                    "last_name": getFormData?.primary_last_name,
+                    "first_name": getFormData?.sibling_first_name,
+                    "last_name": getFormData?.sibling_last_name,
                     "relation_type": familyRelation,
                     "account": userData?.id
                   }
