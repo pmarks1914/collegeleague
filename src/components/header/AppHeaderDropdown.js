@@ -63,11 +63,11 @@ const AppHeaderDropdown = (userData) => {
         {/* <CDropdownItem>
           <CIcon icon={cilTask} className="me-2" />
         </CDropdownItem> */}
-        <CDropdownItem onClick={(e)=>logoutUser()}>
-          <CIcon icon={cilLockLocked} className="me-2" />
-          <CBadge className="ms-2 bg-text-wp">
+        <CDropdownItem onClick={(e)=>logoutUser()} className="user-select-none">
+          <CIcon icon={cilLockLocked} className="me-2 bg-text-wp" />
+          {/* <CBadge className="ms-2 bg-text-wp"> */}
           Logout
-          </CBadge>
+          {/* </CBadge> */}
         </CDropdownItem>
         {/* <CDropdownItem href="#">
           <CIcon icon={cilFile} className="me-2" />
