@@ -148,7 +148,7 @@ const Login = () => {
                 permission_list: response?.data?.default_permissions_list,
                 schools: response?.data
 
-              };
+              }; 
 
               // console.log((JSON.stringify(userData)));
               localStorage.setItem("userDataStore", JSON.stringify(userData));
