@@ -121,7 +121,7 @@ const Login = () => {
           .then(function (response) {
             setLoader("<a></a>")
             setLogin("Login")
-            console.log((response.data));
+            // console.log((response.data));
             if (response?.data?.status || response.data) {
               // console.log("user data >> ",response?.data, " data >> ", response1?.data)
               let counter = 600000; // 600000 = 10m
