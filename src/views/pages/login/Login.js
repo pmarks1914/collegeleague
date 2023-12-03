@@ -16,12 +16,13 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 import axios from 'axios';
-import { TextField, OutlinedInput, InputLabel } from '@mui/material';
+import { TextField, OutlinedInput, InputLabel, MenuItem, Select } from '@mui/material';
 import Button from '@mui/material/Button';
 import { Col, Row } from 'reactstrap'
 import Box from '@mui/material/Box';
 
 import avatar9 from '../../../assets/brand/logo.svg'
+import { FormControl } from '@mui/base'
 // import swal from 'sweetalert2'
 
 const swal = require("sweetalert2");
@@ -39,6 +40,8 @@ const Login = () => {
   const [loader, setLoader] = useState("<div></div")
   const [login, setLogin] = useState("Login")
   const [loginError, setLoginError] = useState("")
+  const [userType, setUserType] = useState("")
+  const [userTypeError, setUserTypeError] = useState(false)
 
   function CheckLogin(e) {
     e.preventDefault();
@@ -46,12 +49,16 @@ const Login = () => {
 
     // // console.log("fff", process.env.REACT_APP_BASE_API, passwordVar, usernameVar)
     // window.location.href = "/dashboard";
+
     if (usernameVar === "") {
-      setGetFormDataError({...getFormDataError, ...{"email": true}})
+      setGetFormDataError({ ...getFormDataError, ...{ "email": true } })
     }
     else if (passwordVar === "") {
-      setGetFormDataError({...getFormDataError, ...{"password": true}})
+      setGetFormDataError({ ...getFormDataError, ...{ "password": true } })
 
+    }
+    else if(userType === ""){
+      setUserTypeError(true)
     }
     else {
       setLogin("")
@@ -64,7 +71,7 @@ const Login = () => {
         "password": passwordVar,
         'client_id': process.env.REACT_APP_client_id,
         'client_secret': process.env.REACT_APP_client_secret,
-        'grant_type': 'password' 
+        'grant_type': 'password'
 
       });
       // let data = JSON.stringify({
@@ -85,103 +92,113 @@ const Login = () => {
         data: data
       };
       axios(config).then(response1 => {
-
+        let config_user_data = {}
         // console.log(response1.data, "auth ", response1.data.token_type + " " + response1.data.access_token);
-        let config_user_data = {
-          method: 'get',
-          url: process.env.REACT_APP_BASE_API + '/account/profile/info/',
-          headers: { 
-            'Authorization': response1.data.token_type + " "+ response1.data.access_token
-          },
-          data : ''
-        };
-        
+        if(userType === "Student"){
+          // 
+          config_user_data = {
+            method: 'get',
+            url: process.env.REACT_APP_BASE_API + '/account/profile/info/',
+            headers: {
+              'Authorization': response1.data.token_type + " " + response1.data.access_token
+            },
+            data: ''
+          };
+        }
+        else if( userType === "School"){
+          // 
+          config_user_data = {
+            method: 'get',
+            url: process.env.REACT_APP_BASE_API + '/org/',
+            headers: {
+              'Authorization': response1.data.token_type + " " + response1.data.access_token
+            },
+            data: ''
+          };
+        }
+
         axios(config_user_data)
-        .then(function (response) {
-          setLoader("<a></a>")
-          setLogin("Login")
-          // console.log((response.data));
-          if (response?.data?.status) {
-            // console.log("user data >> ",response?.data, " data >> ", response1?.data)
-            let counter = 600000; // 600000 = 10m
-  
-            const userData = {
-              status: response?.data.status,
-              access: response1?.data?.access_token,
-              refresh: response1?.data?.refresh_token,
-              firstname: response?.data?.first_name,
-              lastname: response?.data?.last_name,
-              other_names: response?.data?.other_names,
-              gender: response?.data?.gender,
-              id: response?.data?.account_id,
-              phone: response?.data?.phone?.replaceAll('+', ""),
-              photo: response?.data?.photo,
-              dob: response?.data?.dob,
-              photo150: response?.data?.photo150x150,
-              photo50: response?.data?.photo50x50,
-              role: response?.data?.role || "none",
-              timeLogout: new Date(new Date().getTime() + counter),
-              counter: counter,
-              business_email: response?.data?.kyc?.business_email,
-              business_name: response?.data?.business_name || response?.data?.kyc?.business_name || ((response?.data?.firstname + " " + response?.data?.lastname)?.toString()),
-              gps: response?.data?.kyc?.gps,
-              email: response?.data?.email,
-              business_registration_docs: response?.data?.business_registration_docs,
-              business_address: response?.data?.kyc?.business_address,
-              permission_list: response?.data?.default_permissions_list,
-              team_list: response?.data?.team_list,
-  
-            };
-  
-            // console.log((JSON.stringify(userData)));
-            localStorage.setItem("userDataStore", JSON.stringify(userData));
-            // Cookie
-            // document.cookie = "cookieData" + "=" + JSON.stringify({ 
-            //   account: "", 
-            // wallet: "",
-            // status: "",
-            // access: "",
-            // refresh: "",            
-            // permission_list: ""
-            // })
-            setTimeout(()=>{
-              window.location.href = "/dashboard";
-            }, 1000)
-            
-  
-          }
-          else {
-            setLoginError("Wrong user credentials")
-          }
-        })
-        .catch(function (error) {
-  
-          if (error.response) {
-            // // console.log("==>");
-
+          .then(function (response) {
             setLoader("<a></a>")
-            setLogin("Login data not available")
-            setLoginError("Wrong user credentials")
-            /*
-              * The request was made and the server responded with a
-              * status code that falls out of the range of 2xx
-              */
+            setLogin("Login")
+            // console.log((response.data));
+            if (response?.data?.status || response.data) {
+              // console.log("user data >> ",response?.data, " data >> ", response1?.data)
+              let counter = 600000; // 600000 = 10m
 
-          } else if (error.request) {
+              const userData = {
+                type: userType,
+                status: response?.data.status,
+                access: response1?.data?.access_token,
+                refresh: response1?.data?.refresh_token,
+                firstname: response?.data?.first_name,
+                lastname: response?.data?.last_name,
+                other_names: response?.data?.other_names,
+                gender: response?.data?.gender,
+                id: response?.data?.account_id,
+                phone: response?.data?.phone?.replaceAll('+', ""),
+                photo: response?.data?.photo,
+                dob: response?.data?.dob,
+                photo150: response?.data?.photo150x150,
+                photo50: response?.data?.photo50x50,
+                role: response?.data?.role || "none",
+                timeLogout: new Date(new Date().getTime() + counter),
+                counter: counter,
+                email: response?.data?.email,
+                permission_list: response?.data?.default_permissions_list,
+                schools: response?.data
 
-            setLoader("<a></a>")
-            setLogin("Login data not available")
-            setLoginError("Wrong user credentials")
-            /*
-              * The request was made but no response was received, `error.request`
-              * is an instance of XMLHttpRequest in the browser and an instance
-              * of http.ClientRequest in Node.js
-              */
+              }; 
 
-          } else {
-            // Something happened in setting up the request and triggered an Error
-          }
-        });
+              // console.log((JSON.stringify(userData)));
+              localStorage.setItem("userDataStore", JSON.stringify(userData));
+              // Cookie
+              // document.cookie = "cookieData" + "=" + JSON.stringify({ 
+              //   account: "", 
+              // wallet: "",
+              // status: "",
+              // access: "",
+              // refresh: "",            
+              // permission_list: ""
+              // })
+              setTimeout(() => {
+                window.location.href = "/dashboard";
+              }, 1000)
+
+
+            }
+            else {
+              setLoginError("Wrong user credentials")
+            }
+          })
+          .catch(function (error) {
+
+            if (error.response) {
+              // // console.log("==>");
+
+              setLoader("<a></a>")
+              setLogin("Login data not available")
+              setLoginError("Wrong user credentials")
+              /*
+                * The request was made and the server responded with a
+                * status code that falls out of the range of 2xx
+                */
+
+            } else if (error.request) {
+
+              setLoader("<a></a>")
+              setLogin("Login data not available")
+              setLoginError("Wrong user credentials")
+              /*
+                * The request was made but no response was received, `error.request`
+                * is an instance of XMLHttpRequest in the browser and an instance
+                * of http.ClientRequest in Node.js
+                */
+
+            } else {
+              // Something happened in setting up the request and triggered an Error
+            }
+          });
 
       }).catch(function (error) {
 
@@ -228,9 +245,13 @@ const Login = () => {
 
   }
 
+  function userTypeLogin(e){
+    setUserType(e.target.value)
+    setUserTypeError(false)
+  }
   return (
     <div className="bg-light min-vh-100 min-vw-100 d-flex flex-row align-items-center">
-      <CContainer> 
+      <CContainer>
 
         <CRow className="justify-content-center">
           <CCol md={4} lg={3} xl={3}>
@@ -260,8 +281,8 @@ const Login = () => {
                             margin="normal"
                             type="email"
                             fullWidth
-                            required                           
-                            onChange={(e)=> (setUsernameVar(e.target.value), setGetFormDataError({...getFormDataError, ...{"first_name": false}}))}
+                            required
+                            onChange={(e) => (setUsernameVar(e.target.value), setGetFormDataError({ ...getFormDataError, ...{ "first_name": false } }))}
 
                           />
 
@@ -277,16 +298,34 @@ const Login = () => {
                             id="password"
                             // variant = "standard"
                             autoComplete="current-password"
-                            onChange={(e) => (setPasswordVar(e.target.value), setGetFormDataError({...getFormDataError, ...{"password": false}})) }
+                            onChange={(e) => (setPasswordVar(e.target.value), setGetFormDataError({ ...getFormDataError, ...{ "password": false } }))}
                           />
 
                         </Box>
+
+                        <FormControl fullWidth>
+                          <InputLabel id="user-type-label" className='mt-3' >Select Login As * </InputLabel>
+                          
+                          <Select
+                            labelId="user-type-label"
+                            id="user-type"
+                            error={userTypeError}
+                            value={userType}
+                            label=" Login As"
+                            onChange={(e)=>userTypeLogin(e)}
+                            variant="standard"
+                          >
+                            <MenuItem value={"Student"}> As Student</MenuItem>
+                            <MenuItem value={"School"}>As School</MenuItem>
+                          </Select>
+
+                        </FormControl>
                       </div>
                     </Col>
                     <p className="text-medium-emphasis mb-0">{loginError}</p>
                     <CRow>
                       <CCol xs={12}>
-{/*  */}
+                        {/*  */}
                         {login === "Login" ?
 
                           <Button
@@ -315,13 +354,13 @@ const Login = () => {
                 <div >
                 </div>
                 <p className='mt-10 mb-2 text-center'>
-                  Don{"'"}t have an account? <a href='/signup'> Sign Up </a> 
+                  Don{"'"}t have an account? <a href='/signup'> Sign Up </a>
                   <br />
                   <a href='/reset-password' >Forget Password</a>
                 </p>
               </CCardBody>
             </CCard>
-            
+
           </CCol>
         </CRow>
 
