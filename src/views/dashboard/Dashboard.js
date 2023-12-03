@@ -286,13 +286,15 @@ const Dashboard = () => {
       {/* <WidgetsBrand withCharts /> */}
 
       <ToastContainer />
-      
-      <CRow className='m-3' >
-
-      <CCol sm="12" md="12" lg="12" xl="12">
-          <a href='/apply' className='justify-content-between align-items-center text-white bg-dark rounded-1 p-2' > Quick link to apply </a>
-        </CCol>
-      </CRow>
+      {
+        userData?.type === 'Student' ?
+        <CRow className='m-3' >
+          <CCol sm="12" md="12" lg="12" xl="12">
+            <a href='/apply' className='justify-content-between align-items-center text-white bg-dark rounded-1 p-2' > Quick link to apply </a>
+          </CCol>
+        </CRow>
+        : ""
+      }
       <CRow className='m-3' style={{width: "100%"}}>
 
         <CCol xs className='mt-2'>
