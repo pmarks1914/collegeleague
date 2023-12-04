@@ -77,7 +77,7 @@ const Dashboard = () => {
     trackActivity();
 
   }, [applicationAction])
-  // console.log("summarry ", schDetails)
+  console.log("summarry ", schDetails)
 
   const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
 
@@ -278,7 +278,6 @@ const Dashboard = () => {
     // event.preventDefault()
     trackActivity()
   }
-
   return (
     <>
       {/* Sch  */}
@@ -286,102 +285,218 @@ const Dashboard = () => {
       {/* <WidgetsBrand withCharts /> */}
 
       <ToastContainer />
-      
-      <CRow className='m-3' >
+      {
+        userData?.type === 'Student' ?
+        <CRow className='m-3' >
+          <CCol sm="12" md="12" lg="12" xl="12">
+            <a href='/apply' className='justify-content-between align-items-center text-white bg-dark rounded-1 p-2' > Quick link to apply </a>
+          </CCol>
+        </CRow>
+        : ""
+      }
+      {/* table for student */}
+      {
+        userData?.type === 'Student' ?
+          <CRow className='m-3' style={{width: "100%"}}>
 
-      <CCol sm="12" md="12" lg="12" xl="12">
-          <a href='/apply' className='justify-content-between align-items-center text-white bg-dark rounded-1 p-2' > Quick link to apply </a>
-        </CCol>
-      </CRow>
-      <CRow className='m-3' style={{width: "100%"}}>
+            <CCol xs className='mt-2'>
+              
+              <CCard className="mb-4">            
+                <CCardHeader> Application Overview </CCardHeader>
+                <CCardBody>
 
-        <CCol xs className='mt-2'>
-          
-          <CCard className="mb-4">            
-            <CCardHeader> Application Overview </CCardHeader>
-            <CCardBody>
+                  <CTable align="middle" className="mb-0 border" hover responsive>
+                    <CTableHead color="light">
+                      <CTableRow>
+                        <CTableHeaderCell className="text-center">
+                          <CIcon icon={cilPeople} />
+                        </CTableHeaderCell>
+                        <CTableHeaderCell>Name</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center">Programme</CTableHeaderCell>
+                        <CTableHeaderCell>Status</CTableHeaderCell>
+                        <CTableHeaderCell>Action</CTableHeaderCell>
+                      </CTableRow>
+                    </CTableHead>
+                    <CTableBody>
+                      {schDetails?.map((item, index) => (
+                        <CTableRow v-for="item in tableItems" key={index}>
+                          <CTableDataCell className="text-center">
+                            <CAvatar size="md" src={process.env.REACT_APP_BASE_API + userData?.photo} status={"success"} />
+                          </CTableDataCell>
+                          <CTableDataCell>
+                            <div>{item?.program?.organization}</div>
+                            <div className="small text-medium-emphasis">
+                              <span>{'New '}</span> | Applied:{' '}  
+                              {moment(item?.updated_at).format("YYYY-MM-DD")}
+                            </div>
+                          </CTableDataCell>
+                          <CTableDataCell className="text-center">
+                            {item?.program?.department}
+                            {/* <CIcon size="xl" icon={item.country.flag} title={item.country.name} /> */}
+                          </CTableDataCell>
+                          <CTableDataCell>
+                            <div className="clearfix">
+                              <div className="float-start ">
+                            { item?.status === "Started" ? <strong>25%</strong> : "" }
+                            { item?.status === "Completed" ? <strong>50%</strong> : "" }
+                            { item?.status === "Processing" ? <strong>75%</strong> : "" }
+                            { item?.status === "Approved" ? <strong>100%</strong> : "" }
+                            { item?.status === "Rejected" ? <strong>0%</strong> : "" }
+                              </div>
+                              <div className="float-end">
+                                <small className="text-medium-emphasis">{item?.status}</small>
+                              </div>
+                            </div>
+                            {
+                              item?.status === "Started" ? 
+                              <CProgress thin color={"secondary"} value={25} />
+                              : ""
+                            }
+                            {
+                              item?.status === "Completed" ? 
+                              <CProgress thin color={"info"} value={50} />
+                              : ""
+                            }
+                            {
+                              item?.status === "Processing" ? 
+                              <CProgress thin color={"warning"} value={75} />
+                              : ""
+                            }
+                            {
+                              item?.status === "Approved" ? 
+                              <CProgress thin color={"success"} value={100} />
+                              : ""
+                            }
+                            {
+                              item?.status === "Rejected" ? 
+                              <CProgress thin color={"danger"} value={0} />
+                              : ""
+                            }
+                          </CTableDataCell>
+                          <CTableDataCell>
+                            <div className="small text-medium-emphasis"></div>
+                            <Badge color='primary' onClick={(e)=>{ declineConfirm( item?.id, "Decline Application : "+ item?.program?.department ) } } > Decline </Badge> 
+                          </CTableDataCell>
+                        </CTableRow>
+                      ))}
+                    </CTableBody>
+                  </CTable>
+                </CCardBody>
+              </CCard>
+            </CCol>
 
-              <CTable align="middle" className="mb-0 border" hover responsive>
-                <CTableHead color="light">
-                  <CTableRow>
-                    <CTableHeaderCell className="text-center">
-                      <CIcon icon={cilPeople} />
-                    </CTableHeaderCell>
-                    <CTableHeaderCell>Name</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center">Programme</CTableHeaderCell>
-                    <CTableHeaderCell>Status</CTableHeaderCell>
-                    <CTableHeaderCell>Action</CTableHeaderCell>
-                  </CTableRow>
-                </CTableHead>
-                <CTableBody>
-                  {schDetails?.map((item, index) => (
-                    <CTableRow v-for="item in tableItems" key={index}>
-                      <CTableDataCell className="text-center">
-                        <CAvatar size="md" src={process.env.REACT_APP_BASE_API + userData?.photo} status={"success"} />
-                      </CTableDataCell>
-                      <CTableDataCell>
-                        <div>{item?.program?.organization}</div>
-                        <div className="small text-medium-emphasis">
-                          <span>{'New '}</span> | Applied:{' '}  
-                          {moment(item?.updated_at).format("YYYY-MM-DD")}
-                        </div>
-                      </CTableDataCell>
-                      <CTableDataCell className="text-center">
-                        {item?.program?.department}
-                        {/* <CIcon size="xl" icon={item.country.flag} title={item.country.name} /> */}
-                      </CTableDataCell>
-                      <CTableDataCell>
-                        <div className="clearfix">
-                          <div className="float-start ">
-                        { item?.status === "Started" ? <strong>25%</strong> : "" }
-                        { item?.status === "Completed" ? <strong>50%</strong> : "" }
-                        { item?.status === "Processing" ? <strong>75%</strong> : "" }
-                        { item?.status === "Approved" ? <strong>100%</strong> : "" }
-                        { item?.status === "Rejected" ? <strong>0%</strong> : "" }
-                          </div>
-                          <div className="float-end">
-                            <small className="text-medium-emphasis">{item?.status}</small>
-                          </div>
-                        </div>
-                        {
-                          item?.status === "Started" ? 
-                          <CProgress thin color={"secondary"} value={25} />
-                          : ""
-                        }
-                        {
-                          item?.status === "Completed" ? 
-                          <CProgress thin color={"info"} value={50} />
-                          : ""
-                        }
-                        {
-                          item?.status === "Processing" ? 
-                          <CProgress thin color={"warning"} value={75} />
-                          : ""
-                        }
-                        {
-                          item?.status === "Approved" ? 
-                          <CProgress thin color={"success"} value={100} />
-                          : ""
-                        }
-                        {
-                          item?.status === "Rejected" ? 
-                          <CProgress thin color={"danger"} value={0} />
-                          : ""
-                        }
-                      </CTableDataCell>
-                      <CTableDataCell>
-                        <div className="small text-medium-emphasis"></div>
-                        <Badge color='primary' onClick={(e)=>{ declineConfirm( item?.id, "Decline Application : "+ item?.program?.department ) } } > Decline </Badge> 
-                      </CTableDataCell>
-                    </CTableRow>
-                  ))}
-                </CTableBody>
-              </CTable>
-            </CCardBody>
-          </CCard>
-        </CCol>
+          </CRow> 
+        : ""
+      }
+      {/* table for student */}
+      {
+        userData?.type === 'School' ?
+          <CRow className='m-3' style={{width: "100%"}}>
 
-      </CRow> 
+            <CCol xs className='mt-2'>
+              
+              <CCard className="mb-4">            
+                <CCardHeader> Application Overview </CCardHeader>
+                <CCardBody>
+
+                  <CTable align="middle" className="mb-0 border" hover responsive>
+                    <CTableHead color="light">
+                      <CTableRow>
+                        <CTableHeaderCell className="text-center">
+                          <CIcon icon={cilPeople} />
+                        </CTableHeaderCell>
+                        <CTableHeaderCell>Name</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center">Programme</CTableHeaderCell>
+                        <CTableHeaderCell>Status</CTableHeaderCell>
+                        {/* <CTableHeaderCell>Action</CTableHeaderCell> */}
+                      </CTableRow>
+                    </CTableHead>
+                    <CTableBody>
+                      {schDetails?.data?.map((item, index) => (
+                        <CTableRow v-for="item in tableItems" key={index}>
+                          <CTableDataCell className="text-center">
+                            <CAvatar size="md" src={process.env.REACT_APP_BASE_API + userData?.photo} status={"success"} />
+                          </CTableDataCell>
+                          <CTableDataCell>
+                            <div>{item?.account?.user?.first_name + " " + item?.account?.user?.last_name}</div>
+                            <div className="small text-medium-emphasis">
+                              <span>{'New '}</span> | Applied:{' '}  
+                              {moment(item?.updated_at).format("YYYY-MM-DD")}
+                            </div>
+                          </CTableDataCell>
+                          <CTableDataCell className="text-center">
+                            {item?.program?.name}
+                            {/* <CIcon size="xl" icon={item.country.flag} title={item.country.name} /> */}
+                          </CTableDataCell>
+                          <CTableDataCell>
+                            <div className="clearfix">
+                              <div className="float-start ">
+                            { item?.status === "Pending" ? <strong>1%</strong> : "" }
+                            { item?.status === "Started" ? <strong>25%</strong> : "" }
+                            { item?.status === "Completed" ? <strong>50%</strong> : "" }
+                            { item?.status === "Processing" ? <strong>75%</strong> : "" }
+                            { item?.status === "Approved" ? <strong>100%</strong> : "" }
+                            { item?.status === "Rejected" ? <strong>0%</strong> : "" }
+                              </div>
+                              <div className="float-end">
+                                <small className="text-medium-emphasis">{item?.status}</small>
+                              </div>
+                            </div>
+                            {
+                              item?.status === "Pending" ? 
+                              <CProgress thin color={"secondary"} value={1} />
+                              : ""
+                            }
+                            {
+                              item?.status === "Started" ? 
+                              <CProgress thin color={"secondary"} value={25} />
+                              : ""
+                            }
+                            {
+                              item?.status === "Completed" ? 
+                              <CProgress thin color={"info"} value={50} />
+                              : ""
+                            }
+                            {
+                              item?.status === "Processing" ? 
+                              <CProgress thin color={"warning"} value={75} />
+                              : ""
+                            }
+                            {
+                              item?.status === "Approved" ? 
+                              <CProgress thin color={"success"} value={100} />
+                              : ""
+                            }
+                            {
+                              item?.status === "Rejected" ? 
+                              <CProgress thin color={"danger"} value={0} />
+                              : ""
+                            }
+                          </CTableDataCell>
+                          {/* <CTableDataCell>
+                            <div className="small text-medium-emphasis"></div>
+                            <Badge color='primary' onClick={(e)=>{ declineConfirm( item?.id, "Decline Application : "+ item?.program?.department ) } } > Decline </Badge> 
+                          </CTableDataCell> */}
+                        </CTableRow>
+                      ))}
+                    </CTableBody>
+                  </CTable>
+                </CCardBody>
+              </CCard>
+            </CCol>
+
+          </CRow> 
+        : ""
+      }
+{
+        userData?.type === 'School' ?
+        <CRow className='m-3' >
+          <CCol sm="12" md="12" lg="12" xl="12">
+            <a href={`/applications/${userData?.organization_id}`} className='justify-content-between align-items-center text-white bg-dark rounded-1 p-2' > View More </a>
+          </CCol>
+        </CRow>
+        : ""
+      }
     </>
   )
 }
