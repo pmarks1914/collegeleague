@@ -46,7 +46,6 @@ class App extends Component {
             <Route exact path="/" name="Login Page" element={<Login />} />
             <Route exact path="/login" name="Login Page" element={<Login />} />
             <Route exact path="/team-login" name="Team Login Page" element={<TeamLogin />} />
-            <Route exact path="/join-team/:id" name="Join Team" element={<JoinTeam />} />
             <Route exact path="/signin" name="Signin Page" element={<Signin />} />
             {/* <Route exact path="/register" name="Register Page" element={<Register />} /> */}
             <Route exact path="/signup" name="SignUp Page" element={<Signup />} />

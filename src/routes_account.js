@@ -1,5 +1,8 @@
 import React from 'react'
+
 import General from './views/pages/UserInfo/General'
+import Application from './views/pages/Application/Application'
+import ApplicationDetail from './views/pages/Application/ApplicationDetail'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
@@ -56,6 +59,7 @@ const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 // const Compliance = React.lazy(() => import('./views/pages/Compliance/Compliance'))
 const UserManagement = React.lazy(() => import('./views/pages/UserManagement/UserManagement'))
 
+
 const routes = [
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
   { path: '/theme/colors', name: 'Colors', element: Colors },
@@ -107,6 +111,8 @@ const routes = [
   { path: '/settings/user-management', name: 'User Management', element: UserManagement },
 
   { path: '/apply', name: 'Apply', element: General },
+  { path: '/applications/:id', name: 'Applications', element: Application },
+  { path: '/application-detail/:id', name: 'Application Detail View', element: ApplicationDetail },
 
   // { path: '/checkout/:id', name: '', element: Checkout }, 
 
