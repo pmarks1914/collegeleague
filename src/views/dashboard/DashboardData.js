@@ -35,7 +35,7 @@ export function getSchData(){
 
     function schDetails(){
         return axios(config_sch).then(response => {
-            console.log("data ==", response?.data);
+            // console.log("data ==", response?.data);
             if (response.status === 200) {
                 // 
                 return response.data;
@@ -103,7 +103,7 @@ export function getApplication(){
     //   console.log("data getApplication ==", response);
         <a dangerouslySetInnerHTML={{ __html: loader }}></a>
         if (response.status === 200) {
-              console.log("data source==", response.data);
+              console.log("data source sch ==", response.data);
             if(response?.data){loader = "<a></>";}
                 
             <a dangerouslySetInnerHTML={{ __html: loader }}></a>;
@@ -125,6 +125,7 @@ export function getApplication(){
                   "applicant_program_end_date": moment(tableData[id]?.program?.end_date).format('LLLL'),
                   "applicant_program_start_date": moment(tableData[id]?.program?.start_date).format('LLLL'),
                   "applicant_program_id": tableData[id]?.program?.id,
+                  "account": tableData[id]?.account,
                   "action": "View",
                   
                 //   "action": `<a href= ${'/payroll/salary/'}${tableData[id]?.payrollID} > View </a> ` 
