@@ -10,8 +10,8 @@ import { Badge } from 'reactstrap';
 const userData = JSON.parse(localStorage.getItem("userDataStore"));
 
 let salaryGetAll = getApplication();
-let salaryGetAllInfo = []
-salaryGetAll.list.then(value => salaryGetAllInfo = value)
+// let salaryGetAllInfo = []
+// salaryGetAll.list.then(value => salaryGetAllInfo = value)
 
 
 const ApplicationDataTables = () => {
@@ -23,6 +23,7 @@ const ApplicationDataTables = () => {
   // const products = salaryGetAllInfo;
 
   const [products, setProducts] = useState([]);
+  const [salaryGetAllInfo, setSalaryGetAllInfo] = useState()
 
   const columns = [
     {
@@ -68,11 +69,13 @@ const ApplicationDataTables = () => {
   ];
 
   useEffect(() => {
-    setTimeout(() => {
-      setProducts(salaryGetAllInfo || [])
-      console.log(" >> ", salaryGetAllInfo)
-    }, 1000);
+    // setTimeout(() => {
+    //   setProducts(salaryGetAllInfo || [])
+    //   console.log(" >> ", salaryGetAllInfo)
+    // }, 1000);
 
+    // let salaryGetAllInfo = []
+    salaryGetAll.list.then(value => setProducts( value ) )
   }, []);
 
   // manage paging
@@ -98,9 +101,9 @@ const ApplicationDataTables = () => {
     console.log("rowIndexData ", rowIndexData)
     localStorage.setItem("applicantData", JSON.stringify(rowIndexData));
 
-    setTimeout(()=>{
+    // setTimeout(()=>{
       window.location.href = '/application-detail/' + userData?.organization_id + "/"
-    }, 1000)
+    // }, 1000)
 
     // console.log("<<<<   >>>>", '/payroll/salary/'+rowIndexData?.payrollID?.toString()  )
 
