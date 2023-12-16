@@ -122,35 +122,64 @@ const Login = () => {
             setLoader("<a></a>")
             setLogin("Login")
             // console.log((response.data));
+
             if (response?.data?.status) {
-              console.log("user data >> ",response?.data, " data >> ", response1?.data)
+              // console.log(userType, "user data >> ",response?.data, " data >> ", response1?.data)
               let counter = 600000; // 600000 = 10m
+              let userData = {};
 
-              const userData = {
-                type: userType,
-                status: response?.data?.status,
-                access: response1?.data?.access_token,
-                refresh: response1?.data?.refresh_token,
-                firstname: response?.data?.first_name || response?.data?.data[0]?.manager?.first_name || "",
-                lastname: response?.data?.last_name || response?.data?.data[0]?.manager?.last_name || "",
-                other_names: response?.data?.other_names || response?.data?.data[0]?.manager?.other_names || "",
-                gender: response?.data?.gender || "",
-                organization_id: response?.data?.data[0]?.id || "", 
-                id: response?.data?.account_id || response?.data?.data[0]?.manager?.account_id || "",
-                manager_personal_id: response?.data?.data[0]?.manager?.id || "",
-                phone: response?.data?.phone?.replaceAll('+', "") || response?.data?.data[0]?.manager?.phone?.replaceAll('+', "") || "",
-                photo: response?.data?.photo || response?.data?.data[0]?.manager?.photo || "",
-                dob: response?.data?.dob || response?.data?.data[0]?.manager?.dob || "",
-                photo150: response?.data?.photo150x150 || response?.data?.data[0]?.manager?.photo150x150 || "",
-                photo50: response?.data?.photo50x50 || response?.data?.data[0]?.manager?.photo50x50 || "",
-                role: response?.data?.role || "none" || "",
-                timeLogout: new Date(new Date().getTime() + counter) || "",
-                counter: counter || "",
-                email: response?.data?.email || response?.data?.data[0]?.manager?.email || "",
-                permission_list: response?.data?.default_permissions_list || "",
-                schools: response?.data?.data  || ""
+              if(userType === "Student"){
+                userData = {
+                  type: userType,
+                  status: response?.data?.status,
+                  access: response1?.data?.access_token,
+                  refresh: response1?.data?.refresh_token,
+                  firstname: response?.data?.first_name,
+                  lastname: response?.data?.last_name,
+                  other_names: response?.data?.other_names,
+                  gender: response?.data?.gender,
+                  id: response?.data?.account_id,
+                  phone: response?.data?.phone?.replaceAll('+', ""),
+                  photo: response?.data?.photo,
+                  dob: response?.data?.dob,
+                  photo150: response?.data?.photo150x150,
+                  photo50: response?.data?.photo50x50,
+                  role: response?.data?.role,
+                  timeLogout: new Date(new Date().getTime() + counter),
+                  counter: counter,
+                  email: response?.data?.email,
+                  // permission_list: response?.data?.default_permissions_list || "",  
+                }; 
 
-              }; 
+              }
+              else if ( userType === "School" ){
+
+                userData = {
+                  type: userType,
+                  status: response?.data?.status,
+                  access: response1?.data?.access_token,
+                  refresh: response1?.data?.refresh_token,
+                  firstname: response?.data?.first_name || response?.data?.data[0]?.manager?.first_name || "",
+                  lastname: response?.data?.last_name || response?.data?.data[0]?.manager?.last_name || "",
+                  other_names: response?.data?.other_names || response?.data?.data[0]?.manager?.other_names || "",
+                  gender: response?.data?.gender || "",
+                  organization_id: response?.data?.data[0]?.id || "", 
+                  id: response?.data?.account_id || response?.data?.data[0]?.manager?.account_id || "",
+                  manager_personal_id: response?.data?.data[0]?.manager?.id || "",
+                  phone: response?.data?.phone?.replaceAll('+', "") || response?.data?.data[0]?.manager?.phone?.replaceAll('+', "") || "",
+                  photo: response?.data?.photo || response?.data?.data[0]?.manager?.photo || "",
+                  dob: response?.data?.dob || response?.data?.data[0]?.manager?.dob || "",
+                  photo150: response?.data?.photo150x150 || response?.data?.data[0]?.manager?.photo150x150 || "",
+                  photo50: response?.data?.photo50x50 || response?.data?.data[0]?.manager?.photo50x50 || "",
+                  role: response?.data?.role || "none" || "",
+                  timeLogout: new Date(new Date().getTime() + counter) || "",
+                  counter: counter || "",
+                  email: response?.data?.email || response?.data?.data[0]?.manager?.email || "",
+                  permission_list: response?.data?.default_permissions_list || "",
+                  schools: response?.data?.data  || ""
+  
+                }; 
+              }
 
               // console.log((JSON.stringify(userData)));
               localStorage.setItem("userDataStore", JSON.stringify(userData));
@@ -164,7 +193,7 @@ const Login = () => {
               // permission_list: ""
               // })
               setTimeout(() => {
-                // window.location.href = "/dashboard";
+                window.location.href = "/dashboard";
               }, 1000)
 
 
