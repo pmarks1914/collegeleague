@@ -63,12 +63,17 @@ import { Badge } from 'reactstrap'
 import { ToastContainer, toast } from 'react-toastify';
 import axios from "axios"
 import Swal from 'sweetalert2'
+import { getApplication } from './DashboardData';
 
+
+let salaryGetAll = getApplication();
 const userData = JSON.parse(localStorage.getItem("userDataStore"));
 
 const Dashboard = () => {
   const [schDetails, setSchDetails] = useState(null)
   const [applicationAction, setApplicationAction] = useState(1)
+
+  const [products, setProducts] = useState([]);
 
   useEffect(() => {
     // 
@@ -77,7 +82,10 @@ const Dashboard = () => {
     trackActivity();
 
   }, [applicationAction])
-  console.log("summarry ", schDetails)
+  console.log("summarry products", products)
+  useEffect(() => {
+    salaryGetAll.list.then(value => setProducts( value ) )
+  }, []);
 
   const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
 
@@ -278,6 +286,19 @@ const Dashboard = () => {
     // event.preventDefault()
     trackActivity()
   }
+
+  function funE(rowIndexData) {
+    // console.log("rowIndexData ", rowIndexData)
+    localStorage.setItem("applicantData", JSON.stringify(rowIndexData));
+
+    // setTimeout(()=>{
+      window.location.href = '/application-detail/' + userData?.organization_id + "/"
+    // }, 1000)
+
+    // console.log("<<<<   >>>>", '/payroll/salary/'+rowIndexData?.payrollID?.toString()  )
+
+  }
+  
   return (
     <>
       {/* Sch  */}
@@ -406,13 +427,14 @@ const Dashboard = () => {
                           <CIcon icon={cilPeople} />
                         </CTableHeaderCell>
                         <CTableHeaderCell>Name</CTableHeaderCell>
-                        <CTableHeaderCell className="text-center">Programme</CTableHeaderCell>
+                        <CTableHeaderCell>Email</CTableHeaderCell>
+                        <CTableHeaderCell className="">Programme</CTableHeaderCell>
                         <CTableHeaderCell>Status</CTableHeaderCell>
-                        {/* <CTableHeaderCell>Action</CTableHeaderCell> */}
+                        <CTableHeaderCell>Action</CTableHeaderCell>
                       </CTableRow>
                     </CTableHead>
                     <CTableBody>
-                      {schDetails?.data?.map((item, index) => (
+                      {products?.map((item, index) => (
                         <CTableRow v-for="item in tableItems" key={index}>
                           <CTableDataCell className="text-center">
                             <CAvatar size="md" src={process.env.REACT_APP_BASE_API + userData?.photo} status={"success"} />
@@ -424,8 +446,12 @@ const Dashboard = () => {
                               {moment(item?.updated_at).format("YYYY-MM-DD")}
                             </div>
                           </CTableDataCell>
-                          <CTableDataCell className="text-center">
-                            {item?.program?.name}
+                          <CTableDataCell className="">
+                            {item?.applicant_email}
+                            {/* <CIcon size="xl" icon={item.country.flag} title={item.country.name} /> */}
+                          </CTableDataCell>
+                          <CTableDataCell className="">
+                            {item?.applicant_program_name}
                             {/* <CIcon size="xl" icon={item.country.flag} title={item.country.name} /> */}
                           </CTableDataCell>
                           <CTableDataCell>
@@ -473,10 +499,10 @@ const Dashboard = () => {
                               : ""
                             }
                           </CTableDataCell>
-                          {/* <CTableDataCell>
+                          <CTableDataCell>
                             <div className="small text-medium-emphasis"></div>
-                            <Badge color='primary' onClick={(e)=>{ declineConfirm( item?.id, "Decline Application : "+ item?.program?.department ) } } > Decline </Badge> 
-                          </CTableDataCell> */}
+                            <Badge color='primary' onClick={(e)=>{ funE( item ) } } > View </Badge> 
+                          </CTableDataCell>
                         </CTableRow>
                       ))}
                     </CTableBody>
@@ -492,7 +518,7 @@ const Dashboard = () => {
         userData?.type === 'School' ?
         <CRow className='m-3' >
           <CCol sm="12" md="12" lg="12" xl="12">
-            <a href={`/applications/${userData?.organization_id}`} className='justify-content-between align-items-center text-white bg-dark rounded-1 p-2' > View More </a>
+            <a href={`/applications/${userData?.organization_id}`} className='justify-content-between align-items-center text-white bg-dark rounded-1 p-2' > Load More </a>
           </CCol>
         </CRow>
         : ""

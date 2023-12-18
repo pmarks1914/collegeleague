@@ -124,7 +124,7 @@ const Login = () => {
             // console.log((response.data));
 
             if (response?.data?.status) {
-              // console.log(userType, "user data >> ",response?.data, " data >> ", response1?.data)
+              console.log(userType, "user data >> ",response?.data, " data >> ", response1?.data)
               let counter = 600000; // 600000 = 10m
               let userData = {};
 

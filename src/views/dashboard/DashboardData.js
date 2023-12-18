@@ -126,6 +126,7 @@ export function getApplication(){
                   "applicant_program_start_date": moment(tableData[id]?.program?.start_date).format('LLLL'),
                   "applicant_program_id": tableData[id]?.program?.id,
                   "account": tableData[id]?.account,
+                  "status": tableData[id]?.status,
                   "action": "View",
                   
                 //   "action": `<a href= ${'/payroll/salary/'}${tableData[id]?.payrollID} > View </a> ` 
