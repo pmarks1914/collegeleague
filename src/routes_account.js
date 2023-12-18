@@ -1,8 +1,5 @@
 import React from 'react'
 
-import General from './views/pages/UserInfo/General'
-import Application from './views/pages/Application/Application'
-import ApplicationDetail from './views/pages/Application/ApplicationDetail'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
@@ -59,6 +56,9 @@ const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 // const Compliance = React.lazy(() => import('./views/pages/Compliance/Compliance'))
 const UserManagement = React.lazy(() => import('./views/pages/UserManagement/UserManagement'))
 
+const General = React.lazy(() => import('./views/pages/UserInfo/General'))
+const Application = React.lazy(() => import('./views/pages/Application/Application'))
+const ApplicationDetail = React.lazy(() => import('./views/pages/Application/ApplicationDetail'))
 
 const routes = [
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
