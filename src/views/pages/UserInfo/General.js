@@ -91,7 +91,7 @@ const General = () => {
 
   const toggle = tab => {
     if (activeTab !== tab) setActiveTab(tab);
-    if (tab === '1' || tab === '14') {
+    if (tab === '1' || tab === '14' || "212") {
       // document.getElementById("fin-month-id").style.display = "block";
     }
     else {
